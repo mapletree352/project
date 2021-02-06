@@ -1,0 +1,750 @@
+<div class="row page-header">
+	<h3>Search Accidents</h3>
+</div>
+
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div
+				style="width: 130px; position: absolute; right: 20px; z-index: 998">
+				<button class="btn btn-block btn-primary" ng-click="search()">Search</button>
+				<button type="button" class="btn btn-block btn-default"
+					ng-click="reset()">Clear</button>
+
+				<br /> <br /> <a href=""
+					ng-click="advSearchCollapsed = !advSearchCollapsed"
+					class="pull-right">Advanced Search...</a>
+
+
+			</div>
+
+			<div class="col-sm-12" style="padding-right: 160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Accident ID</label>
+						<div class="col-sm-4">
+							<input class="form-control" ng-model="searchDTO.accidentNo" />
+						</div>
+						<label class="col-sm-2 control-label">Report Status</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-model="searchDTO.reportStatus">
+								<option></option>
+								<option value="NEW">New</option>
+								<option value="UPDATED">Updated</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Accident Date/Time
+							Range</label>
+						<div class="col-sm-4">
+							<input daterangebox ng-model="searchDTO.accidentDateRange"
+								class="form-control" />
+						</div>
+						<label class="col-sm-2 control-label">Accident Category</label>
+						<div class="col-sm-4">
+							<select ng-model="searchDTO.accidentCategory"
+								class="form-control">
+								<option></option>
+								<option ng-repeat="category in accCategories"
+									value="{{category.id}}">{{category.name}}</option>
+							</select>
+						</div>
+					</div>
+					<div uib-collapse="advSearchCollapsed">
+						<hr>
+						<div class="col-sm-1">
+							<ul class="nav nav-tabs tabs-left">
+								<li class="active"><a href="" ng-click="tab='report'"
+									data-toggle="tab">Report</a></li>
+								<li><a href="" ng-click="tab='mission'" data-toggle="tab">Mission</a></li>
+								<li><a href="" ng-click="tab='man'" data-toggle="tab">Man</a></li>
+								<li><a href="" ng-click="tab='machine'" data-toggle="tab">Machine</a></li>
+								<li><a href="" ng-click="tab='medium'" data-toggle="tab">Medium</a></li>
+								<li><a href="" ng-click="tab='management'"
+									data-toggle="tab">Management</a></li>
+								<li><a href="" ng-click="tab='cause'" data-toggle="tab">Cause</a></li>
+							</ul>
+						</div>
+
+						<div class="col-sm-11">
+							<div class="tab-content" ng-if="tab=='report'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Location Type</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											ng-model="searchDTO.reportLocationType">
+											<option />
+											<option ng-repeat="location in accLocTypes"
+												value="{{location.id}}">{{location.name}}</option>
+
+
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Hub Involved</label>
+									<div class="col-sm-4"
+										ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+										<select class="form-control" ng-model="searchDTO.reportHub"
+											ng-options="hub.code as hub.name for hub in hubs">
+											<option />
+										</select>
+									</div>
+
+
+								</div>
+								<div class="form-group">
+
+									<label class="col-sm-2 control-label">Node Involved</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											ng-model="searchDTO.reportNodeCode"
+											ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.reportHub)">
+											<option />
+										</select>
+									</div>
+
+									<label class="col-sm-2 control-label">Unit Involved</label>
+
+									<div class="col-sm-4"
+										ng-if="session.userRole.cat !== 'Unit' || session.userRole.formationCode">
+										<typeahead placeholder="Unit Code or Name"
+											uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+											typeahead-on-select="searchDTO.reportUnitCode = $item.code"
+											ng-blur="searchDTO.reportUnitCode = unit ? searchDTO.reportUnitCode : undefined"
+											ng-model="unit" />
+
+									</div>
+
+								</div>
+								<div class="form-group">
+
+									<label class="col-sm-2 control-label">Sub-Unit Involved</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="seachDTO.reportSubUnit"
+											ng-options="subUnit.id as subUnit.name for subUnit in subUnits | filter: { type: searchDTO.reportUnitCode }">
+											<option></option>
+										</select>
+									</div>
+
+									<label class="col-sm-2 control-label">Between Moving
+										Vehicles</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.reportCollisionTypeId"
+											class="form-control">
+											<option></option>
+											<option ng-repeat="accCollisionDir in accCollisionDirs"
+												value="{{accCollisionDir.id}}">{{accCollisionDir.name}}</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+
+									<label class="col-sm-2 control-label">Moving Vehicle
+										Against</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.reportCollisionObjectId"
+											class="form-control">
+											<option></option>
+											<option ng-repeat="accCollisionObj in accCollisionObjs"
+												value="{{accCollisionObj.id}}">{{accCollisionObj.name}}</option>
+										</select>
+									</div>
+									
+										<label class="col-sm-2 control-label">Vehicle Manoeuvre Before Accident</label>
+									<div class="col-sm-4">
+									
+									
+										<select ng-model="searchDTO.reportManoevureId" class="form-control">
+									<option></option>
+									<option ng-repeat="accManoevre in accManoevres" value="{{accManoevre.id}}">{{accManoevre.name}}</option>
+								</select>
+								
+										
+									</div>
+									
+									
+									
+									
+								</div>
+							</div>
+
+							<div class="tab-content" ng-if="tab=='mission'">
+
+								<div class="form-group">
+
+									<label class="col-sm-2 control-label">Task ID</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="searchDTO.taskId"
+											class="form-control" />
+
+
+									</div>
+									<label class="col-sm-2 control-label">Task Status</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.taskStatus" class="form-control">
+											<option />
+											<option ng-repeat="taskStatus in taskStatuss"
+												value="{{taskStatus.id}}">{{taskStatus.name}}</option>
+
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Indent ID</label>
+									<div class="col-sm-4">
+										<input class="form-control" ng-model="searchDTO.indentNo" />
+
+									</div>
+									<label class="col-sm-2 control-label">Indent Status</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											ng-model="searchDTO.taskIndentStatus">
+											<option />
+											<option ng-repeat="indentStatus in indentStatuss"
+												value="{{indentStatus.id}}">{{indentStatus.name}}</option>
+
+										</select>
+									</div>
+
+
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Activity</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											ng-model="searchDTO.taskActivityCode">
+											<option />
+											<option ng-repeat="activity in activities"
+												value="{{activity.code}}">{{activity.name}}</option>
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Movement</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.taskMovement">
+											<option></option>
+											<option value="IN">In Camp</option>
+											<option value="OUT">Out Camp</option>
+										</select>
+									</div>
+
+
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Is Contributing Factor </label>
+									<div class="col-sm-4">
+									<yes-no ng-model="searchDTO.missionIsContributingFactor"/>
+							
+									</div>
+
+
+
+								</div>
+
+
+							</div>
+							<div class="tab-content" ng-if="tab=='man'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Transport Operator Involved</label>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Nric/Name </label>
+									<div class="col-sm-4">
+										<typeahead placeholder="NRIC No. or Name"
+											uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+											typeahead-on-select="searchDTO.manNricName = $item.code "
+											ng-blur="searchDTO.manNricName = driver ? searchDTO.manNricName : undefined"
+											ng-model="driver" />
+
+
+									</div>
+									<label class="col-sm-2 control-label">Hub </label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.manHubCode"
+											ng-options="hub.code as hub.name for hub in hubs">
+											<option />
+										</select>
+
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Node </label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.manNodeId"
+											ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.manHubCode)">
+											<option />
+										</select>
+
+									</div>
+									<label class="col-sm-2 control-label">Driving Category
+									</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											ng-model="searchDTO.manDrivingCategoryId">
+											<option />
+											<option ng-repeat="drivingCategory in drivingCategories"
+												value="{{drivingCategory.id}}">{{drivingCategory.name}}</option>
+										</select>
+
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Degree of Injury
+									</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.manInjury">
+											<option></option>
+											<option ng-repeat="accInjury in  accInjuries"
+												value="{{accInjury.id}}">{{accInjury.name}}</option>
+
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Have known
+										Psychological Problem </label>
+									<div class="col-sm-4">
+										<input type="radio" ng-model="searchDTO.manPsychoProblem"
+											value="Y"> Yes <input type="radio"
+											ng-model="searchDTO.manPsychoProblem" value="N"> No
+									</div>
+
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Other Personnel
+										Involved</label>
+								</div>
+
+								<div class="form-group">
+								<label class="col-sm-2 control-label">Nric/Name </label>
+									<div class="col-sm-4">
+										<typeahead placeholder="NRIC No. or Name"
+											uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+											typeahead-on-select="searchDTO.manOtherPersonnelNRIC = $item.code "
+											ng-blur="searchDTO.manOtherPersonnelNRIC = driverPersonnel ? searchDTO.manOtherPersonnelNRIC : undefined"
+											ng-model="driverPersonnel" />
+
+
+									</div>
+
+									<label class="col-sm-2 control-label">Degree of Injury
+									</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											ng-model="searchDTO.manPersonnelInjury">
+											<option></option>
+											<option ng-repeat="accInjury in  accInjuries"
+												value="{{accInjury.id}}">{{accInjury.name}}</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Is Contributing Factor </label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.manIsContributingFactor" />
+								
+									</div>
+
+
+
+								</div>
+
+							</div>
+							<div class="tab-content" ng-if="tab=='machine'">
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Machine Type</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.machineType" class="form-control"
+											ng-change="machineTypeOptionReset()">
+											<option></option>
+											<option ng-repeat="accMachineType in  accMachineTypes"
+												value="{{accMachineType.id}}">{{accMachineType.name}}
+											</option>
+
+										</select>
+									</div>
+									<div ng-if="searchDTO.machineType==1">
+										<label class="col-sm-2 control-label">Military Vehicle
+											Type</label>
+										<div class="col-sm-4">
+											<select ng-model="searchDTO.militaryMachineType"
+												class="form-control">
+												<option></option>
+												<option ng-repeat="vehicleType in  vehicleTypes"
+													value="{{vehicleType.id}}">{{vehicleType.name}}</option>
+
+
+											</select>
+										</div>
+									</div>
+									<span ng-if="searchDTO.machineType==2"> <label
+										class="col-sm-2 control-label">Civillian Vehicle Type</label>
+										<div class="col-sm-4">
+											<select ng-model="searchDTO.civillianMachineType"
+												class="form-control">
+												<option></option>
+												<option ng-repeat="accCvVehType in  accCvVehTypes"
+													value="{{accCvVehType.id}}">{{accCvVehType.name}}
+												</option>
+
+											</select>
+										</div>
+									</span>
+								</div>
+
+								<div class="form-group"
+									ng-show="searchDTO.machineType==1 || searchDTO.machineType==2 ">
+									<label class="col-sm-2 control-label">Vehicle Plate
+										Number</label>
+									<div class="col-sm-4">
+										<typeahead ng-if="searchDTO.machineType==1"
+											placeholder="Vehicle No. or Type"
+											uib-typeahead="vehicleNoType.code + ' (' + vehicleNoType.name + ')' for vehicleNoType in searchVehicleNoTypes($viewValue)"
+											typeahead-on-select="searchDTO.machineVehiclePlate = $item.code"
+											ng-blur="searchDTO.machineVehiclePlate = vehicle ? searchDTO.machineVehiclePlate : undefined"
+											ng-model="vehicle" ng-disabled="searchDTO.isDisabled" />
+
+										<input ng-if="searchDTO.machineType==2" class="form-control"
+											ng-model="searchDTO.civillianVehiclePlate" />
+									</div>
+
+									<label class="col-sm-2 control-label"
+										ng-if="searchDTO.machineType==1">BOC Conducted </label>
+									<div class="col-sm-4" ng-show="searchDTO.machineType==1">
+										<input type="radio" ng-model="searchDTO.bocConducted"
+											value="Y"> Yes <input type="radio"
+											ng-model="searchDTO.bocConducted" value="N"> No
+									</div>
+								</div>
+
+								<div class="form-group" ng-show="searchDTO.machineType==1">
+
+									<label class="col-sm-2 control-label">Latest PM Date</label>
+									<div class="col-sm-4">
+										<input daterangebox class="form-control"
+											ng-model="searchDTO.pmDate" />
+									</div>
+									<label class="col-sm-2 control-label"
+										ng-show="searchDTO.machineType==1">AVI Due Date</label>
+									<div class="col-sm-4">
+										<input daterangebox class="form-control"
+											ng-show="searchDTO.machineType==1"
+											ng-model="searchDTO.aviDate" />
+									</div>
+
+
+								</div>
+
+								<div class="form-group">
+
+
+									<label class="col-sm-2 control-label">Is Contributing Factor </label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.machineIsContributingFactor"></yes-no>
+									
+									</div>
+
+
+
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab=='medium'">
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Weather</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.machineWeather"
+											class="form-control">
+											<option></option>
+											<option ng-repeat="accWeather in accWeathers"
+												value="{{accWeather.id}}">{{accWeather.name}}</option>
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Visibility</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.visibilityId" class="form-control">
+											<option></option>
+											<option ng-repeat="accVisibility in accVisibilities"
+												value="{{accVisibility.id}}">{{accVisibility.name}}</option>
+
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Road Surface</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.roadSurface">
+											<option></option>
+											<option ng-repeat="accRoadSurface in accRoadSurfaces"
+												value="{{accRoadSurface.id}}">{{accRoadSurface.name}}</option>
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Road Features</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.roadFeaturesId"
+											class="form-control">
+											<option></option>
+											<option ng-repeat="accRoadFeature in accRoadFeatures"
+												value="{{accRoadFeature.id}}">{{accRoadFeature.name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Road Types</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.roadTypesId" class="form-control">
+											<option></option>
+											<option ng-repeat="accRoadType in accRoadTypes"
+												value="{{accRoadType.id}}">{{accRoadType.name}}</option>
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Road Speed Limit</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.roadSpeedLimitId"
+											class="form-control">
+											<option></option>
+											<option ng-repeat="accSpeedLimit in accSpeedLimits"
+												value="{{accSpeedLimit.id}}">{{accSpeedLimit.name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Traffic Volume</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.trafficVolumeId"
+											class="form-control">
+											<option></option>
+											<option ng-repeat="accTrafficVolume in accTrafficVolumes"
+												value="{{accTrafficVolume.id}}">{{accTrafficVolume.name}}</option>
+										</select>
+									</div>
+
+									<label class="col-sm-2 control-label">Is Contributing Factor </label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.mediumIsContributingFactor" />
+									
+									</div>
+
+								</div>
+
+
+
+
+
+
+							</div>
+							<div class="tab-content" ng-if="tab=='management'">
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Is this an authorized detail?</label>
+									<div class="col-sm-4">
+									<yes-no  ng-model="searchDTO.authorizedFlag" />
+								
+
+
+
+									</div>
+									<label ng-if="searchDTO.authorizedFlag=='Y'"
+										class="col-sm-2 control-label">MT RAC Signed By</label>
+									<div ng-if="searchDTO.authorizedFlag=='Y'" class="col-sm-4">
+										<typeahead
+											uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+											typeahead-on-select="searchDTO.mtRacBy = $item.code"
+											placeholder="NRIC No. or Name" ng-model="nricName" />
+
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Was the road safety briefing done?</label>
+									<div class="col-sm-4">
+									<yes-no ng-model="searchDTO.safetyBriefFlag" />
+								
+
+
+									</div>
+									<label ng-if="searchDTO.safetyBriefFlag=='Y'"
+										class="col-sm-2 control-label">Briefing Done By</label>
+									<div ng-if="searchDTO.safetyBriefFlag=='Y'" class="col-sm-4">
+										<typeahead
+											uib-typeahead="safetyBriefnricName.name + ' (' + safetyBriefnricName.code + ')' for safetyBriefnricName in searchNricNames($viewValue)"
+											typeahead-on-select="searchDTO.safetyBriefBy = $item.code"
+											placeholder="NRIC No. or Name" ng-model="safetyBriefnricName" />
+
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Was there a Vehicle Commander?</label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.vehicleCommanderFlag" />
+									</div>
+									<label ng-if="searchDTO.vehicleCommanderFlag=='Y'"
+										class="col-sm-2 control-label">Vehicle Commander</label>
+									<div ng-if="searchDTO.vehicleCommanderFlag=='Y'"
+										class="col-sm-4">
+										<typeahead
+											uib-typeahead="vehicleCommanderNricName.name + ' (' + vehicleCommanderNricName.code + ')' for vehicleCommanderNricName in searchNricNames($viewValue)"
+											typeahead-on-select="searchDTO.vehicleCommanderNameNRIC = $item.code"
+											placeholder="NRIC No. or Name"
+											ng-model="vehicleCommanderNricName" />
+									</div>
+								</div>								<div ng-if="newManagementDTO.vehicleCommanderFlag=='Y'"
+									class="form-group">
+									<div class="col-sm-6"></div>
+
+								</div>
+
+
+
+							</div>
+							<div class="tab-content" ng-if="tab=='cause'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Point Errors</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.pointErrorsId" tagbox
+											multiple="true" class="form-control"
+											ng-options="accPointError.id as accPointError.name for accPointError in accPointErrors">
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">System Errors</label>
+									<div class="col-sm-4">
+										<select ng-model="searchDTO.systemErrorsId" tagbox
+											multiple="true" class="form-control"
+											ng-options="accSystemError.id as accSystemError.name for accSystemError in accSystemErrors">
+
+										</select>
+									</div>
+
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Fault</label>
+									<div class="col-sm-4">
+										<input ng-model="searchDTO.vehicleFault" class="form-control">
+									</div>
+									<label class="col-sm-2 control-label">Others <span
+										class="glyphicon glyphicon-info-sign"
+										uib-tooltip="For Non-SAF Transport Operator Negligent" /></label>
+									<div class="col-sm-4">
+										<input ng-model="searchDTO.others" class="form-control">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Commander Negligent</label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.IsVehicleCommanderNegligent"/>
+									
+
+									</div>
+									<label class="col-sm-2 control-label">Ground Commander Negligent</label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.IsSafDriverNegligent"/>
+
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">SAF Transport Operator Negligent</label>
+									<div class="col-sm-4">
+										<yes-no ng-model="searchDTO.IsSafDriverNegligent"/>
+								
+
+
+									</div>
+									<label class="col-sm-2 control-label">Non-SAF Transport
+										Operator Negligent</label>
+									<div class="col-sm-4">
+											<yes-no ng-model="searchDTO.IsNonTOnegligent"/>
+
+									</div>
+
+								</div>
+							</div>
+
+
+						</div>
+				</form>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+<style>
+.status {
+	color: blue;
+	font-weight: bold;
+}
+
+.pagination>li.pagination-page>a, .pagination>li.pagination-page>span {
+	width: 3em;
+	text-align: center;
+}
+
+.select2-choices {
+	display: -webkit-inline-box;
+}
+</style>
+
+<div class="row">
+	<div class="col-xs-12">
+
+		<table st-table="records" st-pipe="paginate"
+			class="table table-striped table-bordered table-responsive table-condensed small">
+
+			<tr>
+
+				<th width="15px" class="text-center"><input type="checkbox"
+					ng-model="checkboxes.all" id="select_all" ng-click="checkAll()"></th>
+				<th no-sort>#</th>
+				<th sort property="accidentNo">Accident Number</th>
+				<th sort property="accidentDate">Accident Date Time</th>
+				<th sort property="category">Category</th>
+				<th sort property="location">Location</th>
+				<th sort property="locationType">location Type</th>
+				<th>Additional Location Information</th>
+			</tr>
+			<tr ng-repeat="record in records">
+
+				<td class="text-center"><input type="checkbox"
+					ng-model="checkboxes.records[record.id]"
+					ng-click="checkboxes.all=false"></td>
+				<td>{{$index + searchDTO.startIndex + 1}}</td>
+
+				<td><a href="index2.html#/accident_update/{{record.id}}">{{record.accidentNo}}</a></td>
+				<td>{{record.accidentDate}}</td>
+				<td>{{record.category}}</td>
+				<td>{{record.location}}</td>
+				<td>{{record.locationType}}</td>
+				<td>{{record.additionLocationInfo}}</td>
+			</tr>
+			
+			
+			
+			
+			<tfoot>
+				<tr>
+					<td colspan="13" ng-if="records && records.length > 0">
+						<div style="display: inline" st-template="pagination.html"
+							st-pagination="" st-items-by-page="searchDTO.pageSize"
+							st-displayed-pages="paginationSize"></div>
+							
+							<ul class="pagination">
+						<li>
+							<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+						</li>
+					</ul>
+				
+					</td>
+				</tr>
+			</tfoot>
+
+		</table>
+
+
+	
+	</div>
+</div>
+

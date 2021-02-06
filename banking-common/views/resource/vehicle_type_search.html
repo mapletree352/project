@@ -1,0 +1,274 @@
+<div class="row page-header">
+	<h3>Search Vehicle Type Specifications</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position:absolute;width:130px;right:20px;z-index:998">
+				<button class="btn btn-block btn-primary" type="button" ng-click="search()" ng-disabled="loading">Search</button>
+				<button class="btn btn-block btn-default" type="button" ng-click="reset()">Clear</button>
+				<br>
+                <a href="" ng-click="advSearchCollapsed = !advSearchCollapsed" class="pull-right">Advanced Search...</a>
+			</div>
+			<div style="padding-right:160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+                        <label class="col-sm-2 control-label">Vehicle Type</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" ng-model="searchDTO.vehicleTypeId">
+								<option />
+							</select>
+						</div>
+                        <label class="col-sm-2 control-label">Vehicle Permit Class</label>
+                        <div class="col-sm-4">
+							<select class="form-control" ng-options="permitClass.code as permitClass.name for permitClass in permitClasses" ng-model="searchDTO.permitClassCode">
+								<option />
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">ES Equipment Mapped</label>
+                        <div class="col-sm-4">
+							<select class="form-control" ng-options="esEquipment.id as esEquipment.name for esEquipment in esEquipments" ng-model="searchDTO.esEquipmentId">
+								<option />
+							</select>
+						</div>
+						<label class="col-sm-2 control-label">Maintenance Cycle</label>
+                        <div class="col-sm-4">
+                        	<select class="form-control" ng-options="maintenanceCycle.id as maintenanceCycle.name for maintenanceCycle in maintenanceCycles" ng-model="searchDTO.maintenanceCycleId">
+                                <option />
+                            </select>
+                        </div>
+					</div>
+					<div uib-collapse="advSearchCollapsed">
+						<hr>
+						<div class="col-sm-1">
+							<ul class="nav nav-tabs tabs-left">
+								<li class="active"><a href="" ng-click="tab='profile'" data-toggle="tab">Specification</a></li>
+								<li><a href="" ng-click="tab='maintenance'" data-toggle="tab">Main-<br>tenance</a></li>
+							</ul>
+						</div>
+						<div class="col-sm-11">
+							<div class="tab-content" ng-if="tab=='profile'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Purposes</label>
+			                        <div class="col-sm-4">
+			                            <select class="form-control" ng-options="purpose.id as purpose.name for purpose in purposes" ng-model="searchDTO.purposeId">
+			                                <option />
+			                            </select>
+			                        </div>
+									<label class="col-sm-2 control-label">Militiary Load Class</label>
+			                        <div class="col-sm-4">
+			                            <input type="text" class="form-control" ng-model="searchDTO.militaryLoadClass">
+			                        </div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Front Capacity</label>
+			                        <div class="col-sm-4">
+			                        	<div class="input-group">
+				                            <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.frontCapacityFrom">
+				                            <label class="input-group-addon">to</label>
+				                            <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.frontCapacityTo">
+				                        </div>
+			                        </div>
+									<label class="col-sm-2 control-label">Rear Capacity</label>
+			                        <div class="col-sm-4">
+			                        	<div class="input-group">
+				                            <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.rearCapacityFrom">
+				                            <label class="input-group-addon">to</label>
+				                            <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.rearCapacityTo">
+				                        </div>
+			                        </div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Speed Limit (KM/H)</label>
+			                        <div class="col-sm-4">
+			                        	<div class="input-group">
+				                            <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.speedLimitFrom">
+				                            <label class="input-group-addon">to</label>
+				                            <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.speedLimitTo">
+				                        </div>
+			                        </div>
+			                        <label class="col-sm-2 control-label">Image Uploaded</label>
+			                        <div class="col-sm-4">
+			                            <yes-no class="form-control" ng-model="searchDTO.imageFlag">
+			                        </div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab=='maintenance'">
+								<div class="form-group">
+									<label class="col-sm-3 control-label">Estimated Minor PM Duration</label>
+			                        <div class="col-sm-3">
+			                        	<div class="input-group">
+			                        		<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.pmNormalDurationFrom">
+			                        		<label class="input-group-addon">to</label>
+			                        		<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.pmNormalDurationTo" />
+			                        	</div>
+			                        </div>
+									<label class="col-sm-3 control-label">Estimated Major PM Duration</label>
+			                        <div class="col-sm-3">
+			                        	<div class="input-group">
+			                        		<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.pmMajorDurationFrom">
+			                        		<label class="input-group-addon">to</label>
+			                        		<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.pmMajorDurationTo" />
+			                        	</div>
+			                        </div>
+								</div>
+							</div>
+						</div>
+					</div>	
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div>
+	<div class="row">
+		<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+			<tr>
+				<th class="text-center"><input type="checkbox" ng-model="checkboxes.all" ng-click="checkAll()"></th>
+				<th no-sort>#</th>
+				<th sort property="name">Vehicle Type</th>
+				<th sort property="permitClass.name">Permit Class</th>
+				<th sort property="militaryLoadClass">Militiary Load Class</th>
+				<th sort property="frontCapacity">Front Capacity</th>
+				<th sort property="rearCapacity">Rear Capacity</th>
+				<th sort property="speedLimit">Speed Limit</th>
+				<th sort property="imagePath">Image Uploaded</th>
+				<th sort property="maintenanceCycle.name">Maintenance Cycle</th>
+			</tr>
+			<tr ng-repeat="record in records">
+				<td class="text-center"><input type="checkbox" ng-model="checkboxes.records[record.id]" ng-click="checkboxes.all=false"></td>
+				<td>{{$index + searchDTO.startIndex + 1}}</td>
+				<td><a href="#/vehicle_type/{{record.id}}">{{record.name}}</a></td>
+				<td>{{record.permitClass}}</td>
+				<td>{{record.militaryLoadClass}}</td>
+				<td>{{record.frontCapacity}}</td>
+				<td>{{record.rearCapacity}}</td>
+				<td>{{record.speedLimit}}</td>
+				<td>{{record.imageFlag == 'Y' ? 'Yes' : 'No'}}</td>
+				<td>{{record.maintenanceCycle}}</td>
+			</tr>
+			<tfoot>
+				<tr>
+					<td colspan="10" ng-if="records && records.length > 0">
+						<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+						<ul class="pagination">
+							<li>
+								<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+							</li>
+							<li class="dropup" ng-if="session.rights['showVehicleTypeIpt']">
+								<a href="" style="color:black" data-toggle="dropdown" >
+									<span class="glyphicon glyphicon-open"></span>&nbsp;&nbsp;Batch Update...
+									<ul class="dropdown-menu">
+										<li><a href="" ng-click="setSelection('Vehicle Permit Class')">Vehicle Permit Class</a></li>
+									    <li><a href="" ng-click="setSelection('Front Capacity')">Front Capacity</a></li>
+									    <li><a href="" ng-click="setSelection('Rear Capacity')">Rear Capacity</a></li>
+									    <li><a href="" ng-click="setSelection('Military Load Classification')">Military Load Classification</a></li>
+									    <li><a href="" ng-click="setSelection('Speed Limit')">Speed Limit</a></li>
+									    <li><a href="" ng-click="setSelection('Vehicle Purposes')">Vehicle Purposes</a></li>
+									    <li><a href="" ng-click="setSelection('Estimated Normal PM Duration')">Estimated Normal PM Duration</a></li>
+									    <li><a href="" ng-click="setSelection('Estimated Major PM Duration')">Estimated Major PM Duration</a></li>
+									    <li><a href="" ng-click="setSelection('Maintenance Cycle')">Maintenance Cycle</a></li>
+									</ul>
+								</a>
+							</li>
+						</ul>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<br>
+	</div>
+</div>
+<div class="modal fade" id="batchUpdateModal" tabindex="-1">
+	<div class="modal-dialog" style="width:600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Update {{batchUpdateType}} by Batch</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group" ng-if="batchUpdateType === 'Vehicle Permit Class'">
+							<label class="col-sm-4 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-8">
+								<select class="form-control" ng-options="permitClass.code as permitClass.name for permitClass in permitClasses" ng-model="dto.permitClassCode">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Front Capacity'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<input intbox class="form-control" ng-model="dto.frontCapacity">
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Rear Capacity'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<input intbox class="form-control" ng-model="dto.rearCapacity">
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Military Load Classification'">
+							<label class="col-sm-5 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" ng-model="dto.militaryLoadClass">
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Speed Limit'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<input intbox class="form-control" ng-model="dto.speedLimit">
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Vehicle Purposes'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<select tagbox class="form-control" multiple="true" ng-options="purpose.id as purpose.name for purpose in purposes" ng-model="dto.purposeIds">
+	                               <option />
+	                            </select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Estimated Normal PM Duration'">
+							<label class="col-sm-5 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-7">
+								<input intbox class="form-control" ng-model="dto.pmNormalDuration">
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Estimated Major PM Duration'">
+							<label class="col-sm-5 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-7">
+								<input intbox class="form-control" ng-model="dto.pmMajorDuration">
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Maintenance Cycle'">
+							<label class="col-sm-4 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-8">
+								<select class="form-control" ng-options="maintenanceCycle.id as maintenanceCycle.name for maintenanceCycle in maintenanceCycles" ng-model="dto.maintenanceCycleId" />
+							</div>
+						</div>
+						<hr>
+						<table st-table="selectedRecords" st-safe-src="selectedVehicleTypes" class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th no-sort>#</th>
+								<th st-sort="name">ES Equipment Description</th>
+								<th st-sort="name">Vehicle Type</th>
+							</tr>
+							<tr ng-repeat="selectedRecord in selectedRecords">
+								<td>{{$index + 1}}</td>
+								<td>{{selectedRecord.esEquipmentDesc}}</td>
+								<td>{{selectedRecord.name}}</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+	        </div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-click="batchUpdate()">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>

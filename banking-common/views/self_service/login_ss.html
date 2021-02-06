@@ -1,0 +1,28 @@
+<h1 style="text-align:center">ITMS Self-Service Console</h1>
+<br>
+<div class="panel panel-default" style="margin-left:200px;margin-right:200px">
+	<div class="panel-heading" style="text-align:center"><h3>Please key in your SAF 11B / NRIC No.</h3></div>
+	<div class="panel-body" style="text-align:center">
+		<br>
+		<div class="row">
+			<form class="form-horizontal">
+				<div class="form-group form-group-lg">
+					<label class="col-md-5 control-label">SAF 11B / NRIC No.</label>
+					<div class="col-md-5">
+						<input type="text" class="form-control" ng-model="sessionDTO.loginId">
+					</div>
+				</div>
+			</form>
+		</div>
+		<hr>
+		<div class="row">
+			<button type="button" class="btn btn-primary btn-lg" ng-click="login()">Login</a>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="well" style="color:red;padding:10px;margin:10px">
+				This is a Singapore Ministry of Defence protected computer system. Unauthorised access, use, reproduction, possession, modification, interception, damage or transfer ( including such attempts ) of any content in this system are serious offences under the Computer Misuse Act. If found guilty, an offender can be fined up to $100,000 and/or imprisoned up to 20 years. If you are not authorised to use this system, DO NOT LOG IN OR ATTEMPT TO LOG IN! 
+			</div>
+		</div>
+	</div>
+</div>

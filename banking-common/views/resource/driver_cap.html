@@ -1,0 +1,154 @@
+<div class="row page-header">
+	<h3>Transport Operators Cap</h3>
+</div>
+
+<div class="row page-body">
+    <div class="panel-action">
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>{{task.status | uppercase}}</strong></div>
+            <div class="panel-body">
+                <div>
+                    <small>Last Updated on 1 Mar 2016, 4:25 PM
+                        by Adam Tan Choon Seng</small><br>
+                    <hr>
+                </div>
+                <button class="btn btn-default btn-block">Update Cap</button>
+            </div>
+        </div>
+    </div>
+    <div align="center">
+        <div class="col-sm-7" id='calendar'></div>
+    </div>
+</div>
+    
+<script>
+    $(document).ready(function() {
+
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+
+        var events_array = [
+            {
+                title: '20 (25)',
+                description: 'test',
+                start: '2016-04-01',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '21 (25)',
+                start: '2016-04-04',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '25 (28)',
+                start: '2016-04-05',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '18 (25)',
+                start: '2016-04-06',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '18 (25)',
+                start: '2016-04-07',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '22 (27)',
+                start: '2016-04-08',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '18 (25)',
+                start: '2016-04-11',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '20 (29)',
+                start: '2016-04-12',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '20 (24)',
+                start: '2016-04-13',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '19 (22)',
+                start: '2016-04-14',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '23 (25)',
+                start: '2016-04-15',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '4 (25)',
+                start: '2016-04-18',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '5 (8)',
+                start: '2016-04-19',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '5 (8)',
+                start: '2016-04-20',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '5 (8)',
+                start: '2016-04-21',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '5 (8)',
+                start: '2016-04-22',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '3 (7)',
+                start: '2016-04-25',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '3 (7)',
+                start: '2016-04-26',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '11 (15)',
+                start: '2016-04-27',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '11 (15)',
+                start: '2016-04-28',
+                tip: 'Personal tip 1'
+            },
+            {
+                title: '22 (25)',
+                start: '2016-04-29',
+                tip: 'Personal tip 1'
+            }
+        ];
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            selectable: true,
+            events: events_array,
+            eventRender: function(event, element) {
+                element.attr('title', event.tip);
+            }
+        });
+    });
+</script>

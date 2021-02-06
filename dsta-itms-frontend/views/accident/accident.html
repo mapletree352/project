@@ -1,0 +1,1340 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> Accident
+	</h3>
+</div>
+<div class="row page-body">
+	<div>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="" data-target="#report" aria-controls="reportTab" role="tab" ng-click="accVTab='Rep'" data-toggle="tab">Report</a></li>
+			<li role="presentation"><a href="" data-target="#mission" aria-controls="missionTab" role="tab" ng-click="accVTab='Mis'" data-toggle="tab">Mission</a></li>
+			<li role="presentation"><a href="" data-target="#man" aria-controls="manTab" role="tab" ng-click="accVTab='Man'" data-toggle="tab">Man</a></li>
+			<li role="presentation"><a href="" data-target="#machine" aria-controls="machineTab" role="tab" ng-click="accVTab='Mac'" data-toggle="tab">Machine</a></li>
+			<li role="presentation"><a href="" data-target="#medium" aria-controls="mediumTab" role="tab" ng-click="accVTab='Med'" data-toggle="tab">Medium</a></li>
+			<li role="presentation"><a href="" data-target="#management" aria-controls="managementTab" role="tab" ng-click="accVTab='Mgt'" data-toggle="tab">Management</a></li>
+			<li role="presentation"><a href="" data-target="#attachments" aria-controls="attachmentsTab" role="tab" ng-click="accVTab='Att'" data-toggle="tab">Attachments</a></li>
+			<li role="presentation"><a href="" data-target="#causes" aria-controls="causesTab" role="tab" ng-click="accVTab='Cse'" data-toggle="tab">Causes</a></li>
+			<li role="presentation"><a href="" data-target="#conclusion" aria-controls="conclusionTab" role="tab" ng-click="accVTab='Con'" data-toggle="tab">Conclusion</a></li>
+			<li role="presentation"><a href="" data-target="#annexes" aria-controls="annexesTab" role="tab" ng-click="accVTab='Ann'" data-toggle="tab">Annexes</a></li>
+			<li role="presentation"><a href="" data-target="#disciplinary" aria-controls="disciplinaryTab" role="tab" ng-click="accVTab='Dis'" data-toggle="tab">Disciplinary</a></li>
+			<li role="presentation"><a href="" data-toggle="tab">Audit Log</a></li>
+		</ul>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane fade in active" id="report">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>General</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Accident ID</label>
+							<div class="col-sm-3 control-value">121208-0009</div>
+							<label class="col-sm-3 control-label">Report Status</label>
+							<div class="col-sm-3 control-value">NEW</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Accident Date/Time</label>
+							<div class="col-sm-3">
+								<input datetimebox class="form-control">
+							</div>
+							<label class="col-sm-3 control-label">Accident Category</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accCategory in accCategories">{{accCategory.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Accident Location</label>
+							<div class="col-sm-3">
+								<textarea class="form-control"></textarea>
+							</div>
+							<label class="col-sm-3 control-label">Additional Location Info</label>
+							<div class="col-sm-3">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Location Type</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accLocType in accLocTypes">{{accLocType.name}}</option>
+								</select>
+							</div>
+						</div>
+						<br>
+						<legend>
+							Involvement <span class="glyphicon glyphicon-info-sign" uib-tooltip="This should be based on the party with the most neligience." />
+						</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Hub Involved</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="hub in hubs">{{hub.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Node Involved</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="node in nodes">{{node.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit Involved</label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control" ng-model="indentSet.transient.unit" placeholder="Unit Name or Unit Code" aria-describedby="basic-addon2" autocomplete="off"
+									uib-typeahead="unit as unit.name for unit in units | filter:$viewValue | limitTo:20" typeahead-on-select="onSelectUnit($item, $model, $label)">
+							</div>
+							<label class="col-sm-3 control-label">Sub-Unit Involved</label>
+							<div class="col-sm-3">
+								<input class="form-control">
+							</div>
+						</div>
+						<br>
+						<legend>Type of Collision</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Between Moving Vehicles</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accCollisionDir in accCollisionDirs">{{accCollisionDir.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Moving Vehicle Against</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accCollisionObj in accCollisionObjs">{{accCollisionObj.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vehicle Manoeuvre Before Accident</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accManoevre in accManoevres">{{accManoevre.name}}</option>
+								</select>
+							</div>
+						</div>
+						<br>
+						<legend>Summary</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Summary of Accident</label>
+							<div class="col-sm-9">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="mission">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Task</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Task ID</label>
+							<div class="col-sm-3">
+								<input class="form-control" value="100725"></span>
+							</div>
+							<label class="col-sm-3 control-label">Task Status</label>
+							<div class="col-sm-3 control-value">Under Execution</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Driver</label>
+							<div class="col-sm-3 control-value">CPL MUHAMMAD NOOR RIZAN BIN ISMAIL</div>
+							<label class="col-sm-3 control-label">Driver Node</label>
+							<div class="col-sm-3 control-value">ITI NODE</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vehicle</label>
+							<div class="col-sm-3 control-value">MID3300</div>
+							<label class="col-sm-3 control-label">Vehicle Node</label>
+							<div class="col-sm-3 control-value">ITI NODE</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vehicle Type</label>
+							<div class="col-sm-3 control-value">L/R FFR 1Ton</div>
+							<label class="col-sm-3 control-label">Task Mileage (km)</label>
+							<div class="col-sm-3 control-value">37.1</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Start Date/Time</label>
+							<div class="col-sm-3 control-value">01-APR-2016 09:00</div>
+							<label class="col-sm-3 control-label">End Date/Time</label>
+							<div class="col-sm-3 control-value">01-APR-2016 22:00</div>
+						</div>
+						<br>
+						<legend>Indent</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Indent ID</label>
+							<div class="col-sm-3 control-value">
+								20160000003</a>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Activity Type</label>
+							<div class="col-sm-3 control-value">Training - Battalion Training</div>
+							<label class="col-sm-3 control-label">Movement</label>
+							<div class="col-sm-3 control-value">In Camp</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Report Date/Time</label>
+							<div class="col-sm-3 control-value">31-MAR-2016 23:30</div>
+							<label class="col-sm-3 control-label">Completion Date/Time</label>
+							<div class="col-sm-3 control-value">01-APR-2016 22:00</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Reporting Location</label>
+							<div class="col-sm-3 control-value">ITI PARADE SQUARE</div>
+							<label class="col-sm-3 control-label">Duration</label>
+							<div class="col-sm-3 control-value">22.5 hours</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Reporting Info</label>
+							<div class="col-sm-3 control-value">Wait next to the cookhouse</div>
+							<label class="col-sm-3 control-label">Additional Info</label>
+							<div class="col-sm-3 control-value">First go to Nee Soon Camp, then to Sembawang Camp, and finally to Maju Camp.</div>
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">Is the task given to the transport operator straightforward?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="misFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="misFlag=='No'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="man">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Transport Operator Involved</legend>
+						<div>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="80px">NRIC No.</th>
+									<th>Rank / Name</th>
+									<th width="50px">Hub</th>
+									<th width="90px">Node</th>
+									<th width="60px">Service<br>Status</th>
+									<th width="60px">Vocation</th>
+									<th width="60px">Driving<br>CAT</th>
+									<th>SAF Driving Permit No.</th>
+									<th width="60px">Class 3<br>Mileage</th>
+									<th width="60px">Class 4<br>Mileage</th>
+									<th width="60px">Total<br>Mileage</th>
+									<th width="80px">Degree<br>of Injury</th>
+									<th width="60px">Hours<br>Rested</th>
+									<th width="80px">Psychological<br>Problems</th>
+								</tr>
+								<tr ng-repeat="accPersonnel in accPersonnels">
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="" ng-click="openAccTO()">{{accPersonnel.nric}}</a></td>
+									<td>{{accPersonnel.name}}</td>
+									<td>{{accPersonnel.hub}}</td>
+									<td>{{accPersonnel.node}}</td>
+									<td>{{accPersonnel.servStat}}</td>
+									<td>{{accPersonnel.vocation}}</td>
+									<td>{{accPersonnel.drivingCat}}</td>
+									<td>{{accPersonnel.permitNo}}</td>
+									<td>{{accPersonnel.class3Mileage}}</td>
+									<td>{{accPersonnel.class4Mileage}}</td>
+									<td>{{accPersonnel.totalMileage}}</td>
+									<td>{{accPersonnel.injury}}</td>
+									<td>8</td>
+									<td>No</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addTOModal">
+								<div class="glyphicon glyphicon-plus" />
+								Add Transport Operator
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Transport Operator
+							</button>
+						</div>
+						<br>
+						<legend>Other Personnel Involved</legend>
+						<div>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="80px">NRIC No.</th>
+									<th>Name</th>
+									<th>Address</th>
+									<th width="80px">Contact No.</th>
+									<th width="110px">Degree of Injury</th>
+									<th>Remarks</th>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="" ng-click="openAccPerson()">S8477112X</a></td>
+									<td>TAN MO CHIN</td>
+									<td>Blk 526A BEDOK NORTH AVE 2 #11-10 S(213245)</td>
+									<td>97699179</td>
+									<td>No Injuries</td>
+									<td></td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addPerModal">
+								<div class="glyphicon glyphicon-plus" />
+								Add Other Personnel
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Other Personnel
+							</button>
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">Is the transport operator qualified and fitted for his/her detail?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="manFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="manFlag=='No'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="machine">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Vehicles Involved</legend>
+						<div>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="110px">Vehicle Plate No.</th>
+									<th width="90px">Machine Type</th>
+									<th>Vehicle Type</th>
+									<th width="100px">Last UQM Date</th>
+									<th width="100px">Last AVI Date</th>
+									<th width="110px">BOC Conducted</th>
+									<th>Vehicle Damages</th>
+									<th>Property Damages</th>
+								</tr>
+								<tr ng-repeat="accVehicle in accVehicles">
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="" ng-click="openAccVehicle()">{{accVehicle.plateNo}}</a></td>
+									<td>{{accVehicle.machineType}}</td>
+									<td>{{accVehicle.vehicleType}}</td>
+									<td>{{accVehicle.lastUQM}}</td>
+									<td>{{accVehicle.lastAVI}}</td>
+									<td>{{accVehicle.bocConducted}}</td>
+									<td>{{accVehicle.vehDamages}}</td>
+									<td>{{accVehicle.propDamages}}</td
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addVehModal">
+								<div class="glyphicon glyphicon-plus" />Add Vehicle
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#removeVehModal">
+								<div class="glyphicon glyphicon-minus" />Remove Vehicle
+							</button>
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">Is the vehicle serviceable and roadworthy for its detail?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="macFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="macFlag=='No'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="medium">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Assessment</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Weather</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accWeather in accWeathers">{{accWeather.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Visibility</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accVisibility in accVisibilities">{{accVisibility.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Road Surface</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accRoadSurface in accRoadSurfaces">{{accRoadSurface.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Road Features</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accRoadFeature in accRoadFeatures">{{accRoadFeature.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Road Types</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accRoadType in accRoadTypes">{{accRoadType.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Road Speed Limit</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accSpeedLimit in accSpeedLimits">{{accSpeedLimit.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Traffic Volume</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accTrafficVolume in accTrafficVolumes">{{accTrafficVolume.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Remarks</label>
+							<div class="col-sm-3">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">Is the medium a contributing factor to the accident?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="medFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="medFlag=='Yes'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="management">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Assessment</legend>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Is this an authorized detail?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="racFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+							<label ng-if="racFlag=='Yes'" class="col-sm-2 control-label">MT RAC Signed By</label>
+							<div ng-if="racFlag=='Yes'" class="col-sm-5">
+								<input type="text" class="form-control" ng-model="indentSet.transient.pocName1" placeholder="Name or NRIC No." aria-describedby="basic-addon1" autocomplete="off"
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10" typeahead-on-select="onSelectPOC($item)">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Was the road safety briefing done?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="briefingFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+							<label ng-if="briefingFlag=='Yes'" class="col-sm-2 control-label">Briefing Done By</label>
+							<div ng-if="briefingFlag=='Yes'" class="col-sm-5">
+								<input type="text" class="form-control" ng-model="indentSet.transient.pocName2" placeholder="Name or NRIC No." aria-describedby="basic-addon1" autocomplete="off"
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10" typeahead-on-select="onSelectPOC($item)">
+							</div>
+						</div>
+						<div ng-if="briefingFlag=='Yes'" class="form-group">
+							<div class="col-sm-4"></div>
+							<label class="col-sm-2 control-label">Briefing Done On </label>
+							<div class="col-sm-2">
+								<input datetimebox class="form-control">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Was there a Vehicle Commander?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="vcFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+							<label ng-if="vcFlag=='Yes'" class="col-sm-2 control-label">Vehicle Commander</label>
+							<div ng-if="vcFlag=='Yes'" class="col-sm-5">
+								<input type="text" class="form-control" ng-model="indentSet.transient.pocName3" placeholder="Name or NRIC No." aria-describedby="basic-addon1" autocomplete="off"
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10" typeahead-on-select="onSelectPOC($item)">
+							</div>
+						</div>
+						<div ng-if="vcFlag=='Yes'" class="form-group">
+							<div class="col-sm-4"></div>
+							<label class="col-sm-2 control-label">Unit</label>
+							<div class="col-sm-2">
+								<input type="text" id="unit" class="form-control" ng-model="indentSet.transient.unit" placeholder="Unit Name or Unit Code" aria-describedby="basic-addon2"
+									autocomplete="off" uib-typeahead="unit as unit.name for unit in units | filter:$viewValue | limitTo:20" typeahead-on-select="onSelectUnit($item, $model, $label)">
+							</div>
+							<label class="col-sm-1 control-label">Contact No.</label>
+							<div class="col-sm-2">
+								<input class="form-control">
+							</div>
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">Is the management a contributing factor to the accident?</label>
+							<div class="col-sm-1">
+								<select class="form-control" ng-model="mgtFlag">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="mgtFlag=='Yes'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="attachments">
+				<form class="form-horizontal">
+					<fieldset>
+						<div>
+							<legend>Statements of Personnel</legend>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="300px">File Name</th>
+									<th width="100px">File Type</th>
+									<th>Description</th>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="">S8477112X.doc</a></td>
+									<td>Document</td>
+									<td>S8477112X Accident Report</td>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="">S8303514E.pdf</a></td>
+									<td>Document</td>
+									<td>S8303514E Accident Report</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+								<div class="glyphicon glyphicon-plus" />
+								Upload Attachment
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Attachment
+							</button>
+							<br>
+							<legend>Photographs of Accident</legend>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="300px">File Name</th>
+									<th width="100px">File Type</th>
+									<th>Description</th>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="">Photograph1.jpg</a></td>
+									<td>Image</td>
+									<td>Accident Site 1</td>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="">Photograph2.jpg</a></td>
+									<td>Image</td>
+									<td>Accident Site 2</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+								<div class="glyphicon glyphicon-plus" />
+								Upload Attachment
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Attachment
+							</button>
+							<br>
+							<legend>Semantics</legend>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="300px">File Name</th>
+									<th width="100px">File Type</th>
+									<th>Description</th>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="">semantics.pdf</a></td>
+									<td>Document</td>
+									<td>Scemantics</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+								<div class="glyphicon glyphicon-plus" />
+								Upload Attachment
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Attachment
+							</button>
+							<br>
+							<legend>Transponder Log Data</legend>
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+									<th width="300px">File Name</th>
+									<th width="100px">File Type</th>
+									<th>Description</th>
+								</tr>
+								<tr>
+									<td class="text-center"><input type="checkbox"></td>
+									<td><a href="">Transponder_Log.doc</a></td>
+									<td>Document</td>
+									<td>Transponder Log.doc</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+								<div class="glyphicon glyphicon-plus" />
+								Upload Attachment
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Attachment
+							</button>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="causes">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Causal Factors of Accident</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Point Errors</label>
+							<div class="col-sm-9">
+								<select tagbox multiple="true" class="form-control">
+									<option ng-repeat="accPointError in accPointErrors">{{accPointError.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">System Errors</label>
+							<div class="col-sm-9">
+								<select tagbox multiple="true" class="form-control">
+									<option ng-repeat="accSystemError in accSystemErrors">{{accSystemError.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vehicle Fault</label>
+							<div class="col-sm-9">
+								<input class="form-control">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Others <span class="glyphicon glyphicon-info-sign" uib-tooltip="For Non-SAF Transport Operator Negligent" /></label>
+							<div class="col-sm-9">
+								<input class="form-control">
+							</div>
+						</div>
+						<br>
+						<legend>Neglience of Personnel</legend>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Commander Negligent</label>
+							<div class="col-sm-2">
+								<select class="form-control">
+									<option>Yes</option>
+									<option selected="true">No</option>
+								</select>
+							</div>
+							<label class="col-sm-4 control-label">Ground Commander Negligent</label>
+							<div class="col-sm-2">
+								<select class="form-control">
+									<option>Yes</option>
+									<option selected="true">No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">SAF Transport Operator Negligent</label>
+							<div class="col-sm-2">
+								<select class="form-control">
+									<option selected="true">Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+							<label class="col-sm-4 control-label">Non-SAF Transport Operator Negligent</label>
+							<div class="col-sm-2">
+								<select class="form-control">
+									<option>Yes</option>
+									<option selected="true">No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="conclusion">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Conclusion</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Conclusion / Recommendation</label>
+							<div class="col-sm-9">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Key Lesson Learnt</label>
+							<div class="col-sm-9">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-default btn-block">Save</button>
+							</div>
+						</div>
+						<legend>Confirmation</legend>
+						<div class="form-group">
+							<div class="col-sm-8" />
+							<div class="col-sm-2">
+								<button type="submit" class="btn btn-default btn-block">Generate TAR Report</button>
+							</div>
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-primary btn-block">Submit</button>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="annexes">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Formal Investigation Report (FIR)</legend>
+						<table class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+								<th width="300px">File Name</th>
+								<th width="100px">File Type</th>
+								<th>Description</th>
+							</tr>
+							<tr>
+								<td class="text-center"><input type="checkbox"></td>
+								<td><a href="">S8477112X_FIR.doc</a></td>
+								<td>Document</td>
+								<td>S8477112X FIR</td>
+							</tr>
+						</table>
+						<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+							<div class="glyphicon glyphicon-plus" />
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+						<br>
+						<legend>BOI</legend>
+						<table class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+								<th width="300px">File Name</th>
+								<th width="100px">File Type</th>
+								<th>Description</th>
+							</tr>
+							<tr>
+								<td class="text-center"><input type="checkbox"></td>
+								<td><a href="">S8477112X_BOI.doc</a></td>
+								<td>Document</td>
+								<td>S8477112X BOI</td>
+							</tr>
+						</table>
+						<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+							<div class="glyphicon glyphicon-plus" />
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+						<br>
+						<legend>Police Report</legend>
+						<table class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+								<th width="300px">File Name</th>
+								<th width="100px">File Type</th>
+								<th>Description</th>
+							</tr>
+							<tr>
+								<td class="text-center"><input type="checkbox"></td>
+								<td><a href="">S8477112X_Police_Report.pdf</a></td>
+								<td>Document</td>
+								<td>S8477112X Police Report</td>
+							</tr>
+						</table>
+						<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#addOffenceModal">
+							<div class="glyphicon glyphicon-plus" />
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawOffenceModal">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div role="tabpanel" class="tab-pane fade" id="disciplinary">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Demerit Points / Penalty</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Reference No.</label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Transport Operator</label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control" ng-model="indentSet.transient.demeritTO" placeholder="Name or NRIC No." aria-describedby="basic-addon1" autocomplete="off"
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10" typeahead-on-select="onSelectPOC($item)">
+							</div>
+							<label class="col-sm-2 control-label">SAF Driving Permit No.</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Offence Type <span class="glyphicon glyphicon-info-sign"
+								uib-tooltip="Offences involving a Traffic Accident will reset all Incentive claimable mileage accumulated before the offence's Issue Date." /></label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="cdOffenceType in cdOffenceTypes" value="{{cdOffenceType.id}}">{{cdOffenceType.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Offence Committed</label>
+							<div class="col-sm-4">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="cdOffenceCommitted in cdOffencesCommitted" value="{{cdOffenceCommitted.name}}">{{cdOffenceCommitted.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Demerit Points</label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control" />
+							</div>
+							<label class="col-sm-2 control-label">Fine ($)</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Suspend Permit</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Suspension Period</label>
+							<div class="col-sm-4">
+								<input daterangebox class="form-control">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Revoke Permit</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Revocation Date</label>
+							<div class="col-sm-4">
+								<input datebox class="form-control">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Issued On</label>
+							<div class="col-sm-3">
+								<input datebox id="startDate" class="form-control" />
+							</div>
+							<label class="col-sm-2 control-label required">Issued By</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" ng-model="indentSet.transient.demeritIssueBy" placeholder="Name or NRIC No." aria-describedby="basic-addon1" autocomplete="off"
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10" typeahead-on-select="onSelectPOC($item)">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-primary btn-block">Issue</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addTOModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" style="width: 800px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Add / Update Transport Operator Involved</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Rank / Name (NRIC No.)</label>
+							<div class="col-sm-9">
+								<input type="text" value="CPL IRWAN BIN AWANG (S8303514E)" class="form-control" ng-model="accTO" placeholder="Name or NRIC No." aria-describedby="basic-addon1" autocomplete="off"
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10" typeahead-on-select="onSelectPOC($item)">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Hub</label>
+							<div class="col-sm-3 control-value">HUB EAST</div>
+							<label class="col-sm-3 control-label">Node</label>
+							<div class="col-sm-3 control-value">BEDOK NODE</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Service Status</label>
+							<div class="col-sm-3 control-value">REG</div>
+							<label class="col-sm-3 control-label">Vocation</label>
+							<div class="col-sm-3 control-value">DVR</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">SAF Driving Permit No.</label>
+							<div class="col-sm-3 control-value">SAF/TPT/N/01942/07</div>
+							<label class="col-sm-3 control-label">Driving CAT</label>
+							<div class="col-sm-3 control-value">B</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Class 3 Mileage</label>
+							<div class="col-sm-3 control-value">3000</div>
+							<label class="col-sm-3 control-label">Class 4 Mileage</label>
+							<div class="col-sm-3 control-value">2000</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Total Mileage</label>
+							<div class="col-sm-3 control-value">5000</div>
+							<label class="col-sm-3 control-label">Degree of Injury</label>
+							<div class="col-sm-3">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accInjury in accInjuries">{{accInjury.name}}</option>
+								</select>
+							</div>
+						</div>
+						<br>
+						<legend>Assessment</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">How many hours has the transport operator rested prior to the detail?</label>
+							<div class="col-sm-2">
+								<input class="form-control">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-10 control-label">Does the service man has any known psychological problem which may affect his driving?</label>
+							<div class="col-sm-2">
+								<select class="form-control" ng-model="accPsyProblem">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div ng-if="accPsyProblem=='Yes'" class="form-group">
+							<label class="col-sm-2 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+						<br>
+						<legend>Vehicle Familiarisation</legend>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<table class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th>Vehicle Type</th>
+										<th>Tow Type</th>
+										<th width="50px">Status</th>
+										<th width="90px">Approved On</th>
+										<th width="90px">Approved By</th>
+										<th width="120px">Approval Status</th>
+									</tr>
+									<tr ng-repeat="familiarisation in familiarisations">
+										<td>{{familiarisation.vehicleType}}</td>
+										<td>{{familiarisation.towType}}</td>
+										<td>{{familiarisation.status}}</td>
+										<td>{{familiarisation.approvedOn}}</td>
+										<td><a uib-tooltip="MAJ DAVID LIM MENG KIAT" tooltip-placement="left">{{familiarisation.approvedBy}}</a></td>
+										<td ng-if="familiarisation.approvalStatus == 'PENDING'" style="color: blue">{{familiarisation.approvalStatus}}</td>
+										<td ng-if="familiarisation.approvalStatus == 'REJECTED'"><a style="color: red"
+											uib-tooltip="This is an erroneous submission. TO has not taken the specified vehicle familiarisation." tooltip-placement="left">{{familiarisation.approvalStatus}}</td>
+										<td ng-if="familiarisation.approvalStatus == 'APPROVED'">{{familiarisation.approvalStatus}}</td>
+										<td ng-if="familiarisation.approvalStatus == 'WITHDRAWN'"><a style="color: red"
+											uib-tooltip="This is an erroneous submission. TO has not taken the specified vehicle familiarisation." tooltip-placement="left">{{familiarisation.approvalStatus}}</a></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<br>
+						<legend>Operational Proficiency</legend>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<table class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th>Operational Proficiency</th>
+										<th width="50px">Status</th>
+										<th width="90px">Approved On</th>
+										<th width="90px">Approved By</th>
+										<th width="120px">Approval Status</th>
+									</tr>
+									<tr ng-repeat="proficiency in proficiencies">
+										<td>{{proficiency.proficiency}}</td>
+										<td>{{proficiency.status}}</td>
+										<td>{{proficiency.approvedOn}}</td>
+										<td><a uib-tooltip="MAJ DAVID LIM MENG KIAT" tooltip-placement="left">{{proficiency.approvedBy}}</a></td>
+										<td ng-if="proficiency.approvalStatus == 'PENDING'" style="color: blue">{{proficiency.approvalStatus}}</td>
+										<td ng-if="proficiency.approvalStatus == 'REJECTED'"><a style="color: red" uib-tooltip="This is an erroneous submission. TO has not taken the specified proficiency."
+											tooltip-placement="left">{{proficiency.approvalStatus}}</a></td>
+										<td ng-if="proficiency.approvalStatus == 'APPROVED'">{{proficiency.approvalStatus}}</td>
+										<td ng-if="proficiency.approvalStatus == 'WITHDRAWN'"><a style="color: red" uib-tooltip="This is an erroneous submission. TO has not taken the specified proficiency."
+											tooltip-placement="left">{{proficiency.approvalStatus}}</a></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<br>
+						<legend>Past 2 Days Task Details</legend>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<table class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th>Indent ID</th>
+										<th>Task ID</th>
+										<th>Activity Type</th>
+										<th>Book-out Date/Time</th>
+										<th>Book-in Date/Time</th>
+										<th>Mileage</th>
+									</tr>
+									<tr>
+										<td>20160000003</a></td>
+										<td>100725</a></td>
+										<td>Training - Battalion Training</td>
+										<td>28-Mar-2016 08:00</td>
+										<td>29-Mar-2016 20:00</td>
+										<td>32</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<br>
+						<legend>Accident Records</legend>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<table class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th>Accident ID</th>
+										<th>Date</th>
+										<th>Vehicle Type</th>
+										<th width="100px">TO Negligent</th>
+									</tr>
+									<tr>
+										<td>121201-0001</td>
+										<td>01-Jan-2012</td>
+										<td>5 TON GS (AUTO)</td>
+										<td>No</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addPerModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" style="width: 600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Add / Update Other Personnel Involved</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">NRIC No.</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Name</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Address</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Contact No.</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Degree of Injury</label>
+							<div class="col-sm-9">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accInjury in accInjuries">{{accInjury.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Remarks</label>
+							<div class="col-sm-9">
+								<textarea class="form-control"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addVehModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" style="width: 600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Add / Update Vehicle Involved</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Machine Type</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="accVehMachType">
+									<option></option>
+									<option selected="true">MILITARY</option>
+									<option>CIVILIAN</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Plate No.</label>
+							<div class="col-sm-9"><input class="form-control" value="MID12312"></div>
+						</div>
+						<div ng-if="accVehMachType=='MILITARY'" class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Type</label>
+							<div class="col-sm-9 control-value">5 TON GS (AUTO)</div>
+						</div>
+						<div ng-if="accVehMachType=='CIVILIAN'" class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Type</label>
+							<div class="col-sm-9">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="accCvVehType in accCvVehTypes">{{accCvVehType.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div ng-if="accVehMachType=='MILITARY'" class="form-group">
+							<label class="col-sm-3 control-label required">Last UQM Date</label>
+							<div class="col-sm-9 control-value">20-Jan-2016</div>
+						</div>
+						<div ng-if="accVehMachType=='MILITARY'" class="form-group">
+							<label class="col-sm-3 control-label required">Last AVI Date</label>
+							<div class="col-sm-9 control-value">20-Dec-2015</div>
+						</div>
+						<div ng-if="accVehMachType=='MILITARY'" class="form-group">
+							<label class="col-sm-3 control-label">BOC Conducted</label>
+							<div class="col-sm-9">
+								<select class="form-control">
+									<option></option>
+									<option selected="true">Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">SAF/Civilian<br>Vehicle Damages</label>
+							<div class="col-sm-9 control-value"><textarea class="form-control">Windscreen crack</textarea></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Private/Public<br>Property Damages</label>
+							<div class="col-sm-9 control-value"><textarea class="form-control"></textarea></div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+			</div>
+		</div>
+	</div>
+</div>

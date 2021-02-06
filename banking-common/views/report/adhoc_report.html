@@ -1,0 +1,206 @@
+<style>
+/**
+ * The dnd-list should always have a min-height,
+ * otherwise you can't drop to it once it's empty
+ */
+#adhocReport ul[dnd-list] {
+	min-height: 42px;
+	padding-left: 0px;
+}
+
+/**
+ * The dndDraggingSource class will be applied to
+ * the source element of a drag operation. It makes
+ * sense to hide it to give the user the feeling
+ * that he's actually moving it.
+ */
+#adhocReport ul[dnd-list] .dndDraggingSource {
+	display: none;
+}
+
+/**
+ * An element with .dndPlaceholder class will be
+ * added to the dnd-list while the user is dragging
+ * over it.
+ */
+#adhocReport ul[dnd-list] .dndPlaceholder {
+	background-color: #ddd;
+	display: block;
+	min-height: 42px;
+}
+
+#adhocReport tr[dnd-list] .dndPlaceholder {
+	background-color: #ddd;
+	display: block;
+	min-height: 42px;
+}
+
+#adhocReport ul[dnd-list] li {
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-top-right-radius: 4px;
+	border-top-left-radius: 4px;
+	display: block;
+	padding: 5px 10px;
+	margin-bottom: -1px;
+}
+</style>
+
+<div id="adhocReport" class="row">
+	<div class="page-header">
+		<h3>Ad-hoc Report Generator</h3>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="form-group">
+			<label class="col-sm-2 control-label">Module</label>
+				<div class="col-sm-4">
+					<select class="form-control" ng-model="searchDTO.module" ng-change="changeModule()">
+						<option value = "indent">Indent</option>
+						<option value = "indentResource">Indent Resource</option>
+						<option value = "task">Task</option>
+						<option value = "taskDetail">Task Detail</option>
+						<option value = "driver">Driver</option>
+						<option value = "vehicle">Vehicle</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-2" ng-if = "searchDTO.module">
+		<div class="panel panel-default">
+			<div class="panel-heading">Available Columns</div>
+			<div class="panel-body">
+				<ul dnd-list="models.lists.A">
+					<li ng-repeat="item in models.lists.A" dnd-draggable="item"
+						dnd-moved="models.lists.A.splice($index, 1)"
+						dnd-effect-allowed="move" dnd-selected="models.selected = item"
+						ng-class="{'selected': models.selected === item}">
+						{{item.name}}</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-10" ng-if = "searchDTO.module">
+		<div class="panel panel-default">
+			<table
+				class="table table-bordered table-striped table-responsive table-condensed">
+				<thead>
+					<th style="width: 2%"></th>
+					<th style="width: 23%">Selected Fields</th>
+					<th style="width: 15%">Type</th>
+					<th style="width: 13%">Criteria</th>
+					<th style="width: 37%">Value</th>
+					<th style="width: 10%">Conjunction</th>
+				</thead>
+				<tbody dnd-list="models.lists.B"
+					>
+					<tr ng-repeat="item in models.lists.B" dnd-draggable="item" dnd-moved="models.lists.B.splice($index, 1)">
+						<td style="vertical-align:middle"><a href="" ng-click="removeCriteria($index, item)"><span class="glyphicon glyphicon-trash"></span></a></td>
+						<td style="vertical-align:middle">{{item.name}}</span></td>								
+						<td>
+							<select class="form-control" ng-model="item.displayType">
+								<option value = 1>Display Only</option>
+								<option value = 2>Filter Only</option>
+								<option value = 3>Display & Filter Only</option>
+							</select>
+						</td>
+						<td>
+							<select class="form-control" ng-if="item.displayType != '1' && (item.type === 'number' || item.type === 'bigDecimal' || item.type ==='date')" ng-model="item.criteria">
+								<option value = "eq">Equals</option>
+								<option value = "ne">Not Equals</option>
+								<option value = "lt">Less Than</option>
+								<option value = "mt">More Than</option>
+								<option value = "le">Less Than or Equal</option>
+								<option value = "ge">More Than or Equal</option>
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && !(item.type === 'number' || item.type === 'bigDecimal' || item.type ==='date')" ng-model="item.criteria">
+								<option value = eq>Equals</option>
+								<option value = ne>Not Equals</option>
+							</select>
+						</td>
+						<td>
+							<input type="text" class="form-control" ng-if="item.displayType != '1' && item.type === 'text'" ng-model="item.value" />
+							<input type="number" class="form-control" ng-if="item.displayType != '1' && item.type === 'number'" ng-model="item.value" />
+							<input type="number" class="form-control" ng-if="item.displayType != '1' && item.type === 'bigDecimal'" ng-model="item.value" />
+							<input datebox class="form-control" ng-if="item.displayType != '1' && item.type === 'date'" ng-model="item.value" />
+							<yes-No-only ng-if="item.displayType != '1' && item.type === 'yesNo'" ng-model="item.value" />
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'inOut'" ng-model="item.value">
+								<option value = "IN">In</option>
+								<option value = "OUT">Out</option>
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'activityType'" ng-model="item.value" ng-options="activityType.code as activityType.name for activityType in activityTypes" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'venue'" ng-model="item.value" ng-options="venue.id as venue.name for venue in venues" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'unit'" ng-model="item.value" ng-options="unit.code as unit.name for unit in units" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'subUnit'" ng-model="item.value" ng-options="subUnit.id as subUnit.name for subUnit in subUnits" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'hub'" ng-model="item.value" ng-options="hub.code as hub.name for hub in hubs" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'node'" ng-model="item.value" ng-options="node.id as node.name for node in nodes" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'country'" ng-model="item.value" ng-options="country.code as country.name for country in countries" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'indentStatus'" ng-model="item.value" ng-options="indentStatus.code as indentStatus.name for indentStatus in indentStatuses" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'resourceType'" ng-model="item.value" ng-options="resourceType.code as resourceType.name for resourceType in resourceTypes" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'vehicleType'" ng-model="item.value" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'vehiclePurpose'" ng-model="item.value" ng-options="vehiclePurpose.id as vehiclePurpose.name for vehiclePurpose in vehiclePurposees" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'taskStatus'" ng-model="item.value" ng-options="taskStatus.id as taskStatus.name for taskStatus in taskStatuses" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'taskDetailStatus'" ng-model="item.value" ng-options="taskDetailStatus.id as taskDetailStatus.name for taskDetailStatus in taskDetailStatuses" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'driverType'" ng-model="item.value" ng-options="driverType.code as driverType.name for driverType in driverTypes" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'esEquipment'" ng-model="item.value" ng-options="esEquipment.id as esEquipment.name for esEquipment in esEquipments" >
+								<option />
+							</select>
+							<select class="form-control" ng-if="item.displayType != '1' && item.type === 'vehiclePermitClass'" ng-model="item.value" ng-options="vehiclePermitClass.code as vehiclePermitClass.name for vehiclePermitClass in vehiclePermitClasses" >
+								<option />
+							</select>
+						</td>
+						<td>
+							<select class="form-control" ng-if="item.displayType != '1'" ng-model="item.conjunction">
+								<option value = "OR">OR</option>
+								<option value = "AND">AND</option>
+							</select>
+						</td>
+					</tr>
+					<tr class="dndPlaceholder text-center">
+						<td colspan="6">- Drop Selected Column here -</td>
+					</tr>
+					<tr class="text-center">
+						<td colspan="6">- Drop Selected Column here -</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr class="text-right">
+						<td colspan="6">
+							<button class="btn btn-default" ng-click="reset()" >Reset</button>
+							<button class="btn btn-primary" ng-click="export()" >Export</button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>

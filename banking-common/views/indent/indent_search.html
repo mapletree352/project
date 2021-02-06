@@ -1,0 +1,225 @@
+<div class="row page-header">
+	<h3>Search Indents</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position:absolute;width:130px;right:20px;z-index:998">
+				<button type="button" class="btn btn-block btn-primary" ng-click="search()" ng-disabled="loading">Search</button>
+				<button type="button" class="btn btn-block btn-default" ng-click="reset()">Clear</button>
+				<br>
+				<a href="" ng-click="advSearchCollapsed = !advSearchCollapsed" class="pull-right">Advanced Search...</a>
+			</div>
+			<div style="padding-right:160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Indent ID</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" ng-model="searchDTO.indentNo" />
+						</div>
+						<label class="col-sm-2 control-label">Indent Name</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" ng-model="searchDTO.name" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Status</label>
+						<div class="col-sm-4">
+							<select tagbox multiple="true" class="form-control" ng-options="status.code as status.name for status in statuses" ng-model="searchDTO.statusCodes">
+								<option />
+							</select>
+						</div>
+						<label class="col-sm-2 control-label">Customer Unit</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Unit'">
+							<typeahead placeholder="Unit Code or Name" uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+								typeahead-on-select="searchDTO.unitCode = $item.code" ng-blur="searchDTO.unitCode = unit ? searchDTO.unitCode : undefined" ng-model="unit" />
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Unit'">
+							<input class="form-control" ng-model="session.userRole.unitNameAndCode" readonly/>
+						</div>												
+					</div>
+					
+					<div uib-collapse="advSearchCollapsed">
+						<hr>
+						<div class="form-group" ng-if="session.userRole.cat !== 'Unit'">
+							<label class="col-sm-1 control-label">Hub</label>
+							<div class="col-sm-4" ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+								<select class="form-control" ng-model="searchDTO.hubCode" ng-options="hub.code as hub.name for hub in hubs">
+									<option />
+								</select>
+							</div>
+							<div class="col-sm-4" ng-if="session.userRole.cat === 'Hub' || session.userRole.cat === 'Node'">
+								<input class="form-control" ng-model="session.userRole.hub" readonly/>
+							</div>
+							<label class="col-sm-2 control-label">Node</label>
+							<div class="col-sm-4" ng-if="session.userRole.cat !== 'Node'">
+								<select class="form-control" ng-model="searchDTO.nodeId" ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.hubCode)">
+									<option />
+								</select>
+							</div>
+							<div class="col-sm-4" ng-if="session.userRole.cat === 'Node'">
+								<input class="form-control" ng-model="session.userRole.node" readonly/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-1 control-label">Activity Type</label>
+							<div class="col-sm-4">
+								<select class="form-control" ng-model="searchDTO.activityId" ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities">
+									<option />
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Submission Date</label>
+							<div class="col-sm-4">
+								<div class="input-group valueColumn date"">
+									<input datetimerangebox class="form-control" id="startPeriod" ng-model="searchDTO.submissionDateRange" />
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>
+								</div>	
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-1 control-label">Waiting List</label>
+							<div class="col-sm-4">
+								<yes-no ng-model="searchDTO.waitingListFlag" />
+							</div>
+							<label class="col-sm-2 control-label">Execution Date</label>
+							<div class="col-sm-4">
+								<div class="input-group valueColumn date"">
+									<input datetimerangebox class="form-control" id="endPeriod" ng-model="searchDTO.executionDateRange" />
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-1 control-label">POC</label>
+							<div class="col-sm-4">
+								<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+									typeahead-on-select="searchDTO.pocNricNo = $item.code" ng-blur="searchDTO.pocNricNo = poc ? searchDTO.pocNricNo : undefined" ng-model="poc" />
+							</div>
+							<label class="col-sm-2 control-label">Completion Date</label>
+							<div class="col-sm-4">
+								<div class="input-group valueColumn date"">
+									<input datetimerangebox class="form-control" id="completionPeriod" ng-model="searchDTO.completionDateRange" />
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-1 control-label">Movement</label>
+							<div class="col-sm-4">
+								<select class="form-control" ng-model="searchDTO.campMovement">
+									<option/>
+									<option value="IN">In Camp</option>
+									<option value="OUT">Out Camp</option>
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Reporting Venue</label>
+							<div class="col-sm-4">
+								<select class="form-control" ng-model="searchDTO.reportingVenueId" required ng-options="venue.id as venue.name for venue in venues">
+									<option/>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-1 control-label">Credit</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.creditsAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.creditsAmtTo" />
+								</div>
+							</div>
+							<label class="col-sm-2 control-label">Destination Venue</label>
+							<div class="col-sm-4">
+								<select class="form-control" ng-model="searchDTO.destinationVenueId" required ng-options="venue.id as venue.name for venue in venues">
+									<option/>
+								</select>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+		<tr>
+			<th no-sort>#</th>
+			<th sort initial="{{initialSort}}" property="indentNo">Indent ID</th>
+			<th sort initial="{{initialSort}}" property="unit.name">Customer Unit</th>
+			<th sort initial="{{initialSort}}" property="activity.type.code">Activity Type</th>
+			<th sort initial="{{initialSort}}" property="startDate">Indent Period</th>
+			<th sort initial="{{initialSort}}" property="name">Indent Details</th>
+			<th no-sort>Vehicle Resources</th>
+			<th no-sort>Driver Resources</th>
+			<th sort initial="{{initialSort}}" property="credits">Credits</th>
+			<th sort initial="{{initialSort}}" property="status.code">Status</th>
+			<th no-sort>Additional Info</th>
+		</tr>
+		<tr ng-repeat="record in records">
+			<td>{{$index + searchDTO.startIndex + 1}}</td>
+			<td width="5%"><a href="#/indent/{{record.indentNo}}">{{record.indentNo}}</a></td>
+			<td>{{record.unit}}</td>
+			<td width="8%">
+				<div>{{record.activityType}} {{record.activity != null ? '-' : null}}</div>
+				<div>{{record.activity != null ? record.activity : null}}</div>
+			</td>
+			<td>
+				<div>{{record.startDate}} to</div>
+				<div>{{record.endDate}}</div>
+				<div>({{record.duration | number:1}} {{record.durationUnit}})</div>
+			</td>
+			<td>
+				<div style="font-size:13"><b>{{record.name}}</b></div>
+				<div><span class="glyphicon glyphicon-map-marker"/> {{record.reportingVenue}}</div>
+				<div><span class="glyphicon glyphicon-transfer"/> {{record.campMovement}}</div>
+			</td>
+			<td  width="11%">
+				<img src="images/vehicle.gif" height="50" style="float:left; margin-right:10px">
+				<div>
+					<div>{{record.vehiclesRequested}} Requested</div>
+					<div>{{record.vehiclesTasked}} Tasked</div>
+				</div>
+			</td>
+			<td  width="11%">
+				<img src="images/driver.gif" height="50" style="float:left; margin-right:10px">
+				<div>
+					<div>{{record.driversRequested}} Requested</div>
+					<div>{{record.driversTasked}} Tasked</div>
+				</div>
+			</td>
+			<td>{{record.credits | number:1}}</td>
+			<td>
+				{{record.status}}<br><div ng-if="record.status !== 'Confirmed' && record.status !== 'Approved'"></div>
+				<!--  <div ng-if="record.transferredFlag === 'Y' && record.hubCode !== session.userRole.hub">
+				 	<div ng-if="session.userRole.cat === 'Hub'"><p>Forwarded from <br><b>{{record.hubCode}}</b></p></div>
+				 	<div ng-if="session.userRole.cat !== 'Hub'"><b>(Cross Hub Support)</b></div>
+				 </div>  -->
+			</td>
+			<td width="13%">
+				<div ng-if="record.waitingListFlag === 'Y'">
+					<div ng-if="record.approvedFlag != null && record.approvedFlag === 'Y'">Waiting List: No</div>
+					<div ng-if="record.approvedFlag == null  || (record.approvedFlag != null && record.approvedFlag === 'N')">Waiting List: <b>Yes</b></div>
+				</div>
+				<div ng-if="record.waitingListFlag === 'N'">Waiting List: No</div>
+				<div ng-if="record.crossHubFlag === 'Y'">Cross Hub Indent: <b>Yes</b></div>
+				<div ng-if="record.crossHubFlag === 'N'">Cross Hub Indent: No</div>
+				<div ng-if="record.recalledFlag === 'Y'">Recalled Before: <b>Yes</b></div>
+				<div ng-if="record.recalledFlag === 'N'">Recalled Before: No</div>
+				<div ng-if="record.revertedFlag === 'Y'">Reverted Before: <b>Yes</b></div>
+				<div ng-if="record.revertedFlag === 'N'">Reverted Before: No</div>
+			</td>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="13">
+					<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

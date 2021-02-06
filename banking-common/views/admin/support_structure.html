@@ -1,0 +1,111 @@
+<div class="row page-header">
+	<h3>
+		Manage Support Structure
+		<div class="pull-right" style="padding-right:25px">
+			<button type="button" class="btn btn-default">Undo</button>
+			<button type="button" class="btn btn-primary" ng-click="save()">Save Changes</button>
+		</div>
+	</h3>
+</div>
+
+<div class="row page-body">
+	<div class="col-xs-12">
+		
+		<style>
+			.table-condensed>tbody>tr>td, 
+			.table-condensed>tfoot>tr>td, 
+			.table-condensed>thead>tr>td {
+				padding-top: 0;
+				padding-bottom: 0;
+				padding-right: 0;
+			}
+			#support .table-bordered > tbody > tr > td,
+			#support .table-bordered > thead > tr > td,
+			#support .table-bordered {
+				border-left: 0;
+				border-top: 0;
+			}
+			#support .table-bordered > tbody > tr:last-child > td,
+			#support .table-bordered > thead > tr:last-child > td,
+			#support .table-bordered {
+				border-bottom: 0;
+			}
+			#support .btn {
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+		</style>
+		
+		<table class="table table-bordered table-responsive table-condensed">
+			<tr>
+
+				<th width="25%">
+					Hubs<br>
+					<select class="form-control" ng-model="hubSelected" ng-change="updateFilter()" required ng-options="hub as hub.name for hub in hubs">
+					<option value=""></option>
+					</select>
+				</th>
+				<th width="25%">
+					Nodes<br>
+					<select class="form-control" ng-model="nodeSelected" ng-change="updateFilter()" required ng-options="node as node.name for node in nodes | filter:filterNodes(hubSelected.code)">
+					<option value=""></option>
+					</select>
+				</th>
+				
+				<th width="25%">
+					Units<br>
+					<typeahead placeholder="Unit Code or Name" uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+								typeahead-on-select="onSelectFilterUnit($item)" ng-model="unitFilter" ng-change='unitFilterChange()'/>
+				</th>
+				<th width="25%">
+					Sub Units<br>
+					<typeahead placeholder="Subunit Name" uib-typeahead="subunit.name for subunit in searchSubunits($viewValue)"
+												typeahead-on-select="onSelectFilterSubunit($item)" ng-model="subunitFilter" ng-change = 'subunitFilterChange()' />
+				</th>
+					
+				
+			</tr>
+			<tr ng-repeat="hub in manageHubs">
+				<td width="25%">{{hub.name}}</td>
+				<td colspan="3">
+					<table class="table table-bordered table-responsive table-condensed">
+						<tr ng-repeat="node in hub.nodeDTOs">
+							<td width="33%">{{node.name}}</td>
+							<td colspan="2">
+								<table class="table table-bordered table-responsive table-condensed">
+									<tr ng-repeat="unit in node.unitDTOs">
+										<td width="50%"><a href=""><span class="glyphicon glyphicon-remove" ng-click="deleteUnit(node,hub,unit)"></span></a> {{unit.name}}</td>
+										<td colspan="1">
+										<table class="table table-bordered table-responsive table-condensed">
+										<tr ng-repeat="subunit in unit.subunitDTOs">
+											<td width="100%"><a href=""><span class="glyphicon glyphicon-remove" ng-click="deleteSubunit(node,hub,unit,subunit)"></span></a> {{subunit.name}}</td>
+											
+										</tr>	
+										</table>
+										<div class="col-sm-12 input-group" style="width:100%" ng-if="unit.isAddSubUnit">
+											<typeahead placeholder="Subunit Name" uib-typeahead="subunit.name for subunit in searchSubunits($viewValue)"
+												typeahead-on-select="onSelectSubunit($item)" ng-model="subunit" />
+											<span class="input-group-addon glyphicon glyphicon-search"></span>
+										</div>
+											<button type="button" class="btn btn-xs btn-primary" ng-if="unit.isAddSubUnit" ng-click="addSubunit(unit,node,hub)">Add</button>
+											<button type="button" class="btn btn-xs btn-default" ng-if="unit.isAddSubUnit" ng-click="unit.isAddSubUnit=false">Cancel</button>
+											<button type="button" class="btn btn-xs btn-default" ng-if="!unit.isAddSubUnit" ng-click="unit.isAddSubUnit=true"><span class="glyphicon glyphicon-plus"></span> Add Sub-Unit</button>
+										</td>
+									</tr>
+								</table>
+								<div class="col-sm-12 input-group" style="width:25%" ng-if="node.isAddUnit">
+									<typeahead placeholder="Unit Code or Name" uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+								typeahead-on-select="onSelectUnit($item)" ng-model="unit" />
+									<span class="input-group-addon glyphicon glyphicon-search"></span>
+								</div>
+								<button type="button" class="btn btn-xs btn-primary" ng-if="node.isAddUnit" ng-click=" addUnit(node,hub)">Add</button>
+								<button type="button" class="btn btn-xs btn-default" ng-if="node.isAddUnit" ng-click="node.isAddUnit=false">Cancel</button>
+								<button type="button" class="btn btn-xs btn-default" ng-if="!node.isAddUnit" ng-click="node.isAddUnit=true"><span class="glyphicon glyphicon-plus"></span> Add Unit</button>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

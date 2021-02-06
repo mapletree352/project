@@ -1,0 +1,144 @@
+<div class="row">
+	<div class="page-header">
+		<h3>Dashboard</h3>
+	</div>
+	<div class="table-responsive col-sm-7">
+		<div  ng-if="session.userRole.cat === 'Unit'">
+			<caption ><h4>Credit Status Overview 	</h4></caption>
+						<table class="table table-striped table-bordered table-hover table-responsive table-condensed small notifications">
+					
+				<tr>
+					<td style="background-color:white">
+								<div style="float:left">
+	
+							<select  ng-model="searchCreditDTO.workYear" ng-change="getCreditStatus()">
+							  	 <option value="" disabled="disabled">Resource View</option>
+								<option ng-repeat="n in _.range(currentYear - 9, currentYear + 1)" value="{{n}}">{{n}} (1 Apr {{n}} - 31 Mar {{n + 1}})</option>
+							</select>
+										
+								
+						</div>
+					
+		</td>
+				</tr>
+				<tr>
+					<td style="background-color:white">
+						<br>
+						<div>
+							<div style="float:left; width:90%">
+								<canvas    class="chart chart-pie"      chart-data="resPie.data" chart-labels="resPie.labels"  options="resPie.pieChartoptions"  height="150px"></canvas>
+							</div>
+						</div>	
+					</td>
+				</tr>
+			</table>
+		
+		
+		</div>
+	<div  ng-if="session.userRole.cat !== 'Unit'">
+		<caption ><h4>Resource Overview 	</h4></caption>
+			<table class="table table-striped table-bordered table-hover table-responsive table-condensed small notifications">
+					
+				<tr>
+					<td style="background-color:white">
+								<div style="float:left">
+	
+										<input style="width:100px;height:18px"  datebox   ng-model="searchDTO.date"  ng-change="resourceView()"  />
+										
+								
+						</div>
+						<div style="float:left">
+							&nbsp;
+							<select ng-model="searchDTO.optionType" ng-init="searchDTO.optionType='TO'" ng-change="resourceViewReset()">
+							   <option value="" disabled="disabled">Resource Type</option>
+							 <option value="TO" >TO</option>
+							 <option value="VEH">VEHICLE</option>
+							</select>
+						</div>
+						<div  style="float:left">
+						
+							<select style="width:220px" ng-model="searchDTO.vehicleTypeId" ng-change="resourceView()" >
+								 	 <option value="0" disabled="disabled">Vehicle Type</option>
+								<option  ng-repeat="vehicle in vehicleTypes" value="{{vehicle.id}}">{{vehicle.name}}</option>
+							</select>
+						</div>
+						<div style="float:left">
+							&nbsp;
+							<select ng-model="searchDTO.hubCode" ng-change="resourceHubView()">
+							  	 <option value="" disabled="disabled">Hub</option>
+								<option value="">All Hub</option>
+								<option ng-repeat="hub in hubs" value="{{hub.code}}">{{hub.name}}</option>
+							</select>
+						</div>
+						<div style="float:left">
+							&nbsp;
+							<select  ng-show="searchDTO.hubCode!=''" ng-model="searchDTO.nodeId" ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.hubCode!='all'?searchDTO.hubCode:'')" ng-change="resourceView()">
+								<option value="">All Node</option>
+						
+							
+								</select>
+						</div>
+							<div ng-show="searchDTO.nodeId==null" style="float:left">
+								<select  ng-model="searchDTO.meridiem" ng-change="resourceView()"  ng-if="searchDTO.searchMode=='hubNode'">
+										<option value="AM">AM (00:00 - 11:59)</option>
+										<option value="PM">PM (12:00 - 23:59)</option>
+									</select>
+								</div>
+						<div ng-show="searchDTO.nodeId==null" style="float:right">
+							<select ng-model="searchDTO.searchMode" ng-init="searchDTO.searchMode='hubNode'" ng-change="resourceView()">
+							  	 <option value="" disabled="disabled">Resource View</option>
+								<option value="hubNode">By Hub / Node</option>
+								<option  value="daily">By Daily Total</option>
+							</select>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="background-color:white">
+						<br>
+						<div>	
+							<div style="float:left; width:90%">
+								<canvas id="canvas" class="chart chart-base" chart-type="resChart.type" chart-series="resChart.series" chart-data="resChart.data" chart-labels="resChart.labels"  height="150px"  chart-options="options"></canvas>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		
+	
+	</div>
+	
+	
+	
+		<table class="table table-striped table-bordered table-hover table-responsive table-condensed small notifications">
+			<caption style="height:38px"><h4>Pending Actions</h4></caption>
+			<tr>
+				<th>Pending Since</th>
+				<th>Description</th>
+			</tr>
+			<tr ng-repeat="pendingAction in pendingActions">
+				<td>{{pendingAction.createDate}}</td>
+				<td><span style="white-space: pre-wrap;" ng-bind-html="renderHtml(pendingAction.message)"></td>
+			</tr>
+		</table>
+	</div>
+	<div class="table-responsive col-sm-5">
+		<table class="table table-striped table-bordered table-hover table-responsive table-condensed small notifications">
+			<caption>
+				<h4>
+					Notifications <button type="button" ng-click="dismissClick()" class="btn btn-default navbar-btn btn-xs"><div class="glyphicon glyphicon-remove" /> Dismiss</button>
+				</h4>
+			</caption>
+			<tr>
+				<th><input type="checkbox" ng-model="checkboxes.all" ng-click="checkAll()"></th>
+				<th>Date/Time</th>
+				<th>Description</th>
+			</tr>
+			<tr ng-repeat="notification in notifications">
+				<td><input type="checkbox" ng-model="checkboxes.items[notification.id]" ng-click="checkboxes.all=false"></td>
+				<td>{{notification.createDate}}</td>
+				<td><span style="white-space: pre-wrap;" ng-bind-html="renderHtml(notification.message)"></a></td>
+			</tr>
+		</table>
+	</div>
+</div>

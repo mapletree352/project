@@ -1,0 +1,1105 @@
+<div class="row page-header">
+	<h3><span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> {{dto.driverType}}</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-toggle="tab" data-target="#profile" ng-click="breakDownBy='PF'">Profile</a></li>
+			<li><a href="" data-toggle="tab" data-target="#skills" ng-click="breakDownBy='SKL'">Skills</a></li>
+			<li><a href="" data-toggle="tab" data-target="#mileage" ng-click="breakDownBy='ML'">Mileage</a></li>
+			<li><a href="" data-toggle="tab" data-target="#rewards" ng-click="breakDownBy='RW'">Rewards</a></li>
+			<li><a href="" data-toggle="tab" data-target="#demerit" ng-click="breakDownBy='DP'">Demerit Points</a></li>
+			<li><a href="" data-toggle="tab" data-target="#calendar" ng-click="breakDownBy='SCH'">Schedule</a></li>
+			<li><a href="" data-toggle="tab" data-target="#auditLog" ng-click="breakDownBy='AL'">Audit Log</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-heading"><strong>{{dto.driverType | uppercase}}</strong></div>
+					<div class="panel-body">
+						<div style="text-align:center">
+							<img src="{{photoUrl}}" style="height:120px" />
+							<br>
+							<strong><big>{{dto.nricNo}}</big></strong>
+							<br>
+							<p>{{dto.name}}</p>
+							<hr>
+						</div>
+						<div ng-if="session.rights['showDriverOpsTagNodeOpt'] || session.rights['showDriverOpsTagUnitOpt'] || session.rights['showDriverOthersOpt']">
+							<button type="button" ng-if="tab=='profile'" class="btn btn-default btn-block" ng-click="confirmDialog('Are you sure you want to update the Driver?', update)">Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="profile">
+				<form class="form-horizontal">
+					<fieldset ng-if="dto.driverType==='Transport Leader'">
+						<legend>Transport</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">E-HR Hub</label>
+							<div class="col-sm-4 control-value">{{dto.ehrHub}}</div>
+							<label class="col-sm-2 control-label">E-HR Node</label>
+							<div class="col-sm-4 control-value">{{dto.ehrNode}}</div>
+						</div>
+					</fieldset>
+					<fieldset ng-if="dto.driverType==='Transport Operator'">
+						<legend>Transport</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">E-HR Hub</label>
+							<div class="col-sm-4 control-value">{{dto.ehrHub}}</div>
+							<label class="col-sm-2 control-label">Ops Tag Unit</label>
+							<div ng-if="session.rights['showDriverOpsTagUnitOpt']" class="col-sm-4">
+								<select class="form-control" ng-model="dto.opsTagUnitCode" ng-options="opsTagUnit.code as opsTagUnit.name for opsTagUnit in opsTagUnits">
+									<option />
+								</select>
+							</div>
+							<div ng-if="!session.rights['showDriverOpsTagUnitOpt']" class="col-sm-4 control-value">{{dto.opsTagUnitName}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">E-HR Node</label>
+							<div class="col-sm-4 control-value">{{dto.ehrNode}}</div>
+							<div ng-if="dto.opsTagUnitCode">
+								<label class="col-sm-2 control-label">Ops Tag Sub-Unit</label>
+								<div ng-if="session.rights['showDriverOthersOpt']" class="col-sm-4">
+									<select class="form-control" ng-model="dto.opsTagSubunitId" ng-options="subunit.id as subunit.name for subunit in subunits | filter:filterSubunits(dto.opsTagUnitCode)">
+										<option />
+									</select>
+								</div>
+								<div ng-if="!session.rights['showDriverOthersOpt']" class="col-sm-4 control-value">{{dto.opsTagSubunitName}}</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Platoon</label>
+							<div ng-if="session.rights['showDriverOthersOpt']" class="col-sm-4">
+								<input class="form-control" ng-model="dto.platoon" />
+							</div>
+							<div ng-if="!session.rights['showDriverOthersOpt']" class="col-sm-4 control-value">{{dto.platoon}}</div>
+							<label class="col-sm-2 control-label">ITMS Node</label>
+							<div ng-if="session.rights['showDriverOpsTagNodeOpt']" class="col-sm-4">
+								<select class="form-control" ng-model="dto.opsTagNodeId" ng-options="node.id as node.name for node in dto.nodes " />								
+							</div>
+							<div ng-if="!session.rights['showDriverOpsTagNodeOpt']" class="col-sm-4 control-value">{{dto.opsTagNodeName}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Section</label>
+							<div ng-if="session.rights['showDriverOthersOpt']" class="col-sm-4">
+								<input class="form-control" ng-model="dto.section">
+							</div>
+							<div ng-if="!session.rights['showDriverOthersOpt']" class="col-sm-4 control-value">{{dto.section}}</div>
+							<label class="col-sm-2 control-label">Attached Node</label>
+							<div class="col-sm-4 control-value">{{dto.attachedNode}}</div>
+						</div>
+						<br>
+					</fieldset>
+					<fieldset>
+						<legend>Military</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Appointment</label>
+							<div class="col-sm-4 control-value">{{dto.appointment}}</div>
+							<label class="col-sm-2 control-label">Date of Appointment</label>
+							<div class="col-sm-4 control-value">{{dto.appointmentDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vocation</label>
+							<div class="col-sm-4 control-value">{{dto.vocation}}</div>
+							<label class="col-sm-2 control-label">Date of Vocation</label>
+							<div class="col-sm-4 control-value">{{dto.vocationDate}}</div>
+						</div>
+						<div class="form-group">
+						<label class="col-sm-2 control-label">Type of Service</label>
+							<div class="col-sm-4 control-value">{{dto.serviceType}}</div>
+							<label class="col-sm-2 control-label">Date of Rank</label>
+							<div class="col-sm-4 control-value">{{dto.rankDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit</label>
+							<div class="col-sm-4 control-value">{{dto.unit}}</div>
+							<label class="col-sm-2 control-label">Date to Unit</label>
+							<div class="col-sm-4 control-value">{{dto.unitDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit Service Type</label>
+							<div class="col-sm-4 control-value">{{dto.unitService}}</div>
+							<label class="col-sm-2 control-label">Date of Enlistment</label>
+							<div class="col-sm-4 control-value">{{dto.enlistmentDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Security CAT</label>
+							<div class="col-sm-4 control-value">{{dto.securityCat}}</div>
+							<label class="col-sm-2 control-label">ORD</label>
+							<div class="col-sm-4 control-value">{{dto.ord}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">PES Grading</label>
+							<div class="col-sm-4 control-value">{{dto.pes}}</div>
+						</div>
+						<br>
+					</fieldset>
+					<fieldset>
+						<legend>Personal</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Citizenship</label>
+							<div class="col-sm-4 control-value">{{dto.citizenship}}</div>
+							<label class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-4 control-value">{{dto.emailAddress}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Place of Birth</label>
+							<div class="col-sm-4 control-value">{{dto.birthPlace}}</div>
+							<label class="col-sm-2 control-label">Hand Phone</label>
+							<div class="col-sm-4 control-value">{{dto.mobilePhoneNo}}</div>							
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Date of Birth</label>
+							<div class="col-sm-4 control-value">{{dto.birthDate}}</div>
+							<label class="col-sm-2 control-label">Home Phone</label>
+							<div class="col-sm-4 control-value">{{dto.homePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Race</label>
+							<div class="col-sm-4 control-value">{{dto.race}}</div>
+							<label class="col-sm-2 control-label">Office Phone</label>
+							<div class="col-sm-4 control-value">{{dto.officePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Religion</label>
+							<div class="col-sm-4 control-value">{{dto.religion}}</div>	
+							<label class="col-sm-2 control-label">Address</label>
+							<div class="col-sm-4 control-value">{{dto.address}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Marital Status</label>
+							<div class="col-sm-4 control-value">{{dto.maritalStatus}}</div>
+							<label class="col-sm-2 control-label">Alt. Address</label>
+							<div class="col-sm-4 control-value">{{dto.addressAlternative}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Highest Education</label>
+							<div class="col-sm-4 control-value">{{dto.highestEducation}}</div>
+							<label class="col-sm-2 control-label">Overseas Address</label>
+							<div class="col-sm-4 control-value">{{dto.addressOverseas}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Next of Kin (NOK)</label>
+							<div class="col-sm-4 control-value">{{dto.nextOfKin}}</div>
+							<label class="col-sm-2 control-label">NOK Contact No.</label>
+							<div class="col-sm-4 control-value">{{dto.nextOfKinContact}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">NOK Relationship</label>
+							<div class="col-sm-4 control-value">{{dto.nextOfKinRelationship}}</div>
+						</div>
+						<br>
+					</fieldset>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="skills">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Vehicle Familiarisation</legend>
+						<div>
+							<div class="col-xs-12">
+								<table st-table="driverVehicleFams" st-safe-src="dto.driverVehicleFams" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th ng-if="session.rights['showDriverSkillBtn']" class="text-center"><input type="checkbox" ng-model="checkboxes[VEHICLE_FAM].all" ng-click="checkAll(dto.driverVehicleFams, VEHICLE_FAM)"></th>
+										<th st-sort="vehicleType">Vehicle Type</th>
+										<th st-sort="towType">Tow Type</th>
+										<th st-sort="assessmentStatus">Status</th>
+										<th st-sort="reassessFlag">Reassess</th>
+										<th st-sort="assessDate">Assessment</th>
+										<th st-sort="recommendDate">Recommendation</th>
+										<th st-sort="approveDate">Approval</th>
+										<th st-sort="status">Status</th>
+									</tr>
+									<tr ng-repeat="driverVehicleFam in driverVehicleFams">
+										<td ng-if="session.rights['showDriverSkillBtn']" class="text-center"><input type="checkbox" ng-model="checkboxes[VEHICLE_FAM].items[driverVehicleFam.id]" ng-click="checkboxes[VEHICLE_FAM].all = false" ng-if="driverVehicleFam.status!=='Rejected' && driverVehicleFam.status!=='Withdrawn'"></td>
+										<td>{{driverVehicleFam.vehicleType}}</td>
+										<td>{{driverVehicleFam.towType}}</td>
+										<td>{{driverVehicleFam.assessmentStatus}}</td>
+										<td>{{driverVehicleFam.reassessFlag === 'Y' ? 'Yes' : 'No'}}</td>
+										<td><div ng-if="driverVehicleFam.assessDate">On {{driverVehicleFam.assessDate}} <br>by <a uib-tooltip="{{driverVehicleFam.assessedBy}}">{{extract(driverVehicleFam.assessedBy)}}</a></div></td>
+										<td><div ng-if="driverVehicleFam.recommendDate">On {{driverVehicleFam.recommendDate}} <br>by <a uib-tooltip="{{driverVehicleFam.recommendedBy}}">{{extract(driverVehicleFam.recommendedBy)}}</a></div></td>
+										<td><div ng-if="driverVehicleFam.approveDate">On {{driverVehicleFam.approveDate}} <br>by <a uib-tooltip="{{driverVehicleFam.approvedBy}}">{{extract(driverVehicleFam.approvedBy)}}</a></div></td>
+										<td ng-if="driverVehicleFam.status==='Rejected'"><a uib-tooltip="{{driverVehicleFam.rejectionReason}}" style="color:red">{{driverVehicleFam.status}}</a></td>
+										<td ng-if="driverVehicleFam.status==='Withdrawn' || driverVehicleFam.status==='Pending Withdrawal'"><a uib-tooltip="{{driverVehicleFam.withdrawalReason}}" style="color:red">{{driverVehicleFam.status}}</a></td>
+										<td ng-if="driverVehicleFam.status!=='Rejected' && driverVehicleFam.status!=='Withdrawn' && driverVehicleFam.status!=='Pending Withdrawal'">{{driverVehicleFam.status}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<button ng-if="session.rights['showDriverSkillBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-backdrop="static" data-target="#vehicleFamModal" >
+							<div class="glyphicon glyphicon-plus" /> Recommend Familiarisation
+						</button>
+						<button ng-if="session.rights['showDriverSkillBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-backdrop="static" data-target="#withdrawModal" ng-click="$parent.withdrawType=VEHICLE_FAM; withdrawVerification(dto.driverVehicleFams, VEHICLE_FAM)">
+							<div class="glyphicon glyphicon-minus" /> Withdraw Familiarisation
+						</button>
+					</fieldset>
+					<br ng-if="!session.rights['showDriverSkillBtn']">
+					<br>
+					<fieldset>
+						<legend>Driving Category</legend>
+						<div>
+							<div class="col-xs-12">
+								<table st-table="driverDrivingCategories" st-safe-src="dto.driverDrivingCategories" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th ng-if="session.rights['showDriverSkillBtn']" class="text-center"><input type="checkbox" ng-model="checkboxes[DRIVING_CATEGORY].all" ng-click="checkAll(dto.driverDrivingCategories, DRIVING_CATEGORY)"></th>
+										<th st-sort="category">Driving CAT</th>
+										<th st-sort="assessmentStatus">Status</th>
+										<th st-sort="reassessFlag">Reassessment</th>
+										<th st-sort="assessDate">Assessment</th>
+										<th st-sort="recommendDate">Recommendation</th>
+										<th st-sort="approveDate">Approval</th>
+										<th st-sort="status">Status</th>
+									</tr>
+									<tr ng-repeat="driverDrivingCategory in driverDrivingCategories">
+										<td ng-if="session.rights['showDriverSkillBtn']" class="text-center"><input type="checkbox" ng-model="checkboxes[DRIVING_CATEGORY].items[driverDrivingCategory.id]" ng-click="checkboxes[DRIVING_CATEGORY].all = false" ng-if="driverDrivingCategory.status!=='Rejected' && driverDrivingCategory.status!=='Withdrawn'"></td>
+										<td>{{driverDrivingCategory.category}}</td>
+										<td>{{driverDrivingCategory.assessmentStatus}}</td>
+										<td>{{driverDrivingCategory.reassessFlag == 'Y' ? 'Yes' : 'No'}}</td>
+										<td><div ng-if="driverDrivingCategory.assessDate">On {{driverDrivingCategory.assessDate}} by <a uib-tooltip="{{driverDrivingCategory.assessedBy}}">{{extract(driverDrivingCategory.assessedBy)}}</a></div></td>
+										<td><div ng-if="driverDrivingCategory.recommendDate">On {{driverDrivingCategory.recommendDate}} by <a uib-tooltip="{{driverDrivingCategory.recommendedBy}}">{{extract(driverDrivingCategory.recommendedBy)}}</a></div></td>
+										<td><div ng-if="driverDrivingCategory.approveDate">On {{driverDrivingCategory.approveDate}} by <a uib-tooltip="{{driverDrivingCategory.approvedBy}}">{{extract(driverDrivingCategory.approvedBy)}}</a></div></td>
+										<td ng-if="driverDrivingCategory.status==='Rejected'"><a uib-tooltip="{{driverDrivingCategory.rejectionReason}}" style="color:red">{{driverDrivingCategory.status}}</a></td>
+										<td ng-if="driverDrivingCategory.status==='Withdrawn' || driverDrivingCategory.status==='Pending Withdrawal'"><a uib-tooltip="{{driverDrivingCategory.withdrawalReason}}" style="color:red">{{driverDrivingCategory.status}}</a></td>
+										<td ng-if="driverDrivingCategory.status!=='Rejected' && driverDrivingCategory.status!=='Withdrawn' && driverDrivingCategory.status!=='Pending Withdrawal'">{{driverDrivingCategory.status}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<button ng-if="session.rights['showDriverSkillBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-backdrop="static" data-target="#drivingCategoryModal">
+							<div class="glyphicon glyphicon-plus" /> Recommend Driving CAT
+						</button>
+						<button ng-if="session.rights['showDriverSkillBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-backdrop="static" data-target="#withdrawModal" ng-click="$parent.withdrawType=DRIVING_CATEGORY; withdrawVerification(dto.driverDrivingCategories, DRIVING_CATEGORY)">
+							<div class="glyphicon glyphicon-minus" /> Withdraw Driving CAT
+						</button>
+					</fieldset>
+					<br ng-if="!session.rights['showDriverSkillBtn']">
+					<br>
+					<fieldset>
+						<legend>Skills & Qualifications</legend>
+						<div>
+							<div class="col-xs-12">
+								<table st-table="driverProficiencies" st-safe-src="dto.driverProficiencies" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th ng-if="session.rights['showDriverSkillBtn']" class="text-center"><input type="checkbox" ng-model="checkboxes[PROFICIENCY].all" ng-click="checkAll(dto.driverProficiencies, PROFICIENCY)"></th>
+										<th st-sort="proficiency">Skills & Qualifications</th>
+										<th st-sort="assessmentStatus">Status</th>
+										<th st-sort="reassessFlag">Reassessment</th>
+										<th st-sort="assessDate">Assessment</th>
+										<th st-sort="recommendDate">Recommendation</th>
+										<th st-sort="approveDate">Approval</th>
+										<th st-sort="status">Status</th>
+									</tr>
+									<tr ng-repeat="driverProficiency in driverProficiencies">
+										<td ng-if="session.rights['showDriverSkillBtn']" class="text-center"><input type="checkbox" ng-model="checkboxes[PROFICIENCY].items[driverProficiency.id]" ng-click="checkboxes[PROFICIENCY].all = false" ng-if="driverProficiency.status!=='Rejected' && driverProficiency.status!=='Withdrawn'"></td>
+										<td>{{driverProficiency.proficiency}}</td>
+										<td>{{driverProficiency.assessmentStatus}}</td>
+										<td>{{driverProficiency.reassessFlag == 'Y' ? 'Yes' : 'No'}}</td>
+										<td><div ng-if="driverProficiency.assessDate">On {{driverProficiency.assessDate}} by <a uib-tooltip="{{driverProficiency.assessedBy}}">{{extract(driverProficiency.assessedBy)}}</a></div></td>
+										<td><div ng-if="driverProficiency.recommendDate">On {{driverProficiency.recommendDate}} by <a uib-tooltip="{{driverProficiency.recommendedBy}}">{{extract(driverProficiency.recommendedBy)}}</a></div></td>
+										<td><div ng-if="driverProficiency.approveDate">On {{driverProficiency.approveDate}} by <a uib-tooltip="{{driverProficiency.approvedBy}}">{{extract(driverProficiency.approvedBy)}}</a></div></td>
+										<td ng-if="driverProficiency.status==='Rejected'"><a uib-tooltip="{{driverProficiency.rejectionReason}}" style="color:red">{{driverProficiency.status}}</a></td>
+										<td ng-if="driverProficiency.status==='Withdrawn' || driverProficiency.status==='Pending Withdrawal'"><a uib-tooltip="{{driverProficiency.withdrawalReason}}" style="color:red">{{driverProficiency.status}}</a></td>
+										<td ng-if="driverProficiency.status!=='Rejected' && driverProficiency.status!=='Withdrawn' && driverProficiency.status!=='Pending Withdrawal'">{{driverProficiency.status}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<button ng-if="session.rights['showDriverSkillBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-backdrop="static" data-target="#proficiencyModal">
+							<div class="glyphicon glyphicon-plus" /> Recommend Skill / Qualification
+						</button>
+						<button ng-if="session.rights['showDriverSkillBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-backdrop="static" data-target="#withdrawModal" ng-click="$parent.withdrawType=PROFICIENCY; withdrawVerification(dto.driverProficiencies, PROFICIENCY)">
+							<div class="glyphicon glyphicon-minus" /> Withdraw Skill / Qualification
+						</button>
+					</fieldset>
+					<br ng-if="!session.rights['showDriverSkillBtn']">
+					<br>
+					<fieldset>
+						<legend>SAF Driving Permit</legend>
+						<div>
+							<div class="col-xs-12">
+								<table st-table="driverPermits" st-safe-src="dto.driverPermits" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th st-sort="permitNo">Permit No.</th>
+										<th st-sort="issueDate">Issue On</th>
+										<th st-sort="permitType">Permit Type</th>
+										<th st-sort="permitStatus">Permit Status</th>
+										<th st-sort="effectiveStartDate">Status From</th>
+										<th st-sort="effectiveEndDate">Status To</th>
+										<th st-sort="permitClasses">Permit Class</th>
+									</tr>
+									<tr ng-repeat="driverPermit in driverPermits">
+										<td>{{driverPermit.permitNo}}</td>
+										<td>{{driverPermit.issueDate}}</td>
+										<td>{{driverPermit.permitType}}</td>
+										<td>{{driverPermit.permitStatus}}</td>
+										<td>{{driverPermit.effectiveStartDate}}</td>
+										<td>{{driverPermit.effectiveEndDate}}</td>
+										<td>{{driverPermit.permitClasses}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+					<br>
+					<fieldset>
+						<legend>Civilian Driving Licence</legend>
+						<div ng-if="dto.cdlNo">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Licence No.</label>
+								<div class="col-sm-4 control-value">{{dto.cdlNo}}</div>
+								<label class="col-sm-2 control-label">Barcode No.</label>
+								<div class="col-sm-4 control-value">{{dto.cdlBarcodeNo}}</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Issue Date</label>
+								<div class="col-sm-4 control-value">{{dto.cdlIssueDate}}</div>
+								<label class="col-sm-2 control-label">Type of Classes</label>
+								<div class="col-sm-4 control-value">{{dto.cdlClasses}}</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Status</label>
+								<div class="col-sm-4 control-value">{{dto.cdlStatus}}</div>
+								<label class="col-sm-2 control-label">Demerit Points</label>
+								<div class="col-sm-4 control-value">{{dto.cdlDemeritPoints}}</div>
+							</div>
+						</div>
+						<div ng-if="!dto.cdlNo">
+							No record found.
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="mileage">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Mileage Breakdown</legend>
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<div class="form-group">
+									<label class="col-sm-1 control-label">By</label>
+									<div class="col-sm-5">
+										<div class="radio radio-inline">
+											<label> <input type="radio" name="breakdownBy" id="breakdownBy1" ng-click="breakDownBy='V'">Vehicle Type
+											</label>
+										</div>
+										<div class="radio radio-inline">
+											<label> <input type="radio" name="breakdownBy" id="breakdownBy2" ng-click="breakDownBy='L'">Vehicle Permit Class
+											</label>
+										</div>
+										<div class="radio radio-inline">
+											<label> <input type="radio" name="breakdownBy" id="breakdownBy3" ng-click="breakDownBy='T'">Trip
+											</label>
+										</div>
+									</div>
+									<div ng-show="breakDownBy=='T'">
+										<label class="col-sm-2 control-label">Date Range</label>
+										<div class="col-sm-4">
+											<div class='input-group valueColumn date'>
+												<input daterangebox value="" ng-model="searchDTO.dateRange" class="form-control" limit-days="91" /> <label class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span>
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div style="width:130px;" class="pull-right">
+									<button type="button" class="btn btn-block btn-primary" ng-click="searchButton()" ng-disabled="loading">Search</button>
+								</div>
+								<br><br>
+								<a href="" ng-show="breakDownBy=='T'" ng-click="taskSearch.isCollapsed = !taskSearch.isCollapsed" class="pull-right">Advanced Search...</a>
+								<div ng-show="breakDownBy=='T'" class="form-group" style="padding-right: 0px" uib-collapse="!taskSearch.isCollapsed">
+									<hr>
+									<div class="form-group">
+										<label class="col-sm-2 control-label">Task ID</label>
+										<div class="col-sm-4">
+											<input type="text" class="form-control" ng-model="searchDTO.taskId" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label">Vehicle Type</label>
+										<div class="col-sm-4">
+											<select class="form-control" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" ng-model="searchDTO.vehicleTypeId">
+												<option />
+											</select>
+										</div>
+										<label class="col-sm-2 control-label">Vehicle Permit Class</label>
+										<div class="col-sm-3">
+											<select class="form-control" ng-options="vehPermitClass.code as vehPermitClass.name for vehPermitClass in vehPermitClasses" ng-model="searchDTO.vehPermitClassCode">
+												<option />
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div ng-if="breakDownBy=='V'" class="col-xs-12">
+								<table st-table="records" st-pipe="searchDriverVehicleTypes" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th st-sort="vehicleType" width="25%">Vehicle Type</th>
+										<th st-sort="lastDrivenDate" width="25%">Date Last Driven</th>
+										<th st-sort="speedingCount" width="25%">Speeding Count</th>
+										<th st-sort="mileage" width="25%">Mileage</th>
+									</tr>
+									<tr ng-repeat="record in records">
+										<td>{{record.vehicleType}}</td>
+										<td>{{record.lastDrivenDate}}</td>
+										<td>{{record.speedingCount}}</td>
+										<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileageVehicleType(records.total.mileage)">{{record.mileage | number:1}}</td>
+									</tr>
+									<tr>
+										<td colspan="3" style="text-align:right"><strong>TOTAL: </strong></td>
+										<td><strong>{{totalMileageVehicleType | number:1}}</strong></td>
+									</tr>
+									<tfoot>
+										<tr>
+											<td colspan="13">
+												<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+												<ul class="pagination">
+													<li ng-if="records && records.length > 0">
+														<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+													</li>
+												</ul>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+						<div>
+							<div ng-if="breakDownBy=='L'" class="col-xs-12">
+								<table st-table="records" st-pipe="searchDriverVehicleClasses" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th st-sort="vehiclePermitClass" width="25%">Vehicle Permit Class</th>
+										<th st-sort="lastDrivenDate" width="25%">Date Last Driven</th>
+										<th st-sort="speedingCount" width="25%">Speeding Count</th>
+										<th st-sort="mileage" width="25%">Mileage</th>
+									</tr>
+									<tr ng-repeat="record in records">
+										<td>{{record.vehiclePermitClass}}</td>
+										<td>{{record.lastDrivenDate}}</td>
+										<td>{{record.speedingCount}}</td>
+										<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileageVehPermitClass(records.total.mileage)">{{record.mileage | number:1}}</td>
+									</tr>
+									<tr>
+										<td colspan="3" style="text-align:right"><strong>TOTAL: </strong></td>
+										<td><strong>{{totalMileageVehPermitClass | number:1}}</strong></td>
+									</tr>
+									<tfoot>
+										<tr>
+											<td colspan="13">
+												<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+												<ul class="pagination">
+													<li ng-if="records && records.length > 0">
+														<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+													</li>
+												</ul>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+						<div>
+							<div ng-if="breakDownBy=='T'" class="col-xs-12">
+								<table st-table="records" st-pipe="searchDriverTrips" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th no-sort>Trip ID</th>
+										<th no-sort>Task ID</th>
+										<th no-sort>Date Time Start</th>
+										<th no-sort>Date Time End</th>
+										<th no-sort>Vehicle Type</th>
+										<th no-sort>Vehicle Permit Class</th>
+										<th no-sort>Speeding Count</th>
+										<th no-sort>Mileage</th>
+									</tr>
+									<tr ng-repeat="record in records">
+										<td>{{record.tripId}}</td>
+										<td><a href="#/task/{{record.taskId}}">{{record.taskId}}</a></td>
+										<td>{{record.tripStartDate}}</td>
+										<td>{{record.tripEndDate}}</td>
+										<td>{{record.vehicleType}}</td>
+										<td>{{record.vehiclePermitClass}}</td>
+										<td>{{record.speedingCount}}</td>
+										<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileageTrip(records.total.mileage)">{{record.mileage | number:1}}</td>
+									</tr>
+									<tr>
+										<td colspan="7" style="text-align:right"><strong>TOTAL: </strong></td>
+										<td><strong>{{totalMileageTrip | number:1}}</strong></td>
+									</tr>
+									<tfoot>
+										<tr>
+											<td colspan="13">
+												<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+												<ul class="pagination">
+													<li ng-if="records && records.length > 0">
+														<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+													</li>
+												</ul>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="rewards">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Rewards</legend>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Total Mileage</label>
+							<div class="col-sm-2 control-value">{{(dto.mileage | number:1) || "0.0"}}</a></div>
+							<label class="col-sm-4 control-label">Total Mileage Since Last Traffic Accident</label>
+							<div ng-if="dto.lastAccidentDate != null" class="col-sm-2 control-value"><a uib-tooltip="Last TA on {{dto.lastAccidentDate}}">{{(dto.mileageSinceLastAccident | number:1) || "0.0"}}</a></div>
+							<div ng-if="dto.lastAccidentDate == null" class="col-sm-2 control-value">{{(dto.mileageSinceLastAccident | number:1) || "0.0"}}</a></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Eligible Mileage for Incentive</label>
+							<div class="col-sm-2 control-value">{{(dto.incentiveMileage | number:1) || "0.0"}}</div>
+							<label class="col-sm-4 control-label">Eligible Mileage for Safe & Courteous Badge</label>
+							<div class="col-sm-2 control-value" ng-if="safetyBadgeClaimed">Claimed</div>
+							<div class="col-sm-2 control-value" ng-if="!safetyBadgeClaimed">{{(dto.safetyBadgeMileage | number:1) || "0.0"}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Eligible Mileage for CL3 CDL Conversion</label>
+							<div class="col-sm-2 control-value" ng-if="cl3CDLClaimed">Claimed</div>
+							<div class="col-sm-2 control-value" ng-if="!cl3CDLClaimed">{{(dto.cl3Mileage | number:1) || "0.0"}}</div>
+							<label class="col-sm-4 control-label">Eligible Mileage for CL4 CDL Conversion</label>
+							<div class="col-sm-2 control-value" ng-if="cl4CDLClaimed">Claimed</div>
+							<div class="col-sm-2 control-value" ng-if="!cl4CDLClaimed">{{(dto.cl4Mileage | number:1) || "0.0"}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Eligible Mileage for CL2B/2A/2 CDL Conversion</label>
+							<div class="col-sm-2 control-value" ng-if="cl2CDLClaimed">Claimed</div>
+							<div class="col-sm-2 control-value" ng-if="!cl2CDLClaimed">{{(dto.cl2Mileage | number:1) || "0.0"}}</div>
+						</div>
+						<br>
+						<div>
+							<div class="col-xs-12">
+								<table st-table="driverRewards" st-safe-src="dto.driverRewards" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th class="text-center"><input type="checkbox" ng-model="checkboxes[REWARD].all" ng-click="checkAll(dto.driverRewards, REWARD)"></th>
+										<th st-sort="rewardType">Rewards Type</th>
+										<th st-sort="submitDate">Submission</th>
+										<th st-sort="verifyDate">Verification</th>
+										<th st-sort="recommendDate">Recommendation</th>
+										<th st-sort="approveDate">Approval</th>
+										<th st-sort="status">Status</th>
+									</tr>
+									<tr ng-repeat="driverReward in driverRewards">
+										<td class="text-center"><input type="checkbox" ng-model="checkboxes[REWARD].items[driverReward.id]" ng-click="checkboxes[REWARD].all = false" ng-if="(session.rights['showSubmitDriverRewardBtn'] && (driverReward.status.includes('Verification') || driverReward.status.startsWith('Approved'))) || (session.rights['showDriverRewardVerification'] && driverReward.status.includes('Recommendation')) || (session.rights['showDriverRewardRecommendation'] && driverReward.status.includes('Approval'))"></td>
+										<td>{{driverReward.rewardType}}</td>
+										<td><div ng-if="driverReward.submitDate">On {{driverReward.submitDate}} By <a uib-tooltip="{{driverReward.submittedBy}}">{{extract(driverReward.submittedBy)}}</a></div></td>
+										<td><div ng-if="driverReward.verifyDate">On {{driverReward.verifyDate}} By <a uib-tooltip="{{driverReward.verifiedBy}}">{{extract(driverReward.verifiedBy)}}</a></div></td>
+										<td><div ng-if="driverReward.recommendDate">On {{driverReward.recommendDate}} By <a uib-tooltip="{{driverReward.recommendedBy}}">{{extract(driverReward.recommendedBy)}}</a></div></td>
+										<td><div ng-if="driverReward.approveDate">On {{driverReward.approveDate}} By <a uib-tooltip="{{driverReward.approvedBy}}">{{extract(driverReward.approvedBy)}}</a></div></td>
+										<td ng-if="driverReward.status.startsWith('Pending') && !driverReward.status.includes('Withdrawal')" style="color: blue">{{driverReward.status}}</td>
+										<td ng-if="driverReward.status.includes('Withdraw')"><a style="color: red" uib-tooltip="{{driverReward.withdrawalReason}}" tooltip-placement="left">{{driverReward.status}}</a></td>
+										<td ng-if="driverReward.status.endsWith('Rejected')"><a style="color: red" uib-tooltip="{{driverReward.rejectionReason}}" tooltip-placement="left">{{driverReward.status}}</a></td>
+										<td ng-if="driverReward.status.endsWith('Approved')">{{driverReward.status}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<button ng-if="session.rights['showSubmitDriverRewardBtn']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#rewardModal">
+							<div class="glyphicon glyphicon-plus" />
+							Submit Reward
+						</button>
+						<button ng-if="session.rights['showSubmitDriverRewardBtn'] || session.rights['showDriverRewardVerification'] || session.rights['showDriverRewardRecommendation']" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#withdrawModal" ng-click="$parent.withdrawType=REWARD; withdrawVerification(dto.driverRewards, REWARD)">
+							<div class="glyphicon glyphicon-minus" />
+							Withdraw Reward
+						</button>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="demerit">
+				<form class="form-horizontal">
+					<fieldset>
+						<div>
+							<table st-table="driverDemeritPoints" st-safe-src="dto.driverDemeritPoints" class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th st-sort="id">ID</th>
+									<th st-sort="type">Type</th>
+									<th st-sort="offenceOrReductionReason">Offence Committed / Reduction Remarks</th>
+									<th st-sort="issueDate">Issued On</th>
+									<th st-sort="issuedBy">Issued By</th>
+									<th st-sort="submitDate">Submission</th>
+									<th st-sort="status">Status</th>
+									<th st-sort="demeritPoints">Demerit Points</th>
+								</tr>
+								<tr ng-repeat="driverDemeritPoint in driverDemeritPoints">
+									<td><a href="" ng-click="openDemeritPointsRecord(driverDemeritPoint)">{{driverDemeritPoint.id}}</td>
+									<td>{{driverDemeritPoint.type}}</td>
+									<td>{{driverDemeritPoint.offenceOrReductionReason}}</td>
+									<td>{{driverDemeritPoint.issueDate}}</td>
+									<td>{{driverDemeritPoint.issuedBy}}</td>
+									<td><div ng-if="driverDemeritPoint.submitDate">On {{driverDemeritPoint.submitDate}} <br>by <a uib-tooltip="{{driverDemeritPoint.submittedBy}}">{{extract(driverDemeritPoint.submittedBy)}}</a></div></td>
+									<td>{{driverDemeritPoint.status}}</td>
+									<td>{{driverDemeritPoint.demeritPoints}}</td>
+								</tr>
+								<tr>
+									<td colspan="7" style="text-align:right"><strong>TOTAL: </strong></td>
+									<td>{{dto.demeritPoints}}</td>
+								</tr>
+							</table>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="calendar">
+				<div class='calendar'></div>
+			</div>
+			<div ng-if="breakDownBy=='AL'" class="tab-pane fade" id="auditLog">
+				<table st-table="records" st-pipe="getAuditLog" class="table table-striped table-bordered table-responsive table-condensed small">
+					<tr>
+						<th no-sort>#</th>
+						<th no-sort>Action Date</th>
+						<th no-sort>Action By</th>
+						<th no-sort>Action</th>
+						<th no-sort>New Value</th>
+						<th no-sort>Old Value</th>
+					</tr>
+					<tr ng-repeat="record in records">
+						<td>{{$index + searchDTO.startIndex + 1}}</td>
+						<td>{{record.createdDate}}</td>
+						<td>{{record.createdBy}}</td>
+						<td>{{record.action === "I" ? "INSERT" : "UPDATE"}}</td>
+						<td>{{record.newValue}}</td>
+						<td>{{record.oldValue}}</td>
+					</tr>
+					<tfoot>
+						<tr>
+							<td colspan="6">
+								<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="vehicleFamModal" tabindex="-1">
+	<div class="modal-dialog" style="width:600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Recommend Vehicle Familiarisation</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Vehicle Type</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="vehicleFamDTO.vehicleTypeId" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Tow Types</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="vehicleFamDTO.towTypeId" ng-init="vehicleFamDTO.towTypeId=1" ng-options="towType.id as towType.name for towType in towTypes">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Status <span class="glyphicon glyphicon-info-sign" uib-tooltip="Driver is eligible to drive the vehicle type as long as there is an APPROVED record with PASS status. Hence, if he is deemed ineligible, please withdraw any previous APPROVED record with PASS status."></span></label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="vehicleFamDTO.assessmentStatusCode" ng-init="vehicleFamDTO.assessmentStatusCode='P'" ng-options="assessmentStatus.code as assessmentStatus.name for assessmentStatus in assessmentStatuses" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Reassessment</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="vehicleFamDTO.reassessFlag" ng-init="vehicleFamDTO.reassessFlag='N'"  />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Assessed On</label>
+							<div class="col-sm-9">
+								<input datebox max-date="today" class="form-control" ng-model="vehicleFamDTO.assessDate" ng-init="vehicleFamDTO.assessDate=today" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Assessed By</label>
+							<div class="col-sm-9">
+								<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" ng-model="vehicleFamDTO.assessedBy" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" ng-click="saveDriverVehicleFam()">Recommend</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="drivingCategoryModal" tabindex="-1">
+	<div class="modal-dialog" style="width:600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Recommend Driving Category</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Driving Category</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="drivingCategoryDTO.categoryId" ng-options="drivingCategory.id as drivingCategory.name for drivingCategory in drivingCategories">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Status</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="drivingCategoryDTO.assessmentStatusCode" ng-init="drivingCategoryDTO.assessmentStatusCode='P'" ng-options="assessmentStatus.code as assessmentStatus.name for assessmentStatus in assessmentStatuses" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Reassessment</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-init="drivingCategoryDTO.reassessFlag='N'" ng-model="drivingCategoryDTO.reassessFlag" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Assessed On</label>
+							<div class="col-sm-9">
+								<input datebox max-date="today" class="form-control" ng-model="drivingCategoryDTO.assessDate" ng-init="drivingCategoryDTO.assessDate=today"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Assessed By</label>
+							<div class="col-sm-9">
+								<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" ng-model="drivingCategoryDTO.assessedBy" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" ng-click="saveDriverDrivingCategory()">Recommend</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="proficiencyModal" tabindex="-1">
+	<div class="modal-dialog" style="width:600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Recommend Skill / Qualification</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Skill / Qualification</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="proficiencyDTO.proficiencyId" ng-options="proficiency.id as proficiency.name for proficiency in proficiencies">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Status</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="proficiencyDTO.assessmentStatusCode" ng-init="proficiencyDTO.assessmentStatusCode='P'" ng-options="assessmentStatus.code as assessmentStatus.name for assessmentStatus in assessmentStatuses">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Reassessment</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-init="proficiencyDTO.reassessFlag='N'" ng-model="proficiencyDTO.reassessFlag" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Assessed On</label>
+							<div class="col-sm-9">
+								<input datebox max-date="today" class="form-control" ng-model="proficiencyDTO.assessDate" ng-init="proficiencyDTO.assessDate=today"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Assessed By</label>
+							<div class="col-sm-9">
+								<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" ng-model="proficiencyDTO.assessedBy" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" ng-click="saveDriverProficiency()">Recommend</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="withdrawModal" tabindex="-1">
+	<div class="modal-dialog" style="width:600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title" ng-if="withdrawType==VEHICLE_FAM">Withdraw Vehicle Familiarisations</h4>
+				<h4 class="modal-title" ng-if="withdrawType==DRIVING_CATEGORY">Withdraw Driving Categories</h4>
+				<h4 class="modal-title" ng-if="withdrawType==PROFICIENCY">Withdraw Skills / Qualifications</h4>
+				<h4 class="modal-title" ng-if="withdrawType==REWARD">Withdraw Rewards</h4>
+			</div>
+
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div ng-if="showRemarks">
+						<p>Please specify the reason for withdrawing the selected records:</p>
+						<textarea class="form-control" ng-model="withdrawDTO.withdrawalReason"></textarea>
+					</div>
+					<div ng-if="!showRemarks">
+						<p>Are you sure want to withdraw the selected records?</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-if="withdrawType==VEHICLE_FAM" ng-click="withdraw(dto.driverVehicleFams, VEHICLE_FAM)">Withdraw</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-if="withdrawType==DRIVING_CATEGORY" ng-click="withdraw(dto.driverDrivingCategories, DRIVING_CATEGORY)">Withdraw</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-if="withdrawType==PROFICIENCY" ng-click="withdraw(dto.driverProficiencies, PROFICIENCY)">Withdraw</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-if="withdrawType==REWARD" ng-click="withdraw(dto.driverRewards, REWARD)">Withdraw</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="rewardModal" tabindex="-1">
+	<div class="modal-dialog" style="width: 700px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Submit Reward for Verification</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Rewards Type</label>
+							<div class="col-sm-8">
+								<select class="form-control" ng-model="driverRewardDTO.rewardTypeId" ng-options="rewardType.id as rewardType.name for rewardType in rewardTypes">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="driverRewardDTO.rewardTypeId >= 4">
+							<table class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th>CDL</th>
+									<th>Requirement</th>
+								</tr>
+								<tr>
+									<td>All Classes</td>
+									<td>- Has a valid SAF Driving Permit with similar vehicle class<br>- Does not have 8 or more demerit points for the past 24 months<br>- Does not have any blameworthy traffic accident with injury<br>- Has not been suspended/disqualified by TP or a Court of Law from driving for one year or more<br>- Will ORD in 2 months or have ORD-ed in less than 1 month</td>
+								</tr>
+								<tr>
+									<td>Class 2B/2A/A</td>
+									<td>- Has driven mileage of at least 7000 km on any Class 2B/2A/2 vehicles<br>- Has at least 1 year of existing Class 2B CDL (for CL2A conversion) or 2A CDL (for CL2 conversion).</td>
+								</tr>
+								<tr>
+									<td>Class 3</td>
+									<td>- Has driven mileage of at least 7000 km on any Class 3 and/or Class 4 vehicles</td>
+								</tr>
+								<tr>
+									<td>Class 4</td>
+									<td>- Has driven mileage of at least 7000 km on any Class 3 and/or Class 4 vehicles<br>- Has driven mileage of at least 3500 km on any Class 4 vehicles</td>
+								</tr>
+							</table>
+							<small>* For Class 4, applicants less than 21-year-old will have their applications held until they have reached the eligible age</small>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-click="saveDriverReward()">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="fullCalModal" class="modal fade">
+	<div class="modal-dialog" style="width:900px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times; <span class="sr-only">close</span></button>
+				<h4 id="modalTitle" class="modal-title"></h4>
+			</div>
+			<div id="modalBody" class="modal-body">
+
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Schedule</legend>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Activity</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.indentActivityType}} - {{driverCalendarsSelect.indentActivity}}</div>
+							
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Movement</label>
+							<div class="col-sm-3 control-value"><span ng-if="driverCalendarsSelect.indentCampMovement=='IN'">In Camp</span><span  ng-if="driverCalendarsSelect.indentCampMovement=='OUT'">Out Camp</span></div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Date / Time</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.startDate}}</div>
+
+							<label class="col-sm-3 control-label">Completion Date / Time</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.endDate}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Duration</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.duration}} hours</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Location</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.indentReportingVenue}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Info</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.indentReportingInfo}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Additional Info</label>
+							<div class="col-sm-9 control-value">{{driverCalendarsSelect.indentAdditionalInfo}}</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>Vehicle</legend>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Type</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.vehicleType}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle No.</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.vehicleNo}}</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>Contact</legend>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Point-of-Contact</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.indentPocName}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Office Phone</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.indentPocOfficeNo}}</div>
+
+							<label class="col-sm-3 control-label">Mobile Phone</label>
+							<div class="col-sm-3 control-value">{{driverCalendarsSelect.indentPocMobileNo}}</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="demeritPtsRecModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" style="width: 600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Driving Offence</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-4 control-label">ID</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.id}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label required">Offence Type <span class="glyphicon glyphicon-info-sign"
+								uib-tooltip="Offences involving a Traffic Accident will reset all Incentive claimable mileage accumulated before the offence's Issue Date." /></label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.type}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Offence Committed</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.offenceOrReductionReason}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Demerit Points</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.demeritPoints}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Fine ($)</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.fineAmt}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label required">Vehicle Type</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.vehicleType}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Vehicle No.</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.vehicleNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Location</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.location}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Offence Date</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.issueDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label required">Offence Issuer</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.issuedBy}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Submitted On</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.submitDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label required">Submitted By</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.submittedBy}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label required">Status</label>
+							<div class="col-sm-8 control-value">{{driverDemeritPointDTO.status}}</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

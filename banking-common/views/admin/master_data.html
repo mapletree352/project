@@ -1,0 +1,844 @@
+<div class="row page-header">
+	<h3>
+		Manage Master Data
+	</h3>
+</div>
+<div class="row page-body">
+	<div >
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#vehPurposes" data-toggle="tab">Vehicle<br>Purposes</a></li>
+			<li><a href="" data-target="#towTypes" data-toggle="tab">Tow<br>Types</a></li>
+			<li><a href="" data-target="#drivingCats" data-toggle="tab">Driving<br>Categories</a></li>
+			<li><a href="" data-target="#opProficiencies" data-toggle="tab">Soldier<br>Proficiencies</a></li>
+			<li><a href="" data-target="#permitTypes" data-toggle="tab">Permit<br>Types</a></li>
+			<li><a href="" data-target="#permitClasses" data-toggle="tab">Permit<br>Classes</a></li>
+			<li><a href="" data-target="#offenceTypes" data-toggle="tab">Offence<br>Types</a></li>
+			<li><a href="" data-target="#offencesCommitted" data-toggle="tab">Offences<br>Committed</a></li>
+			<li><a href="" data-target="#reasons" data-toggle="tab">Reasons<br>&nbsp;</a></li>
+			<li><a href="" data-target="#venues" data-toggle="tab">Venues<br>&nbsp;</a></li>
+			<li><a href="" data-target="#holidays" data-toggle="tab">Holidays<br>&nbsp;</a></li>
+			<li><a href="" data-target="#auditLog" data-toggle="tab">Audit Log<br>&nbsp;</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="vehPurposes">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Vehicle Purpose
+							<br>
+
+							<typeahead uib-typeahead="purpose.name for purpose in purposes | filter:searchPurposeName($viewValue)"
+								typeahead-on-select="onSelectPurpose($item)" placeholder="" ng-model="selectedPurposeName" ng-change="purposeNameChange()" />
+								 
+		
+						</th>
+						<th width="200px">
+							Activity Type
+							<br>
+							<select class="form-control" ng-model="selectedActivityType" ng-change='updatePurpose()' ng-options="activityType.code as activityType.name for activityType in activityTypes">
+								<option/>
+								
+							</select>
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="purposeObsoleteSelected" ng-change="updatePurpose()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click='showVehiclePurpose(null)'><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdVehiclePurpose in cdVehiclePurposes">
+						<td>{{cdVehiclePurpose.name}}</td>
+						<td>{{cdVehiclePurpose.activityType}}</td>
+						<td>{{cdVehiclePurpose.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" ng-click='showVehiclePurpose(cdVehiclePurpose)'><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+		
+			<div class="tab-pane fade" id="towTypes">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Tow Type
+							<br>
+							<typeahead uib-typeahead="towType.name for towType in towTypes | filter:searchTowTypeName($viewValue)"
+								typeahead-on-select="onSelectTowType($item)" placeholder="" ng-model="selectedTowTypeName" ng-change="towTypeNameChange()" />
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="towTypeObsoleteSelected" ng-change="updateTowType()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showTowType(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdTowType in cdTowTypes">
+						<td>{{cdTowType.name}}</td>
+						<td>{{cdTowType.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showTowType(cdTowType)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="drivingCats">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Driving Category
+							<br>
+							<input type="text" class="form-control">
+						</th>
+						<th>
+							Mileage More Than or Equals
+							<br>
+							<input type="text" class="form-control">
+						</th>
+						<th>
+							Mileage Less Than or Equals
+							<br>
+							<input type="text" class="form-control">
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="drivingCategoryObsoleteSelected" ng-change="updateDrivingCategory()">
+								<option></option>
+								<option value = 'Y'>Yes</option>
+								<option value = 'N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showDrivingCategory(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdDrivingCategory in cdDrivingCategories">
+						<td>{{cdDrivingCategory.name}}</td>
+						<td>{{cdDrivingCategory.mileageMoreThanEqual}}</td>
+						<td>{{cdDrivingCategory.mileageLessThanEqual}}</td>
+						<td>{{cdDrivingCategory.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showDrivingCategory(cdDrivingCategory)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="opProficiencies">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Soldier Proficiency
+							<br>
+							<typeahead uib-typeahead="proficiency.name for proficiency in proficiencies | filter:searchProficiencyName($viewValue)"
+								typeahead-on-select="onSelectProficiency($item)" placeholder="" ng-model="selectedProficiencyName" ng-change="proficiencyNameChange()" />
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="proficiencyObsoleteSelected" ng-change="updateProficiency()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showProficiency(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdProficiency in cdProficiences">
+						<td>{{cdProficiency.name}}</td>
+						<td>{{cdProficiency.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showProficiency(cdProficiency)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="permitTypes">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							SAF Driving Permit Type
+							<br>
+							<typeahead uib-typeahead="permitTypeName.name for permitTypeName in permitTypeNames | filter:searchPermitTypeName($viewValue)"
+								typeahead-on-select="onSelectPermitTypeName($item)" placeholder="" ng-model="selectedPermitTypeName" ng-change="permitTypeNameChange()" />
+						</th>
+						<th>
+							Permit No. Prefix
+							<br>
+							<typeahead uib-typeahead="permitTypePrefix.prefix for permitTypePrefix in permitTypePrefixs | filter:searchPermitTypePrefix($viewValue)"
+								typeahead-on-select="onSelectPermitTypePrefix($item)" placeholder="" ng-model="selectedPermitTypePrefix" ng-change="permitTypePrefixChange()" />
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="permitTypeObsoleteSelected" ng-change="updatePermitType()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showPermitType(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdPermitType in cdPermitTypes">
+						<td>{{cdPermitType.name}}</td>
+						<td>{{cdPermitType.prefix}}</td>
+						<td>{{cdPermitType.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showPermitType(cdPermitType)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="permitClasses">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							SAF Driving Permit Class Code
+							<br>
+							<typeahead uib-typeahead="permitClassCode.code for permitClassCode in permitClassCodes | filter:searchPermitClassCode($viewValue)"
+								typeahead-on-select="onSelectPermitClassCode($item)" placeholder="" ng-model="selectedPermitClassCode" ng-change="permitClassCodeChange()" />
+						</th>
+						<th>
+							Description
+							<br>
+							<typeahead uib-typeahead="permitClassName.name for permitClassName in permitClassNames | filter:searchPermitClassName($viewValue)"
+								typeahead-on-select="onSelectPermitClassName($item)" placeholder="" ng-model="selectedPermitClassName" ng-change="permitClassNameChange()" />
+						</th>
+						<th>
+							Mileage Type
+							<br>
+							<select class="form-control" ng-model="permitClassMileageTypeSelected" ng-change="updatePermitClass()">
+								<option></option>
+								<option>CL 2B/2A/2</option>
+								<option>CL 3</option>
+								<option>CL 4</option>
+							</select>
+						</th>
+						
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="permitClassObsoleteSelected" ng-change="updatePermitClass()">
+								<option></option>
+								<option value='Y'>Yes</option>
+								<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showPermitClass(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdPermitClass in cdPermitClasses">
+						<td>{{cdPermitClass.code}}</td>
+						<td>{{cdPermitClass.name}}</td>
+						<td>{{cdPermitClass.mileageType}}</td>
+						<td>{{cdPermitClass.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showPermitClass(cdPermitClass)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="offenceTypes">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Offence Type
+							<br>
+							<typeahead uib-typeahead="offenceType.name for offenceType in offenceTypes | filter:searchOffenceTypeName($viewValue)"
+								typeahead-on-select="onSelectOffenceTypeName($item)" placeholder="" ng-model="selectedOffenceTypeName" ng-change="offenceTypeNameChange()" />
+						</th>
+						<th width="150px">
+							Accident Involved
+							<br>
+							<select class="form-control" ng-model="offenceTypeAccidentSelected" ng-change="updateOffenceType()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="offenceTypeObsoleteSelected" ng-change="updateOffenceType()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showOffenceType(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdOffenceType in cdOffenceTypes">
+						<td>{{cdOffenceType.name}}</td>
+						<td>{{cdOffenceType.accidentFlag === 'Y' ? 'Yes' : 'No'}}</td>
+						<td>{{cdOffenceType.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showOffenceType(cdOffenceType)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="offencesCommitted">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Offence Committed
+							<br>
+							<typeahead uib-typeahead="offence.name for offence in offences | filter:searchOffenceName($viewValue)"
+								typeahead-on-select="onSelectOffence($item)" placeholder="" ng-model="selectedOffenceName" ng-change="offenceNameChange()" />
+						</th>
+						<th width="125px">
+							Demerit Points
+							<br>
+							<input type="text" class="form-control" ng-change="updateOffence()" ng-model="offenceDemeritSelected"/>
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model="offenceObsoleteSelected" ng-change="updateOffence()">
+							<option></option>
+							<option value='Y'>Yes</option>
+							<option value='N'>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showOffence(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdOffenceCommitted in cdOffencesCommitted">
+						<td>{{cdOffenceCommitted.name}}</td>
+						<td>{{cdOffenceCommitted.demeritPoints}}</td>
+						<td>{{cdOffenceCommitted.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showOffence(cdOffenceCommitted)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="reasons">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Reason
+							<br>
+							<input type="text" class="form-control">
+						</th>
+						<th>
+							Reason Type
+							<br>
+							<select class="form-control">
+								<option></option>
+								<option>Requestor Cancels Indent</option>
+								<option>Recommender/Hub Controller Rejects Submitted Indent</option>
+								<option>Hub/HQ Controller Rejects Recommended Indent</option>
+								<option>Hub/HQ Controller Rejects Forwarded Indent</option>
+								<option>Transport Credit Manager Rejects (National Event) Indent	</option>
+								<option>Transport Credit Manager Rejects Credit Refund</option>
+								<option>Hub Controller Rejects TO Attachment</option>
+								<option>Hub Controller Rejects Vehicle Loan</option>
+								<option>Node Exec/Controller/Cmdr/SM/DTL Rejects MT Maintenance Bookout</option>
+								<option>Node Cmdr/SM Rejects Recommended Skill</option>
+								<option>Hub Controller (Manpower) Rejects Verified Rewards</option>
+								<option>Hub Cmdr Rejects Recommended Rewards	</option>
+								<option>License Admin Rejects Recommended CDL</option>
+							</select>
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control">
+								<option></option>
+								<option>Yes</option>
+								<option>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#addModal"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdReason in cdReasons">
+						<td>{{cdReason.description}}</td>
+						<td>{{cdReason.reasonType}}</td>
+						<td>{{cdReason.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#editModal"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="venues">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Venue
+							<br>
+							<typeahead uib-typeahead="venue.name for venue in venues | filter:searchVenueName($viewValue)"
+								typeahead-on-select="onSelectVenue($item)" placeholder="" ng-model="selectedVenueName" ng-change="venueNameChange()" />
+						</th>
+						<th>
+							Venue Type
+							<br>
+							<typeahead uib-typeahead="venueTypeName.name for venueTypeName in venueTypeNames | filter:searchVenueTypeName($viewValue)"
+								typeahead-on-select="onSelectVenueType($item)" placeholder="" ng-model="selectedVenueType" ng-change="venueTypeChange()" />
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control" ng-model = "selectedVenueObsolete" ng-change="updateVenue()">
+								<option></option>
+								<option>Yes</option>
+								<option>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" ng-click="showVenue(null)"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdVenue in cdVenues">
+						<td>{{cdVenue.name}}</td>
+						<td>{{cdVenue.type}}</td>
+						<td>{{cdVenue.obsolete === 'Y' ? 'Yes' : 'No'}}</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" ng-click="showVenue(cdVenue)"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+			<div class="tab-pane fade" id="holidays">
+				<table class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th>
+							Holiday
+							<br>
+							<input type="text" class="form-control">
+						</th>
+						<th>
+							Date
+							<br>
+							<input daterangebox class="form-control">
+						</th>
+						<th>
+							Date Unchanged Annually
+							<br>
+							<select class="form-control">
+								<option></option>
+								<option>Yes</option>
+								<option>No</option>
+							</select>
+						</th>
+						<th width="85px">
+							Obsolete
+							<br>
+							<select class="form-control">
+								<option></option>
+								<option>Yes</option>
+								<option>No</option>
+							</select>
+						</th>
+						<th width="125px"><button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#addModal"><div class="glyphicon glyphicon-plus" /> Add Master Data</button></th>
+					</tr>
+					<tr ng-repeat="cdHoliday in cdHolidays">
+						<td>{{cdHoliday.name}}</td>
+						<td>{{cdHoliday.date}}</td>
+						<td>{{cdHoliday.repeated}}</td>
+						<td>No</td>
+						<td style="white-space:nowrap">
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#editModal"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+							<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteModal"><div class="glyphicon glyphicon-minus" /> Delete</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditVehiclePurposeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedVehiclePurpose.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Vehicle Purpose</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedVehiclePurpose.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Activity Type</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model='selectedVehiclePurpose.activityTypeCode' ng-options="activityType.code as activityType.name for activityType in activityTypes">
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="selectedVehiclePurpose.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedVehiclePurpose.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateVehiclePurpose()">{{!selectedVehiclePurpose.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditTowTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedTowType.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Tow Type</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedTowType.name"></div>
+						</div>
+						<div class="form-group" ng-if="selectedTowType.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedTowType.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateTowType()">{{!selectedTowType.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditProficiencyModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedProficiency.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Soldier Proficiency</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedProficiency.name"></div>
+						</div>
+						<div class="form-group" ng-if="selectedProficiency.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedProficiency.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateProficiency()">{{!selectedProficiency.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditPermitTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedPermitType.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">SAF Driving Permit Type</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedPermitType.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Permit No. Prefix</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedPermitType.prefix"></div>
+						</div>
+						<div class="form-group" ng-if="selectedPermitType.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedPermitType.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdatePermitType()">{{!selectedPermitType.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditPermitClassModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedPermitClass.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group" ng-if="selectedPermitClass.isEdit">
+							<label class="col-sm-3 control-label required">SAF Driving Permit Class Code</label>
+							<div class="col-sm-9">{{selectedPermitClass.code}}</div>
+						</div>
+						<div class="form-group" ng-if="!selectedPermitClass.isEdit">
+							<label class="col-sm-3 control-label required">SAF Driving Permit Class Code</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedPermitClass.code"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Description</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedPermitClass.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Mileage Type</label>
+							<div class="col-sm-9">
+							<select class="form-control" ng-model="selectedPermitClass.mileageType" >
+								<option>CL 2B/2A/2</option>
+								<option>CL 3</option>
+								<option>CL 4</option>
+							</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="selectedPermitClass.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedPermitClass.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdatePermitClass()">{{!selectedPermitClass.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditOffenceTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedOffenceType.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Offence Type</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedOffenceType.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Accident Involved</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedOffenceType.accidentFlag" />
+							</div>
+						</div>
+						<div class="form-group" ng-if="selectedOffenceType.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedOffenceType.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateOffenceType()">{{!selectedOffenceType.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditOffenceModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedOffence.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Offence Committed</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedOffence.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Demerit Points</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedOffence.demeritPoints"></div>
+						</div>
+						<div class="form-group" ng-if="selectedOffence.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedOffence.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateOffence()">{{!selectedOffence.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditDrivingCategoryModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedDrivingCategory.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Driving Category</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedDrivingCategory.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Mileage More Than or Equals</label>
+							<div class="col-sm-9"><input type="number" class="form-control" ng-model="selectedDrivingCategory.mileageMoreThanEqual"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Mileage Less Than or Equals</label>
+							<div class="col-sm-9"><input type="number" class="form-control" ng-model="selectedDrivingCategory.mileageLessThanEqual"></div>
+						</div>
+						<div class="form-group" ng-if="selectedDrivingCategory.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedDrivingCategory.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateDrivingCategory()">{{!selectedDrivingCategory.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addEditVenueModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!selectedVenue.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Venue</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="selectedVenue.name"></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Venue Type</label>
+							<div class="col-sm-9">
+							<select class="form-control" ng-model="selectedVenue.typeId" required ng-options="venueType.id as venueType.name for venueType in venueTypes">
+							</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="selectedVenue.isEdit">
+							<label class="col-sm-3 control-label required">Obsolete</label>
+							<div class="col-sm-9">
+								<yes-no-only class="form-control" ng-model="selectedVenue.obsolete" />
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateVenue()">{{!selectedVenue.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+	<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>Record has been used by existing data. You can only set it to Obsolete.</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

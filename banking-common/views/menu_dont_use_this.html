@@ -1,0 +1,190 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">
+				<div style="white-space:nowrap"><!-- img src="images/logo.png" height="25" style="vertical-align:text-middle" --> <strong>ITMS</strong></div>
+			</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li><a href="#/dashboard" ng-click="selectedPage='components/dashboard/dashboard_default.html'">Dashboard <span class="badge">2</span></a></li>
+				<li class="dropdown" ng-if="isGranted(['RQ','RC','NC','HE'])">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown" data-submenu>Indent <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#/indents">Search Indents</a></li>
+<!--						<li><a href="#/indents/wait" ng-if="isGranted(['HE'])">Waiting List</a></li>-->
+						<li ng-if="isGranted(['RQ','NC','HE'])"><a href="#/indent" ng-click="resetIndent()">New Indent</a></li>
+						<li class="divider" ng-if="isGranted(['RQ','NC','HE'])"></li>
+						<li class="dropdown-submenu" ng-if="isGranted(['RQ','NC','HE'])"><a href="">Indent Templates</a>
+							<ul class="dropdown-menu">
+								<li ng-if="isGranted(['RQ','NC','HE'])"><a href="#/indent" ng-click="populateIndentTemplate1()">BME (Infantry/Guards)</a></li>
+								<li ng-if="isGranted(['RQ','NC','HE'])"><a href="">4NTM (Infantry/Guards)</a></li>
+								<li ng-if="isGranted(['RQ','NC','HE'])"><a href="">Urgent Admin</a></li>
+								<li ng-if="isGranted(['NC','HE'])"><a href="">MT/Admin</a></li>
+								<li class="divider"></li>
+								<li><a href="#/indent" ng-click="">MT/Admin - AVI</a></li>
+								<li><a href="">Custom Template 2</a></li>
+								<li><a href="">Custom Template 3</a></li>
+								<li><a href="">Custom Template 4</a></li>
+							</ul>
+						</li>
+						<li><a href="#/templates" ng-if="isGranted(['RQ','HE'])">Manage Templates</a></li>
+						<li class="divider" ng-if="isGranted(['RC','HE'])"></li>
+						<li><a href="#/indents/recommend" ng-if="isGranted(['RC'])">Indent Recommendation <span class="badge">3</span></a></li>
+						<li><a href="#/indents/approve" ng-if="isGranted(['HE'])">Indent Approval <span class="badge">16</span></a></li>
+						<li><a href="#/indents/accept" ng-if="isGranted(['HE'])">Indent Acceptance <span class="badge">1</span></a></li>
+						<li><a href="#/indents/confirm" ng-if="isGranted(['HE'])">Indent Confirmation (Manual) <span class="badge">5</span></a></li>
+						<li><a href="#/indents/cvapprove" ng-if="isGranted(['HQ'])">Central Vote Approval <span class="badge">1</span></a></li>
+						<li class="divider"></li>
+						<li><a href="#/tasks">Search Tasks</a></li>
+						<li class="divider"></li>
+						<li><a href="#/tasks">Tasks Pending Execution</a></li>
+						<li><a href="#/tasks">Tasks Under Execution</a></li>
+					</ul>
+				</li>
+				<li class="dropdown" ng-if="isGranted(['NC','HE'])">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown">Resource <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#/operators" ng-click="selectedPage=''">Manage TO</a></li>
+                        <li><a href="#/operators_avail" ng-click="selectedPage=''">TO Availability</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#/operator_loan_approval" ng-click="selectedPage=''">TO Attach-Out Approval <span class="badge">1</span></a></li>
+                        <li><a href="#/operator_skills_approval" ng-click="selectedPage=''">TO Skills Approval <span class="badge">10</span></a></li>
+                        <li><a href="#/operator_rewards_verification" ng-click="selectedPage=''">TO Rewards Verification <span class="badge">7</span></a></li>
+                        <li><a href="#/operator_rewards_recommendation" ng-click="selectedPage=''">TO Rewards Recommendation <span class="badge">7</span></a></li>
+                        <li><a href="#/operator_rewards_approval" ng-click="selectedPage=''">TO Rewards Approval <span class="badge">7</span></a></li>
+<!--                         <li><a href="#/operator_offences_approval" ng-click="selectedPage=''">TO Offences Approval <span class="badge">1</span></a></li> -->
+						<li class="divider"></li>
+                        <li><a href="#/vehicles" ng-click="selectedPage=''">Manage Vehicles</a></li>
+                        <li><a href="#/vehicleTypes" ng-click="selectedPage=''">Manage Vehicle Types</a></li>
+                        <li><a href="#/vehicles_avail" ng-click="selectedPage=''">Vehicle Availability</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#/vehicle_loan_approval" ng-click="selectedPage=''">Vehicle T-Loan Approval <span class="badge">1</span></a></li>
+<!--
+						<li><a href="" ng-click="selectedPage='contract.html'">New Contract...</a></li>
+						<li class="divider"></li>
+						<li><a href="" ng-click="selectedPage='pr_search.html'">Find Purchase Requisition (PR)</a></li>
+						<li><a href="" ng-click="selectedPage='pr_new.html'">Raise Purchase Requisition (PR)...</a></li>
+						<li class="divider"></li>
+						<li class="disabled"><a href="" ng-click="selectedPage=''">Find Invitations to Quote (ITQ)</a></li>
+						<li class="disabled"><a href="" ng-click="selectedPage=''">Raise Invitation to Quote (ITQ)...</a></li>
+						<li class="divider"></li>
+						<li class="disabled"><a href="" ng-click="selectedPage=''">Find Banker's Worsheet (BW)</a></li>
+						<li class="divider"></li>
+						<li><a href="" ng-click="selectedPage='po_search.html'">Find Purchase Order (PO)</a></li>
+						<li><a href="" ng-click="selectedPage='po.html'">Raise Purchase Order (PO)...</a></li>
+						<li class="divider"></li>
+						<li><a href="" ng-click="selectedPage='gr_search.html'">Find Goods Receipt (GR)</a></li>
+						<li class="divider"></li>
+						<li><a href="" ng-click="selectedPage='invoice_search.html'">Find Invoice</a></li>
+-->
+					</ul>
+				</li>
+				<li class="dropdown" ng-if="isGranted(['HQ'])">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown">Credit <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#/credit/allocation">Credit Allocation/Transfer (HQ)</a></li>
+						<li><a href="#/credit/allocation_unit">Credit Allocation/Transfer (Div/Fmn)</a></li>
+						<li><a href="#/credit/transfer">Credit Transfer</a></li>
+<!--						<li><a href="#/credit/refund">Credit Refund</a></li>-->
+						<li class="divider"></li>
+						<li><a href="#/credit/allocations">Credit Status</a></li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown">Reports <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#/report/detailsheet">Detail Sheet</a></li>
+						<li><a href="#">Report 1</a></li>
+						<li><a href="#">Report 2</a></li>
+						<li><a href="#">Report 3</a></li>
+						<li class="divider"></li>
+						<li><a href="#">Report 4</a></li>
+						<li><a href="#">Report 5</a></li>
+					</ul>
+				</li>
+				<li class="dropdown" ng-if="isGranted(['SA'])">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown" data-submenu>Admin <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+<!--						<li><a href="" ng-click="selectedPage=''">Approval Matrix</a></li>-->
+<!--						<li><a href="" ng-click="selectedPage=''">User Admin</a></li>-->
+
+<!--
+						<li class="dropdown">
+							<a href="" class="dropdown-toggle" data-toggle="dropdown" data-submenu>Users <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="#/user">New User</a></li>
+								<li><a href="#/users">Search Users</a></li>
+							</ul>
+						</li>
+-->
+						
+						<li class="dropdown-submenu"><a href="">Users</a>
+							<ul class="dropdown-menu">
+								<li><a href="#/user">New User</a></li>
+								<li><a href="#/users">Search Users</a></li>
+							</ul>
+						</li>
+						<li class="dropdown-submenu"><a href="">Roles</a>
+							<ul class="dropdown-menu">
+								<li><a href="#/user">New Role</a></li>
+								<li><a href="#/users">Search Roles</a></li>
+							</ul>
+						</li>
+<!--						<li><a href="">System Announcements</a></li>-->
+						<li><a href="">Manage Notifications</a></li>
+						<li><a href="">Manage Holidays</a></li>
+						<li><a href="#/admin/parameters">Manage Parameters</a></li>
+						<!--						<li><a href="">Housekeeping</a></li>-->
+					</ul>
+				</li>
+			</ul>
+			<!--					<form class="navbar-form navbar-left">-->
+			<!--						ng-submit="selectedPage='patient_list.html'"-->
+			<!--
+<div class="form-group">
+<div class="input-group">
+<span class="input-group-addon glyphicon glyphicon-search" id="basic-addon1"></span>
+<input type="text" class="form-control typeahead" placeholder="Patient Name or NRIC/FIN No." autocomplete="off">
+</div>
+</div>
+-->
+			<!--					</form>-->
+			<ul class="nav navbar-nav navbar-right" style="padding-top:4px;padding-right:20px">
+				<select class="form-control" ng-options="role.code as role.name for role in roles" ng-model="app.selectedRole"/>
+			</ul>
+			<ul class="nav navbar-nav navbar-right" style="padding-top:4px;padding-right:20px">
+				<li style="text-align:right">Welcome David Lim Meng Kiat<br>Last login on 20 Feb 2016, 09:25 AM</li>
+				<!--
+<li><a href="#">Link</a></li>
+<li class="dropdown">
+<a href="" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="#">Action</a></li>
+<li><a href="#">Another action</a></li>
+<li><a href="#">Something else here</a></li>
+<li class="divider"></li>
+<li><a href="#">Separated link</a></li>
+</ul>
+</li>
+-->
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</div><!-- /.container-fluid -->
+</nav>
+
+<script>
+	$(function() {
+	//init();
+		$('[data-submenu]').submenupicker();
+	});
+</script>

@@ -1,0 +1,1674 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable"
+			ng-click="back()" /> Accident
+	</h3>
+</div>
+<div class="row page-body">
+	<div>
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#report"
+				ng-click="accVTab='Rep'" data-toggle="tab">Report</a></li>
+			<li><a href="" data-target="#mission" ng-click="accVTab='Mis'"
+				data-toggle="tab">Mission</a></li>
+			<li><a href="" data-target="#man" ng-click="accVTab='Man'"
+				data-toggle="tab">Man</a></li>
+			<li><a href="" data-target="#machine" ng-click="accVTab='Mac'"
+				data-toggle="tab">Machine</a></li>
+			<li><a href="" data-target="#medium" ng-click="accVTab='Med'"
+				data-toggle="tab">Medium</a></li>
+			<li><a href="" data-target="#management"
+				ng-click="accVTab='Mgt'" data-toggle="tab">Management</a></li>
+			<li><a href="" data-target="#attachments"
+				ng-click="accVTab='Att'" data-toggle="tab">Attachments</a></li>
+			<li><a href="" data-target="#cause" ng-click="accVTab='Cau'"
+				data-toggle="tab">Causes</a></li>
+			<li><a href="" data-target="#conclusion"
+				ng-click="accVTab='Con'" data-toggle="tab">Conclusion</a></li>
+			<li><a href="" data-target="#annexes" ng-click="accVTab='Ann'"
+				data-toggle="tab">Annexes</a></li>
+			<li><a href="" data-toggle="tab">Audit Log</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="report">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>General</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Accident ID</label>
+							<div class="col-sm-3 control-value">
+								{{reportDTO.accidentNo}} <input type="hidden"
+									value="{{reportDTO.id}}" />
+							</div>
+							<label class="col-sm-3 control-label ">Report Status</label>
+							<div class="col-sm-3 control-value">{{reportDTO.accidentReportStatus}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Accident Date/Time</label>
+							<div class="col-sm-3">
+								<input ng-model="reportDTO.accidentDate" datetimebox
+									class="form-control" />
+
+							</div>
+							<label class="col-sm-3 control-label required">Accident Category</label>
+							<div class="col-sm-3">
+								<select ng-model="reportDTO.categoryId"
+									ng-options="accCategory.id as accCategory.name for accCategory in accCategories"
+									class="form-control">
+									<option></option>
+
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Accident Location</label>
+							<div class="col-sm-3">
+								<textarea ng-model="reportDTO.locationInfo" class="form-control"></textarea>
+							</div>
+							<label class="col-sm-3 control-label">Additional Location
+								Info</label>
+							<div class="col-sm-3">
+								<textarea ng-model="reportDTO.additionalLocationInfo"
+									class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Location Type</label>
+							<div class="col-sm-3">
+								<select ng-model="reportDTO.locationTypeId"
+									ng-options="accLocType.id as accLocType.name for accLocType in accLocTypes"
+									class="form-control">
+									<option></option>
+
+
+								</select>
+							</div>
+						</div>
+						<br>
+						<legend>
+							Involvement <span class="glyphicon glyphicon-info-sign"
+								uib-tooltip="This should be based on the party with the most neligience." />
+						</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Hub Involved</label>
+							<div class="col-sm-3"
+								ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+								<select class="form-control" ng-model="reportDTO.hubCode"
+									ng-options="hub.code as hub.name for hub in hubs">
+									<option />
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Node Involved</label>
+							<div class="col-sm-3">
+								<select class="form-control" ng-model="reportDTO.nodeId"
+									ng-options="node.id as node.name for node in nodes | filter:filterNodes(reportDTO.hubCode)">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit Involved</label>
+							<div class="col-sm-3"
+								ng-if="session.userRole.cat !== 'Unit' || session.userRole.formationCode">
+								<typeahead placeholder="Unit Code or Name"
+									uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+									typeahead-on-select="reportDTO.unitCode = $item.code"
+									ng-blur="reportDTO.unitCode = unit ? reportDTO.unitCode : undefined"
+									ng-model="unit" />
+
+							</div>
+							<label class="col-sm-3 control-label">Sub-Unit Involved</label>
+							<div class="col-sm-3">
+								<select class="form-control" ng-model="reportDTO.subUnitCodeId"
+									ng-options="subUnit.id as subUnit.name for subUnit in subUnits | filter: { type: reportDTO.unitCode }">
+									<option></option>
+								</select>
+							</div>
+						</div>
+						<br>
+						<legend>Type of Collision</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Between Moving
+								Vehicles</label>
+							<div class="col-sm-3">
+								<select ng-model="reportDTO.collisionTypeId"
+									ng-options="accCollisionDir.id as accCollisionDir.name for accCollisionDir in accCollisionDirs"
+									class="form-control">
+									<option></option>
+
+								</select>
+							</div>
+							<label class="col-sm-3 control-label">Moving Vehicle Against</label>
+							<div class="col-sm-3">
+								<select ng-model="reportDTO.collisionObjectId"
+									ng-options="accCollisionObj.id as accCollisionObj.name for accCollisionObj in accCollisionObjs"
+									class="form-control">
+									<option></option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vehicle Manoeuvre
+								Before Accident</label>
+							<div class="col-sm-3">
+								<select ng-model="reportDTO.manoeuvreTypeId"
+									ng-options="accManoevre.id as accManoevre.name for accManoevre in accManoevres"
+									class="form-control">
+									<option></option>
+
+								</select>
+							</div>
+						</div>
+						<br>
+						<legend>Summary</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Summary of Accident</label>
+							<div class="col-sm-9">
+								<textarea ng-model="reportDTO.accidentSummary"
+									class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="button" class="btn btn-default btn-block"
+									ng-click="saveAccident()">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="mission">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Task</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Task ID</label>
+							<div class="col-sm-3">
+								<input type="number" class="form-control"
+									ng-model="missionDTO.taskId" />
+
+							</div>	
+								<span class="col-sm-2">
+						
+								<button ng-show="task!=null"  class="btn btn-default btn-block" ng-click="taskViewMore()">View More </button>
+							</span >
+						</div>
+						<br>
+						<legend>Indent</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Indent ID</label>
+							<div class="col-sm-3 control-value">
+								{{task.indentNo}}</a>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Activity Type</label>
+							<div class="col-sm-3 control-value">{{task.indentActivityType}}</div>
+							<label class="col-sm-3 control-label">Movement</label>
+							<div class="col-sm-3 control-value">{{task.indentCampMovement}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Report Date/Time</label>
+							<div class="col-sm-3 control-value">{{task.indentStartDate}}</div>
+							<label class="col-sm-3 control-label">Completion
+								Date/Time</label>
+							<div class="col-sm-3 control-value">{{task.indentEndDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Reporting Location</label>
+							<div class="col-sm-3 control-value">{{task.indentReportingVenue}}</div>
+							<label class="col-sm-3 control-label">Duration</label>
+							<div class="col-sm-3 control-value">{{task.indentDuration}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Reporting Info</label>
+							<div class="col-sm-3 control-value">{{task.indentReportingInfo}}</div>
+							<label class="col-sm-3 control-label">Additional Info</label>
+							<div class="col-sm-3 control-value">{{task.indentAdditionalInfo}}</div>
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label required">Is the task given to the transport operator straightforward?</label>
+							<div class="col-sm-1">
+
+								<yes-No ng-model="missionDTO.missionFlag" />
+							</div>
+						</div>
+						<div class="form-group" ng-if="missionDTO.missionFlag=='N'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea ng-model="missionDTO.remarks" class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="button" class="btn btn-default btn-block"
+									ng-click="saveMission()">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+						<div class="modal fade" id="viewTask" tabindex="-1">
+					<div class="modal-dialog" style="width: 800px">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Task Details</h4>
+							</div>
+									<div class="modal-body">
+								
+										
+										<table class="table table-striped table-bordered table-responsive table-condensed small">
+											<tr>
+											
+							
+													<td>Driver</td>
+													<td>Driver Node</td>
+													<td>Vehicle</td>
+													<td>Vehicle Node</td>
+													<td>Vehicle Type</td>
+													<td>Task Mileage (km)</td>
+													<td>Start Date/Time</td>
+													<td>End Date/Time</td>
+											
+											</tr>
+											<tr ng-repeat="taskDetail in task.taskDetails">
+														<td>{{taskDetail.driverName}}</td>
+														<td>{{taskDetail.driverNode}}</td>
+														<td>{{taskDetail.vehicleNo}}</td>
+														<td>{{taskDetail.vehicleType}}</td>
+														<td>{{taskDetail.vehicleNode}}</td>
+														<td>{{taskDetail.mileage}}</td>
+														<td>{{taskDetail.startDate}}</td>
+														<td>{{taskDetail.endDate}}</td>
+											</tr>
+										</table>
+									</div>
+									<div class="modal-footer">
+										<form>
+												<div class="form-group">
+													<div class="col-sm-10" ></div>
+														<div class="col-sm-1">
+															<button type="button" class="btn btn-default btn-block" ng-click="taskGoToEditTask()" >Edit</button>
+														</div>
+													<br>
+												</div>	
+											<br>
+										</form>
+									</div>
+						</div>
+					</div>
+				</div>
+
+					
+				</form>
+			</div>
+			<div class="tab-pane fade" id="man">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Transport Operator Involved</legend>
+						<div>
+							<table
+								class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+
+									<th width="15px" class="text-center"><input
+										type="checkbox" ng-model="checkboxes.allTO" id="select_all"
+										ng-click="checkAllTO()"></th>
+									<th>Rank / Name</th>
+									<th width="50px">Hub</th>
+									<th width="90px">Node</th>
+									<th width="60px">Service<br>Type
+									</th>
+									<th width="60px">Vocation</th>
+									<th width="60px">Driving<br>CAT
+									</th>
+									<th>SAF Driving Permit No.</th>
+									<th width="60px">Class 3<br>Mileage
+									</th>
+									<th width="60px">Class 4<br>Mileage
+									</th>
+									<th width="60px">Total<br>Mileage
+									</th>
+									<th width="80px">Degree<br>of Injury
+									</th>
+									<th width="60px">Hours<br>Rested
+									</th>
+									<th width="80px">Psychological<br>Problems
+									</th>
+								</tr>
+								<tr ng-repeat="record in dto.transportOperatorInvolved">
+									<td class="text-center"><input type="checkbox"
+										ng-model="checkboxes.toRecords[record.id]"
+										ng-click="checkboxes.allTO = false" value="record.id"></td>
+									<td><a href="" ng-click="showAddEditToModal(record.id)">{{record.nricNoName}}</a>
+									</td>
+									<td>{{record.ehrHub}}</td>
+									<td>{{record.ehrNode}}</td>
+									<td>{{record.serviceType}}</td>
+									<td>{{record.vocation}}</td>
+									<td>{{record.driverPermitsCAT}}</td>
+									<td>{{record.permitNo}}</td>
+									<td>{{record.cl3Mileage}}</td>
+									<td>{{record.cl4Mileage}}</td>
+									<td>{{record.mileage}}</td>
+									<td>{{record.injury.name}}</td>
+									<td>{{record.restHour}} hours</td>
+									<td>{{record.accPsyProblemDesc}}</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs"
+								ng-click="showAddEditToModal(null)">
+								<div class="glyphicon glyphicon-plus" />
+								Add Transport Operator
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs"
+								ng-click="removeTO()">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Transport Operator
+							</button>
+						</div>
+						<br>
+				
+						<legend>Other Personnel Involved</legend>
+						<div>
+
+
+							<table
+								class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input
+										type="checkbox" ng-model="checkboxes.allPersonnel"
+										id="select_all" ng-click="checkAllPersonnel()"></th>	
+									<th width="80px">NRIC No.</th>
+									<th>Name</th>
+									<th>Address</th>
+									<th width="80px">Contact No.</th>
+									<th width="110px">Degree of Injury</th>
+									<th>Remarks</th>
+								</tr>
+								<tr ng-repeat="record in dto.personnelInvolved ">
+									<td><input type="checkbox"
+										ng-model="checkboxes.personnelRecords[record.id]"
+										ng-click="checkboxes.allPersonnel=false"></input></td>
+									<td><a href=""
+										ng-click="showAddEditPersonnelModal(record.id)">{{record.nricNo}}</a></td>
+									<td>{{record.name}}</td>
+									<td>{{record.address}}</td>
+									<td>{{record.contactNo}}</td>
+									<td>{{record.injury.name}}</td>
+									<td>{{record.remarks}}</td>
+								</tr>
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs"
+								ng-click="showAddEditPersonnelModal(null)">
+								<div class="glyphicon glyphicon-plus" />
+								Add Other Personnel
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs"
+								ng-click="removePersonnel()">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Other Personnel
+							</button>
+
+
+
+
+							<div class="modal fade" id="addPerModal" tabindex="-1">
+								<div class="modal-dialog" style="width: 600px">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button class="close" data-dismiss="modal">&times;</button>
+											<h4 class="modal-title">Add / Update Other Personnel Involved</h4>
+										</div>
+										<div class="modal-body">
+											<div class="container-fluid">
+												<form class="form-horizontal">
+													<div class="form-group">
+														<label class="col-sm-3 control-label required">{{newPersonnelDTO.isDisabled?"":""}} NRIC
+															No.</label>
+														<div class="col-sm-9">
+															<input class="form-control"
+																ng-disabled="newPersonnelDTO.isDisabled"
+																ng-model="newPersonnelDTO.nricNo" />
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-3 control-label required">Name</label>
+														<div class="col-sm-9">
+															<input class="form-control"
+																ng-model="newPersonnelDTO.name" />
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-3 control-label required">Address</label>
+														<div class="col-sm-9">
+															<input class="form-control"
+																ng-model="newPersonnelDTO.address" />
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-3 control-label required">Contact
+															No.</label>
+														<div class="col-sm-9">
+															<input class="form-control"
+																ng-model="newPersonnelDTO.contactNo" />
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-3 control-label required">Degree
+															of Injury</label>
+														<div class="col-sm-9">
+															<select class="form-control"
+																ng-model="newPersonnelDTO.injury"
+																ng-options="accInjury as accInjury.name for accInjury in  accInjuries track by accInjury.id ">
+																<option></option>
+
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-3 control-label required">Remarks</label>
+														<div class="col-sm-9">
+															<textarea class="form-control"
+																ng-model="newPersonnelDTO.remarks"></textarea>
+														</div>
+													</div>
+												</form>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-default"
+												data-dismiss="modal">Cancel</button>
+											<button type="button" class="btn btn-primary"
+												ng-click="saveUpdatePersonnelInvolved(newPersonnelDTO)">{{newPersonnelDTO.isAdd?"Save":"Update"}}</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label required">Is the transport operator qualified and fitted for his/her detail?</label>
+							<div class="col-sm-1">
+								<yes-no ng-model="manDTO.manFlag"/>
+							</div>
+						</div>
+
+
+						<div class="form-group" ng-if="manDTO.manFlag=='N'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" ng-model="manDTO.remarks"></textarea>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="button" class="btn btn-default btn-block"
+									ng-click="saveAccidentMan()">Save</button>
+							</div>
+							<br>
+						</div>
+
+						<div id="addTOModal" class="modal fade" tabindex="-1">
+							<div class="modal-dialog" style="width: 800px">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title">Add / Update Transport Operator Involved</h4>
+									</div>
+									<div class="modal-body">
+										<div class="container-fluid">
+											<form class="form-horizontal">
+												<div class="form-group">
+													<label class="col-sm-3 control-label required">{{newToInvolvedDTO.isDisabled? "":""}}Rank
+														/ Name (NRIC No.)</label>
+													<div class="col-sm-8">
+														<typeahead placeholder="NRIC No. or Name"
+															uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+															typeahead-on-select="newToInvolvedDTO.nricNo = $item.code "
+															ng-blur="newToInvolvedDTO.nricNo = driver ? newToInvolvedDTO.nricNo : undefined"
+															ng-model="driver"
+															ng-disabled="newToInvolvedDTO.isDisabled" />
+
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Hub</label>
+													<div class="col-sm-3 control-value"> {{newToInvolvedDTO.ehrHub}}
+													</div>
+													<label class="col-sm-3 control-label">Node</label>
+													<div class="col-sm-3 control-value">
+															{{newToInvolvedDTO.ehrNode}}
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Service Type</label>
+													<div class="col-sm-3 control-value">
+														{{newToInvolvedDTO.serviceType}}
+													</div>
+													<label class="col-sm-3 control-label">Vocation</label>
+													<div class="col-sm-3 control-value">
+															{{newToInvolvedDTO.vocation}}
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">SAF Driving
+														Permit No.</label>
+													<div class="col-sm-3 control-value">
+															{{newToInvolvedDTO.permitNo}}
+													</div>
+													<label class="col-sm-3 control-label">Driving CAT</label>
+													<div class="col-sm-3 control-value">
+														{{newToInvolvedDTO.driverPermitsCAT}}
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Class 3
+														Mileage</label>
+													<div class="col-sm-3 control-value">
+														{{newToInvolvedDTO.cl3Mileage}}
+													</div>
+													<label class="col-sm-3 control-label">Class 4
+														Mileage</label>
+													<div class="col-sm-3 control-value">
+														{{newToInvolvedDTO.cl4Mileage}}
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Total Mileage</label>
+													<div class="col-sm-3 control-value">
+														{{newToInvolvedDTO.mileage}}
+													</div>
+													<label class="col-sm-3 control-label required">Degree of
+														Injury</label>
+													<div class="col-sm-3">
+														<select class="form-control"
+															ng-model="newToInvolvedDTO.injury"
+															ng-options="accInjury as accInjury.name for accInjury in  accInjuries track by accInjury.id ">
+															<option></option>
+
+														</select>
+													</div>
+												</div>
+												<br>
+												<legend>	</legend>
+												<div class="form-group">
+													<label class="col-sm-10 control-label required">How many
+														hours has the transport operator rested prior to the
+														detail?</label>
+													<div class="col-sm-2">
+														<input class="form-control"
+															ng-model="newToInvolvedDTO.restHour" type="number">
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-10 control-label required">Does the
+														service man has any known psychological problem which may
+														affect his driving?</label>
+													<div class="	col-sm-2">
+														<yes-no ng-model="newToInvolvedDTO.psychoFlag"/>
+
+													</div>
+												</div>
+												<div ng-if="accPsyProblem=='Y'" class="form-group">
+													<label class="col-sm-2 control-label">Remarks</label>
+													<div class="col-sm-10">
+														<textarea class="form-control"></textarea>
+													</div>
+												</div>
+												<br>
+												<legend>Vehicle Familiarisation</legend>
+												<div class="form-group">
+													<div class="col-sm-12">
+														<table
+															class="table table-striped table-bordered table-responsive table-condensed small">
+															<tr>
+																<th>Vehicle Type</th>
+																<th>Tow Type</th>
+																<th width="50px">Status</th>
+																<th width="90px">Approved On</th>
+																<th width="90px">Approved By</th>
+																<th width="120px">Approval Status</th>
+															</tr>
+															<tr ng-repeat="familiarisation in familiarisations">
+																<td>{{familiarisation.vehicleType}}</td>
+																<td>{{familiarisation.towType}}</td>
+																<td>{{familiarisation.assessmentStatus}}</td>
+																<td>{{familiarisation.approveDate}}</td>
+																<td><a uib-tooltip="{{familiarisation.approvedBy}}"
+																	tooltip-placement="left">{{familiarisation.approvedBy}}</a></td>
+																<td ng-if="familiarisation.approvalStatus == 'PENDING'"
+																	style="color: blue">{{familiarisation.approvalStatus}}</td>
+																<td ng-if="familiarisation.approvalStatus == 'REJECTED'"><a
+																	style="color: red"
+																	uib-tooltip="This is an erroneous submission. TO has not taken the specified vehicle familiarisation."
+																	tooltip-placement="left">{{familiarisation.status}}</td>
+																<td ng-if="familiarisation.status =='Pending'">{{familiarisation.status}}</td>
+
+																<td ng-if="familiarisation.status == 'Approved'">{{familiarisation.status}}</td>
+																<td ng-if="familiarisation.status == 'WITHDRAWN'"><a
+																	style="color: red"
+																	uib-tooltip="This is an erroneous submission. TO has not taken the specified vehicle familiarisation."
+																	tooltip-placement="left">{{familiarisation.status}}</a></td>
+															</tr>
+														</table>
+													</div>
+												</div>
+												<br>
+												<legend>Soldier Proficiency</legend>
+												<div class="form-group">
+													<div class="col-sm-12">
+														<table
+															class="table table-striped table-bordered table-responsive table-condensed small">
+															<tr>
+																<th>Soldier Proficiency</th>
+																<th width="50px">Status</th>
+																<th width="90px">Approved On</th>
+																<th width="90px">Approved By</th>
+																<th width="120px">Approval Status</th>
+															</tr>
+															<tr ng-repeat="proficiency in proficiencies">
+																<td>{{proficiency.proficiency}}</td>
+																<td>{{proficiency.assessmentStatus}}</td>
+																<td>{{proficiency.approveDate}}</td>
+																<td><a uib-tooltip="{{proficiency.approvedBy}}"
+																	tooltip-placement="left">{{proficiency.approvedBy}}</a></td>
+																<td ng-if="proficiency.approvalStatus ==null"
+																	style="color: blue">{{proficiency.status}}</td>
+
+																<td ng-if="proficiency.approvalStatus == 'Pending'"
+																	style="color: blue">{{proficiency.status}}</td>
+																<td ng-if="proficiency.approvalStatus == 'Rejected'"><a
+																	style="color: red"
+																	uib-tooltip="This is an erroneous submission. TO has not taken the specified proficiency."
+																	tooltip-placement="left">{{proficiency.status}}</a></td>
+																<td ng-if="proficiency.approvalStatus == 'Approved'">{{proficiency.status}}</td>
+																<td ng-if="proficiency.approvalStatus == 'Withdrawn'"><a
+																	style="color: red"
+																	uib-tooltip="This is an erroneous submission. TO has not taken the specified proficiency."
+																	tooltip-placement="left">{{proficiency.status}}</a></td>
+															</tr>
+														</table>
+													</div>
+												</div>
+												<br>
+												<legend>Past 2 Days Task Details</legend>
+												<div class="form-group">
+													<div class="col-sm-12">
+														<table
+															class="table table-striped table-bordered table-responsive table-condensed small">
+															<tr>
+																<th>Indent ID</th>
+																<th>Task ID</th>
+																<th>Activity Type</th>
+																<th>Book-out Date/Time</th>
+																<th>Book-in Date/Time</th>
+																<th>Mileage</th>
+															</tr>
+															<tr ng-repeat="taskDetail in taskDetails">
+																<td>{{taskDetail.indentNo}}</td>
+																<td>{{taskDetail.id}}</td>
+																<td>{{taskDetail.indentActivityType}}</td>
+																<td>{{taskDetail.taskDetails[0].bookOutDate}}</td>
+																<td>{{taskDetail.taskDetails[0].bookInDate}}</td>
+																<td>{{taskDetail.taskDetails[0].mileage}}</td>
+															</tr>
+
+														</table>
+													</div>
+												</div>
+												<br>
+												<legend>Accident Records</legend>
+												<div class="form-group">
+													<div class="col-sm-12">
+														<table
+															class="table table-striped table-bordered table-responsive table-condensed small">
+															<tr>
+																<th>Accident ID</th>
+																<th>Date</th>
+																<th>Vehicle Type</th>
+																<th width="100px">TO Negligent</th>
+															</tr>
+															<tr ng-repeat="accident in accidents">
+																<td>{{accident.accidentNo}}</td>
+																<td>{{accident.accidentDate}}</td>
+																<td>{{accident.vehicleType}}</td>
+																<td width="100px">{{accident.safDriverNeglience}}
+																</td>
+															</tr>
+
+														</table>
+													</div>
+												</div>
+											</form>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default"
+											data-dismiss="modal">Cancel</button>
+										<button type="button" class="btn btn-primary"
+											data-dismiss="modal"
+											ng-click="saveUpdateToInvolved(newToInvolvedDTO)">{{newToInvolvedDTO.isAdd?'Save':'Update'}}</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</fieldset>
+					<br>
+		</form>
+			</div>
+			<div class="tab-pane fade" id="machine">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Vehicles Involved</legend>
+						<div>
+
+
+							<table
+								class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th width="15px" class="text-center"><input
+										type="checkbox" ng-model="checkboxes.allMachine"
+										ng-click="checkMachineVehicleAll()"></th>
+										<th width="110px">Vehicle Plate No.</th>
+									<th width="90px">Machine Type</th>
+									<th>Vehicle Type</th>
+									<th width="100px">Lastest PM Date</th>
+									<th width="100px">Lastest AVI Date</th>
+									<th width="110px">BOC Conducted</th>
+									<th>Vehicle Damages</th>
+									<th>Property Damages</th>
+								</tr>
+
+								<tr ng-repeat="record in dto.machineVehicles"
+									data-toggle="modal" data-target="#machineModal">
+
+									<td class="text-center"><input type="checkbox"
+										ng-model="checkboxes.machineRecords[record.id]"
+										ng-click="checkboxes.allMachine=false"></td>
+									<td><a href=""
+										ng-click="showAddVehicleModal(record.id,record.machineType,record.civillianVehicleType,record.militaryVehiclePlateNo,record.vehicleType)"><span
+											ng-if="record.machineType.id==1">{{record.militaryVehiclePlateNo}}</span><span
+											ng-if="record.machineType.id==2">{{record.civillianVehiclePlateNo}}</span></a></td>
+									<td>{{record.machineTypeDesc}}</td>
+									<td><span ng-if="record.machineType.id==1">{{record.vehicleType}}</span><span
+										ng-if="record.machineType.id==2">{{record.civillianVehicleType.name}}</span></td>
+									<td>{{record.latestPmStartDate}}</td>
+									<td>{{record.aviDueDate}}</td>
+									<td>{{record.bocConductedDesc}}</td>
+									<td>{{record.vehicleDamages}}</td>
+									<td>{{record.propertyDamages}}</td>
+
+								</tr>
+
+							</table>
+							<button type="button" class="btn btn-default navbar-btn btn-xs"
+								ng-click="showAddVehicleModal(null,null,null,null,null)">
+								<div class="glyphicon glyphicon-plus" />
+								Add Vehicle
+							</button>
+							<button type="button" class="btn btn-default navbar-btn btn-xs"
+								ng-click="removeMachine()">
+								<div class="glyphicon glyphicon-minus" />
+								Remove Vehicle
+							</button>
+						</div>
+
+
+						<br>
+						<legend>Findings</legend>
+						<div class="form-group">
+							<label class="col-sm-10 control-label required">Is the vehicle serviceable and roadworthy for its detail?</label>
+							<div class="col-sm-1">
+
+								<yes-No ng-model="machineDTO.machineFlag" />
+
+							</div>
+						</div>
+						<div class="form-group" ng-if="machineDTO.machineFlag=='N'">
+							<label class="col-sm-1 control-label">Remarks</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" ng-model="machineDTO.remarks"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10" />
+							<div class="col-sm-1">
+								<button type="button" class="btn btn-default btn-block"
+									ng-click="saveMachine()">Save</button>
+							</div>
+							<br>
+						</div>
+					</fieldset>
+					<br>
+					<div class="modal fade" id="addVehModal" tabindex="-1">
+						<div class="modal-dialog" style="width: 600px">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Add / Update Vehicle Involved</h4>
+								</div>
+								<div class="modal-body">
+									<div class="container-fluid">
+										<form class="form-horizontal">
+											<div class="form-group">
+												<label class="col-sm-3 control-label required">Machine
+													Type</label>
+												<div class="col-sm-9">
+													<select class="form-control"
+														ng-disabled="newMachineDTO.isDisabled"
+														ng-init="newMachineDTO.machineType.id=1"
+														ng-model="newMachineDTO.machineType"
+														ng-options="accMachineType as accMachineType.name for accMachineType in  accMachineTypes track by accMachineType.id ">
+													<option></option>
+													</select>
+												</div>
+											</div>
+											<div class="form-group" ng-if="newMachineDTO.machineType.id==1 || newMachineDTO.machineType.id==2">
+
+												<label class="col-sm-3 control-label required">{{newMachineDTO.isDisabled?" ":""}}Vehicle Plate No.</label>
+												<div class="col-sm-9">
+												
+													<typeahead ng-if="newMachineDTO.machineType.id==1 && vehicle==null"
+														placeholder="Vehicle No. or Type"
+														uib-typeahead="vehicleNoType.code + ' (' + vehicleNoType.name + ')' for vehicleNoType in searchVehicleNoTypes($viewValue)"
+														typeahead-on-select="newMachineDTO.militaryVehiclePlateNo = $item.code"
+														ng-blur="newMachineDTO.militaryVehiclePlateNo = vehicle ? newMachineDTO.militaryVehiclePlateNo : undefined" ng-disabled="newMachineDTO.isDisabled" 
+														ng-model="vehicle" />
+												<input type="text"  class="form-control" ng-if="newMachineDTO.machineType.id==1" ng-show="newMachineDTO.isDisabled" ng-disabled="newMachineDTO.isDisabled" 	 value="{{vehicle}}"/>
+													<input type="text" ng-if="newMachineDTO.machineType.id==2"
+														class="form-control"
+														ng-model="newMachineDTO.civillianVehiclePlateNo"
+														placeholder="Vehicle No"
+														ng-disabled="newMachineDTO.isDisabled" />
+												</div>
+											</div>
+
+											<div ng-if="newMachineDTO.machineType.id==1"
+												class="form-group">
+												<label class="col-sm-3 control-label">Vehicle Type </label>
+												<div class="col-sm-9 control-value">
+													<input type="hidden" ng-model="newMachineDTO.vehicleType"
+														ng-value="{{vehicles.vehicleType}}"/ >
+													{{vehicles.vehicleType}}
+												</div>
+											</div>
+											<div ng-if="newMachineDTO.machineType.id==2"
+												class="form-group">
+												<label class="col-sm-3 control-label required">Vehicle Type</label>
+												<div class="col-sm-9">
+													<select class="form-control"
+														ng-model="newMachineDTO.civillianVehicleType"
+														ng-options="accCvVehType as accCvVehType.name for accCvVehType in  accCvVehTypes track by accCvVehType.id ">
+													</select>
+												</div>
+											</div>
+											<div ng-if="newMachineDTO.machineType.id==1"
+												class="form-group">
+												<label class="col-sm-3 control-label ">Lastest
+													PM Date</label>
+												<div class="col-sm-9 control-value">
+													<input type="hidden"
+														ng-model="newMachineDTO.latestPmStartDate"
+														ng-value="{{vehicles.latestPmStartDate}}"/ >
+													{{vehicles.latestPmStartDate}}
+												</div>
+											</div>
+											<div ng-if="newMachineDTO.machineType.id==1"
+												class="form-group">
+												<label class="col-sm-3 control-label ">Lastest
+													AVI Date</label>
+												<div class="col-sm-9 control-value">
+													<input type="hidden" ng-model="newMachineDTO.aviDueDate"
+														ng-value="{{vehicles.aviDueDate}}"/ >
+													{{vehicles.aviDueDate}}
+												</div>
+											</div>
+											<div ng-if="newMachineDTO.machineType.id==1"
+												class="form-group">
+												<label class="col-sm-3 control-label required">BOC Conducted</label>
+												<div class="col-sm-9">
+													<yes-no class="form-control" ng-model="newMachineDTO.bocConducted"/>
+
+												</div>
+											</div>
+											<div class="form-group" ng-if="newMachineDTO.machineType.id==1 || newMachineDTO.machineType.id==2" >
+												<label   class="col-sm-3 control-label required">SAF/Civilian<br>Vehicle Damages
+												</label>
+												<div class="col-sm-9 control-value">
+													<textarea class="form-control"
+														ng-model="newMachineDTO.vehicleDamages"></textarea>
+												</div>
+											</div>
+											<div class="form-group" ng-if="newMachineDTO.machineType.id==1 || newMachineDTO.machineType.id==2" >
+												<label class="col-sm-3 control-label required">Private/Public<br>Property
+													Damages
+												</label>
+												<div class="col-sm-9 control-value">
+													<textarea class="form-control"
+														ng-model="newMachineDTO.propertyDamages"></textarea>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+								<div class="modal-footer" ng-if="newMachineDTO.machineType.id==1 || newMachineDTO.machineType.id==2"   >
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Cancel</button>
+									<button type="button" class="btn btn-primary"
+										data-dismiss="modal" ng-click="saveAndUpdateMachine(newMachineDTO)">{{newMachineDTO.isAdd?'Save':'Update'}}</button>
+								</div>
+							</div>
+						</div>
+				</form>
+
+
+
+
+			</div>
+
+
+		</div>
+		<div class="tab-pane fade" id="medium">
+			<form class="form-horizontal">
+				<fieldset>
+					<legend>Assessment</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Weather</label>
+						<div class="col-sm-3">
+							<select ng-model="mediumDTO.weatherId" class="form-control"
+								ng-options="accWeather.id as accWeather.name for accWeather in accWeathers">
+								<option></option>
+
+							</select>
+						</div>
+						<label class="col-sm-3 control-label">Visibility</label>
+						<div class="col-sm-3">
+							<select ng-model="mediumDTO.visibilityId" class="form-control"
+								ng-options="accVisibility.id as accVisibility.name for accVisibility in accVisibilities">
+								<option></option>
+
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Road Surface</label>
+						<div class="col-sm-3">
+							<select class="form-control"
+								ng-model="mediumDTO.roadSurfaceId"
+								ng-options="accRoadSurface.id as accRoadSurface.name for accRoadSurface in accRoadSurfaces">
+								<option></option>
+
+							</select>
+						</div>
+						<label class="col-sm-3 control-label">Road Features</label>
+						<div class="col-sm-3">
+							<select ng-model="mediumDTO.roadFeaturesId" class="form-control"
+								ng-options="accRoadFeature.id as accRoadFeature.name for accRoadFeature in accRoadFeatures">
+								<option></option>
+
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Road Types</label>
+						<div class="col-sm-3">
+							<select ng-model="mediumDTO.roadTypesId" class="form-control"
+								ng-options="accRoadType.id as accRoadType.name for accRoadType in accRoadTypes">
+								<option></option>
+
+							</select>
+						</div>
+						<label class="col-sm-3 control-label">Road Speed Limit</label>
+						<div class="col-sm-3">
+							<select ng-model="mediumDTO.roadSpeedLimitId"
+								class="form-control"
+								ng-options="accSpeedLimit.id as accSpeedLimit.name for accSpeedLimit in accSpeedLimits">
+								<option></option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Traffic Volume</label>
+						<div class="col-sm-3">
+							<select ng-model="mediumDTO.trafficVolumeId" class="form-control"
+								ng-options="accTrafficVolume.id as accTrafficVolume.name for accTrafficVolume in accTrafficVolumes">
+								<option></option>
+
+							</select>
+						</div>
+						<label class="col-sm-3 control-label">Remarks</label>
+						<div class="col-sm-3">
+							<textarea ng-model="mediumDTO.remarks" class="form-control"></textarea>
+						</div>
+					</div>
+					<br>
+					<legend>Findings</legend>
+					<div class="form-group">
+						<label class="col-sm-10 control-label required">Is the medium a contributing factor to the accident?</label>
+						
+						<div class="col-sm-1">
+							<yes-No ng-model="mediumDTO.mediumFlag"/>
+
+						</div>
+					</div>
+					<div class="form-group" ng-if="mediumDTO.mediumFlag=='Y'">
+						<label class="col-sm-1 control-label">Remarks</label>
+						<div class="col-sm-10">
+							<textarea ng-model="mediumDTO.medFlagRemarks"
+								class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-default btn-block"
+								ng-click="saveMedium()">Save</button>
+						</div>
+						<br>
+					</div>
+				</fieldset>
+				<br>
+
+
+
+			</form>
+		</div>
+		<div class="tab-pane fade" id="management">
+			<form class="form-horizontal">
+				<fieldset>
+					<legend>Assessment</legend>
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Is this an authorized detail?</label>
+						<div class="col-sm-1">
+							<yes-No ng-model="managementDTO.authorizedFlag"/>
+
+						</div>
+						<label ng-if="managementDTO.authorizedFlag=='Y'"
+							class="col-sm-2 control-label">MT RAC Signed By</label>
+						<div ng-if="managementDTO.authorizedFlag=='Y'" class="col-sm-5">
+			
+							<typeahead 
+								uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+								typeahead-on-select="managementDTO.mtRacBy = $item.code"
+								placeholder="NRIC No. or Name" ng-model="nricName" />
+
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Was the road safety
+							briefing done?</label>
+						<div class="col-sm-1">
+							<yes-No ng-model="managementDTO.safetyBriefFlag" />
+
+						</div>
+						<label ng-if="managementDTO.safetyBriefFlag=='Y'"
+							class="col-sm-2 control-label">Briefing Done By</label>
+						<div ng-if="managementDTO.safetyBriefFlag=='Y'" class="col-sm-5">
+							<typeahead
+								uib-typeahead="safetyBriefnricName.name + ' (' + safetyBriefnricName.code + ')' for safetyBriefnricName in searchNricNames($viewValue)"
+								typeahead-on-select="managementDTO.safetyBriefBy = $item.code"
+								placeholder="NRIC No. or Name" ng-model="safetyBriefnricName" />
+
+						</div>
+					</div>
+					<div ng-if="managementDTO.safetyBriefFlag=='Y'" class="form-group">
+						<div class="col-sm-4"></div>
+						<label class="col-sm-2 control-label">{{tryon}}Briefing accDone On </label>
+						<div class="col-sm-2">
+							<input datebox ng-model="managementDTO.safetyBriefDate"
+								class="form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Was there a Vehicle Commander?</label>
+						<div class="col-sm-1">
+							<yes-No ng-model="managementDTO.vehicleCommanderFlag"/>
+
+						</div>
+						<label ng-if="managementDTO.vehicleCommanderFlag=='Y'"
+							class="col-sm-2 control-label">Vehicle Commander</label>
+						<div ng-if="managementDTO.vehicleCommanderFlag=='Y'"
+							class="col-sm-5">
+							<typeahead
+								uib-typeahead="vehicleCommanderNricName.name + ' (' + vehicleCommanderNricName.code + ')' for vehicleCommanderNricName in 	searchNricNames($viewValue)"
+								typeahead-on-select="managementDTO.vehicleCommanderNameNRIC = $item.code"
+								placeholder="NRIC No. or Name"
+								ng-model="vehicleCommanderNricName" />
+						</div>
+					</div>
+					<div ng-if="managementDTO.vehicleCommanderFlag=='Y'"
+						class="form-group">
+						<div class="col-sm-4"></div>
+						<label class="col-sm-2 control-label">Unit</label>
+						<div class="col-sm-2">
+							<typeahead placeholder="Unit Code or Name"
+								uib-typeahead="vehicleCommandderUnit.name + ' (' + vehicleCommandderUnit.code + ')' for vehicleCommandderUnit in searchUnits($viewValue)"
+								typeahead-on-select="managementDTO.vehicleCommanderUnitCode = $item.code"
+								ng-blur="managementDTO.vehicleCommanderUnitCode = vehicleCommandderUnit ? managementDTO.vehicleCommanderUnitCode : undefined"
+								ng-model="vehicleCommandderUnit" />
+
+						</div>
+						<div class="col-sm-2">
+							<label class="col-sm-2 control-label">Contact No.</label> <input
+								ng-model="managementDTO.vehicleCommanderContactNumber"
+								class="form-control">
+						</div>
+					</div>
+					<br>
+					<legend>Findings</legend>
+					<div class="form-group">
+						<label class="col-sm-10 control-label required">Is the management a contributing factor to the accident?</label>
+					
+						<div class="col-sm-1">
+							<yes-No ng-model="managementDTO.managementFlag"/>
+
+						</div>
+					</div>
+					<div class="form-group" ng-if="managementDTO.managementFlag=='Y'">
+						<label class="col-sm-1 control-label">Remarks</label>
+						<div class="col-sm-10">
+							<textarea ng-model="managementDTO.managementFlagRemarks"
+								class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-10" />
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-default btn-block"
+								ng-click="saveManagement()">Save</button>
+						</div>
+						<br>
+					</div>
+				</fieldset>
+				<br>
+			</form>
+		</div>
+		<div class="tab-pane fade" id="attachments">
+			<form class="form-horizontal">
+				<fieldset>
+					<div>
+
+						<legend>Statements of Personnel</legend>
+						<table
+							class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox"
+									ng-model="checkboxes.allAccidentStatements"
+									ng-click="checkAllAccidentStatements()"></th>
+								<th width="300px">File Name</th>
+
+								<th>Description</th>
+							</tr>
+							<tr ng-repeat="accidentStatement in accidentStatements">
+								<td class="text-center"><input type="checkbox"
+									ng-model="checkboxes.accidentStatementsRecords[accidentStatement.accidentFileId]"
+									ng-click="checkboxes.allAccidentStatements=false"
+									value="{{accidentStatement.accidentFileId}}"></td>
+								<td><a
+									href="accident/{{reportDTO.accidentNo}}/Statements_of_Personnel/{{accidentStatement.fileName}}"
+									download="{{accidentStatement.fileName}}">{{accidentStatement.fileName}}
+								</a></td>
+								<td>{{accidentStatement.fileDescription}}</td>
+							</tr>
+
+						</table>
+
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="showUploadStatementModal()">
+							<div class="glyphicon glyphicon-plus" />
+
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="deleteStatementFile()">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+						<br>
+						<legend>Photographs of Accident</legend>
+						<table
+							class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox"
+									ng-model="checkboxes.allAccidentPhotograph"
+									ng-click="checkAllAccidentPhotoGraphFile()"></th>
+								<th width="300px">File Name</th>
+
+								<th>Description</th>
+							</tr>
+							<tr ng-repeat="accidentPhotograph in accidentPhotographs">
+								<td class="text-center"><input type="checkbox"
+									ng-model="checkboxes.accidentPhotographRecords[accidentPhotograph.accidentFileId]"
+									ng-click="checkboxes.allAccidentPhotograph=false"
+									value="{{accidentPhotograph.accidentFileId}}"></td>
+								<td><a
+									href="accident/{{reportDTO.accidentNo}}/Statements_of_Personnel/{{accidentPhotograph.fileName}}"
+									download="{{accidentPhotograph.fileName}}">{{accidentPhotograph.fileName}}
+								</a></td>
+
+								<td>{{accidentPhotograph.fileDescription}}</td>
+							</tr>
+
+						</table>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="showuUploadAccidentPhotographsModal()">
+							<div class="glyphicon glyphicon-plus" />
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="deleteAccidentPhotographFile()">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+						<br>
+						<legend>Semantics</legend>
+						<table
+							class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox"
+									ng-model="checkboxes.allSemantics"
+									ng-click="checkAllAccidentSemantics()"></th>
+								<th width="300px">File Name</th>
+
+								<th>Description</th>
+							</tr>
+							<tr ng-repeat="accidentSemantics in accidentSemanticss ">
+								<td class="text-center"><input type="checkbox"
+									ng-model="checkboxes.accidentSemanticsRecords[accidentSemantics.accidentFileId]"
+									ng-click="checkboxes.allSemantics=false"
+									value="{{accidentSemantics.accidentFileId}}" /></td>
+								<td><a
+									href="accident/{{reportDTO.accidentNo}}/Semantics/{{accidentSemantics.fileName}}"
+									download="{{accidentSemantics.fileName}}">{{accidentSemantics.fileName}}
+								</a></td>
+
+								<td>{{accidentSemantics.fileDescription}}</td>
+							</tr>
+						</table>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="showUploadSemanticsModal()">
+							<div class="glyphicon glyphicon-plus" />
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="deleteSemanticsFile()">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+						<br>
+						<legend>Transponder Log Data</legend>
+						<table
+							class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th width="15px" class="text-center"><input type="checkbox"
+									ng-model="checkboxes.allTransponderLogData"
+									ng-click="allTransponderLogData()"></th>
+								<th width="300px">File Name</th>
+
+								<th>Description</th>
+							</tr>
+
+							<tr
+								ng-repeat="accidentTransponderLog in accidentTransponderLogs ">
+								<td class="text-center"><input type="checkbox"
+									ng-model="checkboxes.accidentTransponderLogRecords[accidentTransponderLog.accidentFileId]"
+									ng-click="checkboxes.allTransponderLogData=false"
+									value="{{accidentTransponderLog.accidentFileId}}" /></td>
+								<td><a
+									href="accident/{{reportDTO.accidentNo}}/Transponder_Log/{{accidentTransponderLog.fileName}}"
+									download="{{accidentTransponderLog.fileName}}">{{accidentTransponderLog.fileName}}
+								</a></td>
+
+								<td>{{accidentTransponderLog.fileDescription}}</td>
+							</tr>
+
+
+						</table>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="uploadTransponderLog()">
+							<div class="glyphicon glyphicon-plus" />
+							Upload Attachment
+						</button>
+						<button type="button" class="btn btn-default navbar-btn btn-xs"
+							ng-click="deleteTransponderLogData()">
+							<div class="glyphicon glyphicon-minus" />
+							Remove Attachment
+						</button>
+					</div>
+				</fieldset>
+				<br>
+
+
+				<div class="modal fade" id="addFileModal" tabindex="-1">
+					<div class="modal-dialog" style="width: 600px">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button class="close" data-dismiss="modal" ng-close="closing()">&times;</button>
+								<h4 class="modal-title">Upload {{fileType}} Attachment</h4>
+							</div>
+							<div class="modal-body">
+								<div class="container-fluid">
+									<form class="form-horizontal">
+
+
+
+										<div class="form-group">
+											<label class="col-sm-3 control-label required">File	Description</label>
+											<div class="col-sm-9"  >
+												<textarea ng-model="newAttachmentDTO.fileDescription"
+													class="form-control"></textarea>
+
+											</div>
+										</div>
+
+
+
+
+									</form>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<div class="form-group" ng-if="newAttachmentDTO.fileDescription!=''">
+									<label class="col-sm-3 control-label required">File</label>
+									<div class="col-sm-9">
+										<button class="btn btn-primary btn-block" fileModel
+											type="file" ngf-select="uploadFile($file, $invalidFiles)"
+											ngf-max-height="1000"  ngf-max-size="300MB">Upload File...</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+			</form>
+		</div>
+		<div class="tab-pane fade" id="cause">
+			<form class="form-horizontal">
+				<fieldset>
+					<legend>Causal Factors of Accident</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Point Errors</label>
+						<div class="col-sm-9">
+							<select ng-model="causesDTO.pointErrorsId" tagbox multiple="true"
+								class="form-control"
+								ng-options="accPointError.id as accPointError.name for accPointError in accPointErrors">
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">System Errors</label>
+						<div class="col-sm-9">
+							<select ng-model="causesDTO.systemErrorsId" tagbox
+								multiple="true" class="form-control"
+								ng-options="accSystemError.id as accSystemError.name for accSystemError in accSystemErrors">
+
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Vehicle Fault</label>
+						<div class="col-sm-9">
+							<input ng-model="causesDTO.vehicleFault" class="form-control">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Others <span
+							class="glyphicon glyphicon-info-sign"
+							uib-tooltip="For Non-SAF Transport Operator Negligent" /></label>
+						<div class="col-sm-9">
+							<input ng-model="causesDTO.others" class="form-control">
+						</div>
+					</div>
+					<br>
+					<legend>Neglience of Personnel</legend>
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">Vehicle Commander Negligent</label>
+						<div class="col-sm-2">
+
+							<yes-No ng-model="causesDTO.vehicleCommanderNeglience" />
+
+						</div>
+						<label class="col-sm-4 control-label required">Ground Commander
+							Negligent</label>
+						<div class="col-sm-2">
+
+							<yes-No ng-model="causesDTO.safDriverNeglience" />
+
+
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">SAF Transport Operator Negligent</label>
+						<div class="col-sm-2">
+							<yes-No ng-model="causesDTO.groundControllerNeglience" />
+
+
+						</div>
+						<label class="col-sm-4 control-label required">Non-SAF Transport Operator Negligent</label>
+						<div class="col-sm-2">
+
+							<yes-No ng-model="causesDTO.nonSafTransportOperatorsNeglience" />
+
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-10" />
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-default btn-block"
+								ng-click="saveAccidentCauses()">Save</button>
+						</div>
+						<br>
+					</div>
+				</fieldset>
+				<br>
+			</form>
+		</div>
+		<div class="tab-pane fade" id="conclusion">
+			<form class="form-horizontal">
+				<fieldset>
+					<legend>Conclusion</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Conclusion /
+							Recommendation</label>
+						<div class="col-sm-9">
+							<textarea ng-model="conclusionDTO.conclusion"
+								class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Key Lesson Learnt</label>
+						<div class="col-sm-9">
+							<textarea ng-model="conclusionDTO.lessonLearnt"
+								class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-10" />
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-default btn-block"
+								ng-click="saveAccidentConculsion()">Save</button>
+						</div>
+					</div>
+		
+				</fieldset>
+				<br>
+			</form>
+		</div>
+		<div class="tab-pane fade" id="annexes">
+			<form class="form-horizontal">
+				<fieldset>
+					<legend>Formal Investigation Report (FIR)</legend>
+
+
+					<table
+						class="table table-striped table-bordered table-responsive table-condensed small">
+						<tr>
+							<th width="15px" class="text-center"><input type="checkbox"
+								ng-model="checkboxes.allFIR" ng-click="checkAllFIR()">
+							</th>
+							<th width="300px">File Name</th>
+
+							<th>Description</th>
+						</tr>
+						<tr ng-repeat="FIR in FIRs ">
+							<td class="text-center"><input type="checkbox"
+								ng-model="checkboxes.FIRs[FIR.accidentFileId]"
+								ng-click="checkboxes.allFIR=false"
+								value="{{FIR.accidentFileId}}" /></td>
+							<td><a
+								href="accident/{{reportDTO.accidentNo}}/Formal_Investigation_Report/{{FIR.fileName}}"
+								download="{{FIR.fileName}}">{{FIR.fileName}} </a></td>
+
+							<td>{{FIR.fileDescription}}</td>
+						</tr>
+					</table>
+					<button type="button" class="btn btn-default navbar-btn btn-xs"
+						ng-click="uploadFIR()">
+						<div class="glyphicon glyphicon-plus" />
+						Upload Attachment
+					</button>
+					<button type="button" class="btn btn-default navbar-btn btn-xs"
+						ng-click="deleteFirFile()">
+						<div class="glyphicon glyphicon-minus" />
+						Remove Attachment
+					</button>
+					<br>
+					<legend>BOI</legend>
+					<table
+						class="table table-striped table-bordered table-responsive table-condensed small">
+						<tr>
+							<th width="15px" class="text-center"><input type="checkbox"
+								ng-model="checkboxes.allBOI" ng-click="checkAllBOI()">
+							</th>
+							<th width="300px">File Name</th>
+
+							<th>Description</th>
+						</tr>
+						<tr ng-repeat="boi in BOIs">
+							<td class="text-center"><input type="checkbox"
+								ng-model="checkboxes.BOIs[boi.accidentFileId]"
+								ng-click="checkboxes.allBOI=false"
+								value="{{boi.accidentFileId}}" /></td>
+							<td><a
+								href="accident/{{reportDTO.accidentNo}}/BOI/{{boi.fileName}}"
+								download="{{boi.fileName}}">{{boi.fileName}} </a></td>
+
+							<td>{{boi.fileDescription}}</td>
+						</tr>
+					</table>
+					<button type="button" class="btn btn-default navbar-btn btn-xs"
+						ng-click="uploadBOI()">
+						<div class="glyphicon glyphicon-plus" />
+						Upload Attachment
+					</button>
+					<button type="button" class="btn btn-default navbar-btn btn-xs"
+						ng-click="deleteBoiFile()">
+						<div class="glyphicon glyphicon-minus" />
+						Remove Attachment
+					</button>
+					<br>
+					<legend>Police Report</legend>
+					<table
+						class="table table-striped table-bordered table-responsive table-condensed small">
+						<tr>
+							<th width="15px" class="text-center"><input type="checkbox"
+								ng-model="checkboxes.allPoliceReport"
+								ng-click="checkAllpoliceReport()"></th>
+							<th width="300px">File Name</th>
+
+							<th>Description</th>
+						</tr>
+						<tr ng-repeat="policeReport in policeReports">
+							<td class="text-center"><input type="checkbox"
+								ng-model="checkboxes.policeReports[policeReport.accidentFileId]"
+								ng-click="checkboxes.allPoliceReport=false"
+								value="{{policeReport.accidentFileId}}" /></td>
+							<td><a
+								href="accident/{{reportDTO.accidentNo}}/Police_Report/{{policeReport.fileName}}"
+								download="{{policeReport.fileName}}">{{policeReport.fileName}}
+							</a></td>
+
+							<td>{{policeReport.fileDescription}}</td>
+						</tr>
+					</table>
+					<button type="button" class="btn btn-default navbar-btn btn-xs"
+						ng-click="uploadPoliceReport()">
+						<div class="glyphicon glyphicon-plus" />
+						Upload Attachment
+					</button>
+					<button type="button" class="btn btn-default navbar-btn btn-xs"
+						ng-click="deletePoliceReport()">
+						<div class="glyphicon glyphicon-minus" />
+						Remove Attachment
+					</button>
+				</fieldset>
+				<br>
+			</form>
+
+
+
+
+
+
+
+			<div class="modal fade" id="addAnnexFileModal" tabindex="-1">
+				<div class="modal-dialog" style="width: 600px">
+					<div class="modal-content">
+						<form class="form-horizontal">
+							<div class="modal-header">
+								<button class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Upload {{AnnexFileType}} Attachment</h4>
+							</div>
+							<div class="modal-body">
+								<div class="container-fluid">
+
+
+
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label required">File Description</label>
+										<div class="col-sm-9">
+											<textarea ng-model="newAnnexDTO.fileDescription" ng-if="newAttachmentDTO.fileDescription!=null || newAttachmentDTO.fileDescription!=''"
+												class="form-control"></textarea>
+
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<div class="form-group" ng-if="newAnnexDTO.fileDescription!=''">
+									<label class="col-sm-3 control-label required">File</label>
+									<div class="col-sm-9">
+										<button class="btn btn-primary btn-block" fileModel
+											type="file"
+											ngf-select="uploadAnnexFile($file, $invalidFiles)"
+											ngf-max-height="1000"  ngf-max-size="300MB">Upload File...</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+

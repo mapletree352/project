@@ -1,0 +1,364 @@
+<div class="row page-header">
+	<h3>Search Vehicles</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position:absolute;width:130px;right:20px;z-index:998">
+				<button class="btn btn-block btn-primary" ng-click="search()" ng-disabled="loading">Search</button>
+				<button class="btn btn-block btn-default" ng-click="reset()">Clear</button>
+				<br>
+			    <a href="" ng-click="advSearchCollapsed = !advSearchCollapsed" class="pull-right">Advanced Search...</a>
+			</div>
+			<div style="padding-right:160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Vehicle</label>
+						<div class="col-sm-4">
+							<typeahead placeholder="Vehicle No. or Type" uib-typeahead="vehicleNoType.code + ' (' + vehicleNoType.name + ')' for vehicleNoType in searchVehicleNoTypes($viewValue)"
+								typeahead-on-select="searchDTO.vehicleNo = $item.code" ng-blur="searchDTO.vehicleNo = vehicle ? searchDTO.vehicleNo : undefined" ng-model="vehicle" />
+						</div>
+						<label class="col-sm-2 control-label">Vehicle Type</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" ng-model="searchDTO.vehicleTypeId">
+								<option />
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Hub</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-options="hub.code as hub.name for hub in hubs" ng-model="searchDTO.hubCode">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Hub' || session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.hub" readonly/>
+						</div>
+						<label class="col-sm-2 control-label">Node</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.hubCode)" ng-model="searchDTO.nodeId">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.node" readonly/>
+						</div>
+					</div>
+					<div uib-collapse="advSearchCollapsed">
+						<hr>
+						<div class="col-sm-1">
+							<ul class="nav nav-tabs tabs-left">
+								<li class="active"><a href="" ng-click="tab = 'profile'" data-toggle="tab">Profile</a></li>
+								<li><a href="" ng-click="tab = 'maintenance'" data-toggle="tab">Main-<br>tenance</a></li>
+								<li><a href="" ng-click="tab = 'mileage'" data-toggle="tab">Mileage</a></li>
+							</ul>
+						</div>
+						<div class="col-sm-11">
+							<div class="tab-content" ng-if="tab === 'profile'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Permit Class</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-options="permitClass.code as permitClass.name for permitClass in permitClasses" ng-model="searchDTO.permitClassCode">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">ES Location</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.esLocation" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Purpose</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-options="purpose.id as purpose.name for purpose in purposes" ng-model="searchDTO.purposeId">
+			                                <option />
+			                            </select>
+			                        </div>
+									<label class="col-sm-2 control-label">ES SLOC</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.esStorageLocation" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">IVD Information</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.ivdInfo" />
+									</div>
+									<label class="col-sm-2 control-label">ES Equipment</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-options="esEquipment.id as esEquipment.name for esEquipment in esEquipments" ng-model="searchDTO.esEquipmentId">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">T-Loan Node</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-options="node.id as node.name for node in nodes" ng-model="searchDTO.loanNodeId">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">ES Material</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.esMaterial" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Stock Type</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.stockType" />
+									</div>
+									<label class="col-sm-2 control-label">ES Work Center</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.esWorkCenter" />
+									</div>
+								</div>
+								<div class="form-group">									
+									<label class="col-sm-2 control-label">Service Type</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.serviceType" />
+									</div>
+									<label class="col-sm-2 control-label">ES Cost Center</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.esCostCenter" />
+									</div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab === 'maintenance'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Warranty Period</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input daterangebox class="form-control" ng-model="searchDTO.warrantyDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>	
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">AVI Due Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input daterangebox class="form-control" ng-model="searchDTO.aviDueDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>
+									</div>
+									<label class="col-sm-2 control-label">Latest PM</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.latestPm" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">AVI Status <span class="glyphicon glyphicon-info-sign" uib-tooltip="Search will not return Obsolete Vehicles unless specified."/></label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-options="aviStatus.code as aviStatus.name for aviStatus in aviStatuses" ng-model="searchDTO.aviStatusCode">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">PM Status</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-options="status.code as status.name for status in statuses" ng-model="searchDTO.statusCode">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Next PM</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.nextPm" />
+									</div>
+									<label class="col-sm-2 control-label">PM Start Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input datetimerangebox class="form-control" ng-model="searchDTO.latestPmStartDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>	
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Next PM Start Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input datetimerangebox class="form-control" ng-model="searchDTO.nextPmStartDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>
+									</div>
+									<label class="col-sm-2 control-label">PM End Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input datetimerangebox class="form-control" ng-model="searchDTO.latestPmEndDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>	
+									</div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab === 'mileage'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Date Range</label>
+                                    <div class="col-sm-4">
+                                   		<div class="input-group valueColumn date"> 
+	                                    	<input daterangebox class="form-control" />
+	                                    	<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>	
+                                    </div>
+                                    <label class="col-sm-2 control-label">Total Mileage</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control"/>
+											<label class="input-group-addon">to</label>
+											<input type="number" oninput="maxChk(this)" class="form-control"/>
+										</div>
+                                    </div>
+								</div>
+								<div class="form-group">
+                               		<label class="col-sm-2 control-label">Task ID</label>
+                                    <div class="col-sm-4">
+                                    	<input type="text" class="form-control">
+                                    </div>
+                                </div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+		<tr>
+			<th class="text-center"><input type="checkbox" ng-model="checkboxes.all" ng-click="checkAll()"></th>
+			<th no-sort>#</th>
+			<th sort property="vehicleNo">Vehicle No</th>
+			<th sort property="vehicleType.name">Vehicle Type</th>
+			<th sort property="permitClass.name">Permit Class</th>
+			<th sort property="ehrNode.name">Node</th>
+			<th sort property="aviStatus.code">AVI Status</th>
+			<th sort property="aviDueDate">AVI Due Date</th>
+			<th sort property="latestPmMaintenance.name">Latest PM</th>
+			<th sort property="latestPm.status.code">Latest PM Status</th>
+			<th sort property="nextPmMaintenance.name">Next PM</th>
+			<th sort property="nextPm.startDate">Next PM Start Date</th>
+			<th sort property="mileage">Total Mileage</th>
+		</tr>
+		<tr ng-repeat="record in records">
+			<td class="text-center"><input type="checkbox" ng-model="checkboxes.records[record.vehicleNo]" ng-click="checkboxes.all=false"></td>
+			<td>{{$index +searchDTO.startIndex +1}}</td>
+			<td><a href="#/vehicle/{{record.vehicleNo}}">{{record.vehicleNo}}</a></td>
+			<td>{{record.vehicleType}}</td>
+			<td>{{record.permitClass}}</td>
+			<td>{{record.node}}</td>
+			<td>{{record.aviStatus}}</td>
+			<td>{{record.aviDueDate}}</td>
+			<td>{{record.latestPm}}</td>
+			<td>{{record.latestPmStatus}}</td>
+			<td>{{record.nextPm}}</td>
+			<td>{{record.nextPmStartDate}}</td>
+			<td>{{record.totalMileage | number: 1}}</td>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="13" ng-if="records && records.length > 0">
+					<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+					<ul class="pagination">
+						<li>
+							<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+						</li>
+						<li class="dropup" ng-if="session.rights['showUpdateVehicleMaintenance']">
+							<a href="" style="color:black" data-toggle="dropdown" >
+								<span class="glyphicon glyphicon-open"></span>&nbsp;&nbsp;Batch Update...
+								<ul class="dropdown-menu">
+									<li><a href="" data-toggle="modal" ng-click="setSelection('IVD Information')">IVD Information</a></li>
+									<li><a href="" data-toggle="modal" ng-click="setSelection('Vehicle Type')">Vehicle Type</a></li>	
+									<li class="divider"></li>
+									<li><a href="" data-toggle="modal" ng-click="setSelection('Warranty Period')">Warranty Period</a></li>
+									<li><a href="" data-toggle="modal" ng-click="setSelection('AVI')">AVI</a></li>	
+								</ul>
+							</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+	<br>
+</div>
+<div class="modal fade" id="batchUpdateModal" tabindex="-1">
+	<div class="modal-dialog" style="width: 600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Update {{batchUpdateType}} by Batch</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group" ng-if="batchUpdateType === 'IVD Information'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<input class="form-control" ng-model="dto.ivdInfo"></input>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Vehicle Type'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" ng-model="dto.vehicleTypeId">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'Warranty Period'">
+							<label class="col-sm-3 control-label">{{batchUpdateType}}</label>
+							<div class="col-sm-9">
+								<input daterangebox class="form-control" ng-model="dto.warrantyDateRange"></input>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'AVI'">
+							<label class="col-sm-3 control-label">AVI Due Date <span class="glyphicon glyphicon-info-sign" uib-tooltip="For New Vehicle, please enter the vehicle's AVI Due Date to allow tasking it for indents and auto-scheduling of its PM." /></label>
+							<div class="col-sm-9">
+								<input datebox class="form-control" ng-model="dto.aviDueDate"/>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdateType === 'AVI'">
+							<label class="col-sm-3 control-label">AVI Status <span class="glyphicon glyphicon-info-sign" uib-tooltip="AVI Status will automatically set to Expired if AVI Due Date is earlier than today's date." /></label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-options="aviStatus.code as aviStatus.name for aviStatus in aviStatusesForBatch" ng-model="dto.aviStatusCode">
+									<option />
+								</select>
+							</div>
+						</div>
+						<hr>
+						<table st-table="selectedRecords" st-safe-src="selectedVehicles" class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th no-sort>#</th>
+								<th st-sort="name">Vehicle No</th>
+								<th st-sort="name">Vehicle Type</th>
+							</tr>
+							<tr ng-repeat="selectedRecord in selectedRecords">
+								<td>{{$index + 1}}</td>
+								<td>{{selectedRecord.vehicleNo}}</td>
+								<td>{{selectedRecord.vehicleType}}</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-click="batchUpdate()">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>

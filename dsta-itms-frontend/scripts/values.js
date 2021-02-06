@@ -1,0 +1,1 @@
+emart.value('configuration',{});

@@ -1,0 +1,82 @@
+<html ng-app="itms">
+	<head>
+		<title>SAF ITMS</title>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-daterangepicker/css/bootstrap-daterangepicker.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-select2/css/bootstrap-select2.min.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-touchspin/css/bootstrap-touchspin.min.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-fileinput/css/bootstrap-fileinput.min.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-summernote/css/bootstrap-summernote.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-vertical-tabs/css/bootstrap.vertical-tabs.min.css">
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-submenu/css/bootstrap-submenu.min.css">
+		<link rel="stylesheet" href="lib/jquery/fullcalendar-2.6.1/fullcalendar.min.css">
+		<link rel="stylesheet" href="lib/jquery/fullcalendar-2.6.1/fullcalendar.print.css" media='print'>
+		<link rel="stylesheet" href="lib/angular/angular-chart.min.css">
+		<link rel="stylesheet" href="lib/angular/ng-table-master/dist/ng-table.min.css">
+		<link rel="stylesheet" media="screen" href="lib/angular/handsontable-master/dist/handsontable.full.min.css">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="lib/bootstrap/bootstrap-3.3.6-dist/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="styles/default.css">
+	</head>
+
+	<body>
+
+	<div id="main-div" class="container-fluid" ng-view ui-view></div>
+		
+			
+		<div class="container-fluid">
+					<!-- Brand and toggle get grouped for better mobile display -->
+		</div>
+				
+					
+
+		<!-- Latest compiled and minified JavaScript -->
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="lib/moment.min.js"></script>
+		<script src="lib/underscore.min.js"></script> <!-- Required by Restangular -->
+		<script src="lib/Chart.min.js"></script>
+		<script src="lib/Chart.StackedBar.js"></script>
+		<script src="lib/jquery/jquery-2.2.0.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-daterangepicker/js/bootstrap-daterangepicker.js"></script>
+		<script src="lib/bootstrap/bootstrap-select2/js/bootstrap-select2.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-touchspin/js/bootstrap-touchspin.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-typeahead/js/bootstrap-typeahead.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-fileinput/js/bootstrap-fileinput.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-summernote/js/bootstrap-summernote.min.js"></script>
+		<script src="lib/bootstrap/bootstrap-submenu/js/bootstrap-submenu.min.js"></script>
+		<script src="lib/jquery/fullcalendar-2.6.1/fullcalendar.min.js"></script>
+		<script src="lib/angular/angular.min.js"></script>
+		<script src="lib/angular/angular-animate.min.js"></script>
+		<script src="lib/angular/angular-ui-router.min.js"></script>
+		<script src="lib/angular/restangular/restangular.min.js"></script>
+		<script src="lib/angular/angular-chart.min.js"></script>
+		<script src="lib/angular/angular-mocks.js"></script>
+		<script src="lib/angular/ui-bootstrap-tpls-1.2.5.min.js"></script>
+		<script src="lib/angular/ng-table-master/dist/ng-table.min.js"></script>
+		<!-- For debugging, use full instead of min first -->
+        <script src="lib/angular/handsontable-master/dist/handsontable.full.js"></script>
+        <script src="lib/angular/ngHandsontable-master/dist/ngHandsontable.min.js"></script>
+        <script src="lib/angular/smart-table-master/dist/smart-table.min.js"></script>
+		
+		<!-- All these should be minified into app.min.js eventually -->
+		<script src="scripts/data.js"></script>
+		<script src="scripts/routes.js"></script>
+		<script src="scripts/app.js"></script>
+		<script src="scripts/constants.js"></script>
+		<script src="scripts/directives.js"></script>
+<!-- 		<script src="scripts/directives/date.js"></script> -->
+<!-- 		<script src="scripts/directives/select.js"></script> -->
+		
+		<script src="scripts/services/CommonService.js"></script>
+		<script src="scripts/services/UserService.js"></script>
+		<script src="scripts/controllers/UserRegisterController.js"></script>
+				
+		<!-- These should be removed in production -->
+		<script src="scripts/test/mock-backend.js"></script>
+	</body>
+</html>

@@ -1,0 +1,131 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> SAF Personnel
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#profile" ng-click="vTab='P'" data-toggle="tab">Profile</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div style="text-align:center">
+							<img src="{{photoUrl}}" style="height:120px; padding-bottom:5px" />
+							<br>
+							<strong><big>{{dto.nricNo}}</big></strong>
+							<br>
+							<p>{{dto.name}}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="profile">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Military</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Appointment</label>
+							<div class="col-sm-4 control-value">{{dto.appointment}}</div>
+							<label class="col-sm-2 control-label">Date of Appointment</label>
+							<div class="col-sm-4 control-value">{{dto.appointmentDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vocation</label>
+							<div class="col-sm-4 control-value">{{dto.vocation}}</div>
+							<label class="col-sm-2 control-label">Date of Vocation</label>
+							<div class="col-sm-4 control-value">{{dto.vocationDate}}</div>
+						</div>
+						<div class="form-group">
+						<label class="col-sm-2 control-label">Type of Service</label>
+							<div class="col-sm-4 control-value">{{dto.serviceType}}</div>
+							<label class="col-sm-2 control-label">Date of Rank</label>
+							<div class="col-sm-4 control-value">{{dto.rankDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit</label>
+							<div class="col-sm-4 control-value">{{dto.unit}}</div>
+							<label class="col-sm-2 control-label">Date to Unit</label>
+							<div class="col-sm-4 control-value">{{dto.unitDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit Service Type</label>
+							<div class="col-sm-4 control-value">{{dto.unitService}}</div>
+							<label class="col-sm-2 control-label">Date of Enlistment</label>
+							<div class="col-sm-4 control-value">{{dto.enlistmentDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Security CAT</label>
+							<div class="col-sm-4 control-value">{{dto.securityCat}}</div>
+							<label class="col-sm-2 control-label">ORD</label>
+							<div class="col-sm-4 control-value">{{dto.ord}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">PES Grading</label>
+							<div class="col-sm-4 control-value">{{dto.pes}}</div>
+						</div>
+						<br>
+					</fieldset>
+					<fieldset>
+						<legend>Personal</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Citizenship</label>
+							<div class="col-sm-4 control-value">{{dto.citizenship}}</div>
+							<label class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-4 control-value">{{dto.emailAddress}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Place of Birth</label>
+							<div class="col-sm-4 control-value">{{dto.birthPlace}}</div>
+							<label class="col-sm-2 control-label">Hand Phone</label>
+							<div class="col-sm-4 control-value">{{dto.mobilePhoneNo}}</div>							
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Date of Birth</label>
+							<div class="col-sm-4 control-value">{{dto.birthDate}}</div>
+							<label class="col-sm-2 control-label">Home Phone</label>
+							<div class="col-sm-4 control-value">{{dto.homePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Race</label>
+							<div class="col-sm-4 control-value">{{dto.race}}</div>
+							<label class="col-sm-2 control-label">Office Phone</label>
+							<div class="col-sm-4 control-value">{{dto.officePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Religion</label>
+							<div class="col-sm-4 control-value">{{dto.religion}}</div>	
+							<label class="col-sm-2 control-label">Address</label>
+							<div class="col-sm-4 control-value">{{dto.address}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Marital Status</label>
+							<div class="col-sm-4 control-value">{{dto.maritalStatus}}</div>
+							<label class="col-sm-2 control-label">Alt. Address</label>
+							<div class="col-sm-4 control-value">{{dto.addressAlternative}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Highest Education</label>
+							<div class="col-sm-4 control-value">{{dto.highestEducation}}</div>
+							<label class="col-sm-2 control-label">Overseas Address</label>
+							<div class="col-sm-4 control-value">{{dto.addressOverseas}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Next of Kin (NOK)</label>
+							<div class="col-sm-4 control-value">{{dto.nextOfKin}}</div>
+							<label class="col-sm-2 control-label">NOK Contact No.</label>
+							<div class="col-sm-4 control-value">{{dto.nextOfKinContact}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">NOK Relationship</label>
+							<div class="col-sm-4 control-value">{{dto.nextOfKinRelationship}}</div>
+						</div>
+						<br>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

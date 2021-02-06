@@ -1,0 +1,122 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> New CDL Conversion
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#applicaton" ng-click="cdlcTab='A'" data-toggle="tab">Application</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<button type="button" class="btn btn-primary btn-block" ng-click="go('/cdlc')">Create Application</button>
+						<button type="button" class="btn btn-default btn-block">Clear</button>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="applicaton">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Application Details</legend>	
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Applicant</label>
+							<div class="col-sm-4">
+								<input class="form-control" ng-model="cdlcNRIC" placeholder="Name or NRIC No."
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10">
+							</div>					
+							<label class="col-sm-2 control-label">Application Status</label>
+							<div class="col-sm-4 control-value">NEW</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">CDL Class</label>
+							<div class="col-sm-4">
+								<select class="form-control">
+									<option></option>
+									<option ng-repeat="cdlClass in cdlClasses">{{cdlClass.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Remarks</label>
+							<div class="col-sm-4">
+								<textarea class="form-control" />
+							</div>
+						</div>
+						<br>
+						<legend>Recommendation Details</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Recommended By</label>
+							<div class="col-sm-4">
+								<input class="form-control" ng-model="pmtRecommendedByNew" placeholder="Name or NRIC No."
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10">
+							</div>
+							<label class="col-sm-2 control-label">Recommended On</label>
+							<div class="col-sm-4">
+								<input datebox class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" />
+							</div>
+							<label class="col-sm-2 control-label">Appointment</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">					
+							<label class="col-sm-2 control-label">Contact No.</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" />
+							</div>				
+						</div>
+						<br>
+						<legend>Processing Details</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Processed By</label>
+							<div class="col-sm-4">
+								<input class="form-control" ng-model="pmtProcessedByNew" placeholder="Name or NRIC No."
+									uib-typeahead="customer as customer.name for customer in customers | filter:$viewValue | limitTo:10">
+							</div>			
+							<label class="col-sm-2 control-label">Processed On</label>
+							<div class="col-sm-4">
+								<input datebox class="form-control" />
+							</div>					
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Mileage Checked</label>
+							<div class="col-sm-4">
+								<select class="form-control">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>			
+							<label class="col-sm-2 control-label">TP Screened</label>
+							<div ng-if="cdlcApproved == 'N'" class="col-sm-4">
+								<select class="form-control">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Classes Eligible</label>
+							<div class="col-sm-4">
+								<select class="form-control">
+									<option></option>
+									<option>Yes</option>
+									<option>No</option>
+								</select>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

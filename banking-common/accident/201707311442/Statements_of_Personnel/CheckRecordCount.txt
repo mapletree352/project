@@ -1,0 +1,4 @@
+Msg 116, Level 16, State 1, Line 20
+Only one expression can be specified in the select list when the subquery is not introduced with EXISTS.
+Msg 116, Level 16, State 1, Line 23
+Only one expression can be specified in the select list when the subquery is not introduced with EXISTS.

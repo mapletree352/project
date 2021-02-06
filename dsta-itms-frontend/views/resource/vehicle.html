@@ -1,0 +1,304 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()"/> Vehicle
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#profile" data-toggle="tab" ng-click="tab='profile'">Profile</a></li>
+			<li><a href="" data-target="#maintenance" data-toggle="tab" ng-click="tab='maintenance'">Maintenance</a></li>
+			<li><a href="" data-target="#mileage" data-toggle="tab" ng-click="tab='mileage'">Mileage</a></li>
+            <li><a href="" data-target="#schedule" data-toggle="tab" ng-click="tab='schedule'">Schedule</a></li>
+			<li><a href="" data-target="#auditLog" data-toggle="tab" ng-click="tab='audit'">Audit Log</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div style="text-align:center">
+							<a target="_blank" href="images/vehicles/{{dto.vehicleTypeImagePath ? dto.vehicleTypeImagePath : 'vehicle.gif'}}">
+								<img src="images/vehicles/{{dto.vehicleTypeImagePath ? dto.vehicleTypeImagePath : 'vehicle.gif'}}" style="height:120px" />
+							</a>
+							<br>
+                            <strong><big>{{dto.vehicleNo}}</big></strong>
+                            <br>
+                            <p><a href="#/vehicle_type/{{dto.vehicleTypeId}}">{{dto.vehicleType}}</a></p>
+							<hr>
+						</div>
+						<div ng-if="session.rights['showUpdateVehicleMaintenance']">
+							<button type="button" class="btn btn-default btn-block" ng-click="confirm()">Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="profile">
+				<form class="form-horizontal">
+                    <fieldset>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Hub</label>
+							<div class="col-sm-4 control-value">{{dto.hub}}</div>
+                            <label class="col-sm-2 control-label">ES Location</label>
+							<div class="col-sm-4 control-value">{{dto.esLocation}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Node</label>
+							<div class="col-sm-4 control-value">{{dto.node}}</div>
+							<label class="col-sm-2 control-label">ES SLOC</label>
+                            <div class="col-sm-4 control-value">{{dto.esStorageLocation}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">T-Loan Node</label>
+							<div class="col-sm-4 control-value">{{dto.loanNode}}</div>
+							<label class="col-sm-2 control-label">ES Equipment</label>
+                            <div class="col-sm-4 control-value">{{dto.esEquipment}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">IVD Information</label>
+							<div class="col-sm-4" ng-if="session.rights['showUpdateVehicleMaintenance']">
+								<input type="text" class="form-control" ng-model="dto.ivdInfo" />
+							</div>
+							<div ng-if="!session.rights['showUpdateVehicleMaintenance']" class="col-sm-4 control-value">{{dto.ivdInfo}}</div>
+							<label class="col-sm-2 control-label">ES Material</label>
+                            <div class="col-sm-4 control-value">{{dto.esMaterial}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vehicle Type</label>
+							<div class="col-sm-4" ng-if="session.rights['showUpdateVehicleMaintenance']">
+								<select class="form-control" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" ng-model="dto.vehicleTypeId">
+									<option />
+								</select>
+							</div>
+							<div ng-if="!session.rights['showUpdateVehicleMaintenance']" class="col-sm-4 control-value">{{dto.vehicleType}}</div>
+							<label class="col-sm-2 control-label">ES Work Center</label>
+                            <div class="col-sm-4 control-value">{{dto.esWorkCenter}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Stock Type</label>
+                            <div class="col-sm-4 control-value">{{dto.stockType}}</div>
+                            <label class="col-sm-2 control-label">ES Cost Center</label>
+                            <div class="col-sm-4 control-value">{{dto.esCostCenter}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Service Type</label>
+                            <div class="col-sm-4 control-value">{{dto.serviceType}}</div>
+							<label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-4 control-value"></div>
+						</div>
+						<br>
+					</fieldset>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="maintenance">
+				<form class="form-horizontal">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Warranty Period</label>
+							<div class="col-sm-3" ng-if="session.rights['showUpdateVehicleMaintenance']">
+								<input daterangebox class="form-control" ng-model="dto.warrantyDateRange"></input>
+							</div>
+							<div ng-if="!session.rights['showUpdateVehicleMaintenance']" class="col-sm-3 control-value">{{dto.warrantyDateRange}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">AVI Due Date <span class="glyphicon glyphicon-info-sign" uib-tooltip="For New Vehicle, please enter the vehicle's AVI Due Date to allow tasking it for indents and auto-scheduling of its PM." /></label>
+                            <div class="col-sm-3" ng-if="session.rights['showUpdateVehicleMaintenance']">
+                                <input datebox class="form-control" ng-model="dto.aviDueDate"/>
+                            </div>
+                            <div ng-if="!session.rights['showUpdateVehicleMaintenance']" class="col-sm-3 control-value">{{dto.aviDueDate}}</div>
+							<label class="col-sm-3 control-label">Latest PM</label>
+                            <div class="col-sm-3 control-value">{{dto.latestPm}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">AVI Status <span class="glyphicon glyphicon-info-sign" uib-tooltip="Only vehicles with a 'Pass' AVI Status can be assigned to Task. AVI Status will automatically set to 'Expired' if AVI Due Date has expired." /></label>						
+                            <div class="col-sm-3 control-value" ng-if="dto.aviStatusCode === 'AVI_N' && dto.aviDueDate">Pass</div>
+                            <div class="col-sm-3 control-value" ng-if="dto.aviStatusCode === 'AVI_N' && !dto.aviDueDate">New Vehicle</div>
+                            <div class="col-sm-3 control-value" ng-if="dto.aviStatusCode === 'AVI_O'">Obsolete Vehicle</div>
+                            <div class="col-sm-3" ng-if="dto.aviStatusCode !== 'AVI_N' && dto.aviStatusCode !== 'AVI_O' && session.rights['showUpdateVehicleMaintenance']">
+                                <select class="form-control" ng-options="aviStatus.code as aviStatus.name for aviStatus in aviStatuses" ng-model="dto.aviStatusCode" />
+                            </div>
+                            <div ng-if="dto.aviStatusCode !== 'AVI_N' && dto.aviStatusCode !== 'AVI_O' && !session.rights['showUpdateVehicleMaintenance']" class="col-sm-3 control-value">{{dto.aviStatus}}</div>
+                            <label class="col-sm-3 control-label">Latest PM Status</label>
+							<div class="col-sm-3 control-value">{{dto.latestPmStatus}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Next PM</label>
+                            <div class="col-sm-3 control-value">{{dto.nextPm}}</div>
+							<label class="col-sm-3 control-label">Latest PM Start Date</label>
+							<div class="col-sm-3 control-value">{{dto.latestPmStartDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Next PM Start Date</label>
+                            <div class="col-sm-3 control-value">{{dto.nextPmStartDate}}</div>
+                            <label class="col-sm-3 control-label">Latest PM End Date</label>
+							<div class="col-sm-3 control-value">{{dto.latestPmEndDate}}</div>                         
+						</div>
+						<br>
+					</fieldset>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="mileage">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Mileage Breakdown</legend>
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Date Range</label>
+									<div class="col-sm-4">
+										<div class='input-group valueColumn date'>
+											<input daterangebox value="" ng-model="searchDTO.dateRange" class="form-control" limit-days="91"  /> <label class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div style="width:130px;" class="pull-right">
+									<button type="button" class="btn btn-block btn-primary" ng-click="searchButton()" ng-disabled="loading">Search</button>
+								</div>
+							</div>
+						</div>
+						<div>
+							<table st-table="records" st-pipe="searchVehicleTrips" class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th no-sort>Trip ID</th>
+									<th no-sort>Task ID</th>
+									<th no-sort>Driver NRIC</th>
+									<th no-sort>Driver Name</th>
+									<th no-sort>Date Time Start</th>
+									<th no-sort>Date Time End</th>
+									<th no-sort>Speeding Count</th>
+									<th no-sort>Mileage</th>
+								</tr>
+								<tr ng-repeat="record in records">
+									<td>{{record.tripId}}</td>
+									<td><a href="#/task/{{record.taskId}}">{{record.taskId}}</a></td>
+									<td>{{record.driverNricNo}}</td>
+									<td>{{record.driverName}}</td>
+									<td>{{record.tripStartDate}}</td>
+									<td>{{record.tripEndDate}}</td>
+									<td>{{record.speedingCount}}</td>
+									<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileage(records.total.mileage)">{{record.mileage | number:1}}</td>
+								</tr>
+								<tr>
+									<td colspan="7" style="text-align:right"><strong>TOTAL: </strong></td>
+									<td><strong>{{totalMileage | number:1}}</strong></td>
+								</tr>
+								<tfoot>
+									<tr>
+										<td colspan="13">
+											<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="schedule">
+				<div class="calendar" id='calendar'></div>
+			</div>
+			<div ng-if="tab=='audit'" class="tab-pane fade" id="auditLog">
+				<table st-table="records" st-pipe="getAuditLog" class="table table-striped table-bordered table-responsive table-condensed small">
+					<tr>
+						<th no-sort>#</th>
+						<th no-sort>Action Date</th>
+						<th no-sort>Action By</th>
+						<th no-sort>Action</th>
+						<th no-sort>New Value</th>
+						<th no-sort>Old Value</th>
+					</tr>
+					<tr ng-repeat="record in records">
+						<td>{{$index + searchDTO.startIndex + 1}}</td>
+						<td>{{record.createdDate}}</td>
+						<td>{{record.createdBy}}</td>
+						<td>{{record.action === "I" ? "INSERT" : "UPDATE"}}</td>
+						<td>{{record.newValue}}</td>
+						<td>{{record.oldValue}}</td>
+					</tr>
+					<tfoot>
+						<tr>
+							<td colspan="6">
+								<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="fullCalModal" class="modal fade">
+	<div class="modal-dialog" style="width:900px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+				<h4 id="modalTitle" class="modal-title"></h4>
+			</div>
+			<div id="modalBody" class="modal-body">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Schedule</legend>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Activity</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.indentActivityType}} - {{vehicleCalendarsSelect.indentActivity}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Movement</label>
+							<div class="col-sm-3 control-value"><span ng-if="vehicleCalendarsSelect.indentCampMovement=='IN'">In Camp</span><span  ng-if="vehicleCalendarsSelect.indentCampMovement=='OUT'">Out Camp</span></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Date / Time</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.startDate}}</div>
+							<label class="col-sm-3 control-label">Completion Date / Time</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.endDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Duration</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.duration}} hours</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Location</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.indentReportingVenue}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Info</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.indentReportingInfo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Additional Info</label>
+							<div class="col-sm-9 control-value">{{vehicleCalendarsSelect.indentAdditionalInfo}}</div>
+						</div>
+					</fieldset>
+					<fieldset>
+						<legend>Driver</legend>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Driver Name</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.driverName}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Driver Node</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.driverNode}}</div>
+						</div>
+					</fieldset>
+					<fieldset>
+						<legend>Contact</legend>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Reporting Point-of-Contact</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.indentPocName}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Office Phone</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.indentPocOfficeNo}}</div>
+							<label class="col-sm-3 control-label">Mobile Phone</label>
+							<div class="col-sm-3 control-value">{{vehicleCalendarsSelect.indentPocMobileNo}}</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

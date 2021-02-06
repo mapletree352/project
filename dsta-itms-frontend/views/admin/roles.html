@@ -1,0 +1,77 @@
+<div class="row page-header">
+	<h3>
+		Manage Roles
+		<div class="pull-right" style="padding-right:25px">
+			<button type="button" class="btn btn-default" ng-click="reset()">Cancel</button>
+			<button type="button" class="btn btn-primary" ng-click="save()" ng-if="session.rights['showSaveRoleChangesBtn']">Save Changes</button>
+		</div>
+	</h3>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<style>
+		
+/* 			.table { */
+/*             	height: 400px; */
+/*         	} */
+		
+			th.rotate {
+				height: 220px;
+				white-space: nowrap;
+			}
+
+			th.rotate > div {
+				transform: 
+					translate(5px, 195px)
+					rotate(270deg);
+				width: 8px;
+			}
+			th.rotate > div > span {
+				border-bottom: 0px solid #ccc;
+				padding: 0;
+			}
+			
+			
+		</style>
+		
+		<table class="table table-striped table-bordered table-responsive table-condensed small" style="margin-top:80px">
+<!-- 		<thead> -->
+			<tr>
+				<th class="text-center">#</th>
+				<th>
+					Module
+					<select class="form-control" ng-model="moduleSelected" ng-change="updateModule()" ng-options="module as module for module in modules">
+					<option value=""></option>
+					<!-- 	<option></option>
+						<option>Indent</option>
+						<option>Task</option>
+						<option>Resource</option>
+						<option>Credit</option>
+						<option>Admin</option> -->
+					</select>
+				</th>
+				
+				<th style="width:450px">
+					Function
+					<select tagbox class="form-control" multiple="multiple" ng-options="role.id as role.name for role in tempRoles" ng-model="roleSelected" ng-change="updateRole()">
+					</select>
+				</th>
+				<th class = 'rotate' ng-repeat="role in roles" ><div><span>{{role.name}}</span></div></th>
+			
+			</tr>
+
+<!-- 			</thead> -->
+<!-- 			<tbody> -->
+			<tr ng-repeat="function in functions">
+				<td class="text-right">{{$index + 1}}.</td>
+				<td>{{function.module}}</td>
+				<td style="white-space:nowrap">{{function.name}}</td>
+				<td ng-repeat="role in roles" ><input type='checkbox' ng-model="checkboxes[role.id][function.id]"></td>
+			
+			</tr>
+<!-- 			</tbody> -->
+		</table>
+		<br>
+	</div>
+</div>

@@ -1,0 +1,458 @@
+<html ng-app="itms">
+<script>
+	<!-- for validation of max length for numeric input -->
+	function maxChk(input) {
+		if (!input.max) {
+			input.max = 9;
+		} else if (input.value && (input.value.length > input.max)) {
+			input.value = input.value.slice(0, input.max);
+		}
+	}
+</script>
+<head>
+<title>SAF ITMS</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-daterangepicker/css/bootstrap-daterangepicker.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-select2/css/bootstrap-select2.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-touchspin/css/bootstrap-touchspin.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-fileinput/css/bootstrap-fileinput.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-summernote/css/bootstrap-summernote.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-vertical-tabs/css/bootstrap.vertical-tabs.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-submenu/css/bootstrap-submenu.min.css">
+<link rel="stylesheet" href="lib/jquery/fullcalendar/fullcalendar.min.css">
+<link rel="stylesheet" href="lib/jquery/fullcalendar/fullcalendar.print.css" media='print'>
+<link rel="stylesheet" href="lib/angular/angular-chart.min.css">
+<link rel="stylesheet" href="lib/angular/ng-table-master/dist/ng-table.min.css">
+<link rel="stylesheet" media="screen" href="lib/angular/handsontable/handsontable.full.min.css">
+<!-- Optional theme -->
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="styles/default.css">
+</head>
+<body>
+	<div id="main-div" class="container-fluid" ng-view ui-view></div>
+	<div id="menu-div">
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+					</button>
+					<div class="loader" ng-show="loading"></div>
+					<div class="navbar-brand" style="white-space: nowrap">
+						<strong><a style="color:grey" href="/ITMS">ITMS</a></strong>
+					</div>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li ng-if="session.rights">
+							<a href="#/dashboard" ng-click="selectedPage='components/dashboard/dashboard_default.html'"><span class="glyphicon glyphicon-home"></span> Dashboard </a>
+						</li>
+						<li ng-if="session.rights['showIndent']" class="dropdown">
+							<a href="" class="dropdown-toggle"  data-toggle="dropdown" data-submenu><span class="glyphicon glyphicon-bed"></span> Indent <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li ng-if="session.rights['showNewIndent'] || session.rights['showNewIndentByTemplate'] || session.rights['showManageTemplates']" class="divider"></li>
+								<li ng-if="session.rights['showNewIndent']"><a href="#/indent_new"><span class="glyphicon glyphicon-plus"></span> New Indent</a></li>
+								<li ng-if="session.rights['showNewIndentByTemplate']" ng-click="showTemplatesDialog()"><a href=""><span class="glyphicon glyphicon-plus"></span> New Indent By Template</a></li>
+								<li ng-if="session.rights['showManageTemplates']"><a href="#/templates"><span class="glyphicon glyphicon-search"></span> Search Templates</a></li>
+								<li ng-if="session.rights['showSearchIndents']" class="divider"></li>
+								<li ng-if="session.rights['showSearchIndents']"><a href="#/indents"><span class="glyphicon glyphicon-search"></span> Search Indents</a></li>
+								<li ng-if="session.rights['showSearchIndents']"><a href="#/indents/PEN_CUST"><span class="glyphicon glyphicon-zoom-out"></span> Search Indents Pending Customer</a></li>
+								<li ng-if="session.rights['showSearchIndents']"><a href="#/indents/PEN_TRAN"><span class="glyphicon glyphicon-zoom-out"></span> Search Indents Pending Transport</a></li>							
+								<li ng-if="session.rights['showIndentRecommendation'] || session.rights['showIndentApproval'] || session.rights['showIndentAcceptance'] || session.rights['showIndentConfirmation'] || session.rights['showIndentMtMaintConfirmation']" class="divider"></li>
+								<li ng-if="session.rights['showIndentRecommendation']"><a href="#/indents/recommend"><span class="glyphicon glyphicon-check"></span> Indent Recommendation</a></li>
+								<li ng-if="session.rights['showIndentApproval']"><a href="#/indents/approve"><span class="glyphicon glyphicon-check"></span> Indent Approval</a></li>
+								<li ng-if="session.rights['showIndentAcceptance']"><a href="#/indents/accept"><span class="glyphicon glyphicon-check"></span> Indent Acceptance (Whole)</a></li>
+								<li ng-if="session.rights['showIndentAcceptance']"><a href="#/indents/accept_multi"><span class="glyphicon glyphicon-check"></span> Indent Acceptance (Multi Hub)</a></li>
+								<li ng-if="session.rights['showIndentConfirmation']"><a href="#/indents/confirm"><span class="glyphicon glyphicon-check"></span> Indent Confirmation (Manual)</a></li>
+								<li ng-if="session.rights['showIndentMtMaintConfirmation']"><a href="#/indents/mtmaintconfirm"><span class="glyphicon glyphicon-check"></span> Indent Confirmation (Mt Maintenance)</a></li>
+								<li ng-if="session.rights['showSearchTasks']" class="divider"></li>
+								<li ng-if="session.rights['showSearchTasks']"><a href="#/tasks"><span class="glyphicon glyphicon-search"></span> Search Tasks</a></li>
+								<li ng-if="session.rights['showSearchTasks']"><a href="#/tasks/TASK_PEN_EXC"><span class="glyphicon glyphicon-zoom-out"></span> Search Tasks Pending Execution</a></li>
+								<li ng-if="session.rights['showSearchTasks']"><a href="#/tasks/TASK_UDR_EXC"><span class="glyphicon glyphicon-zoom-out"></span> Search Tasks Under Execution</a></li>
+								<li ng-if="session.rights['showCreditRefundApproval']" class="divider"></li>
+								<li ng-if="session.rights['showCentralVoteApproval']"><a href="#/indents/cvapprove"><span class="glyphicon glyphicon-check"></span> Central Vote Approval</a></li>
+								<li ng-if="session.rights['showCreditRefundApproval']"><a href="#/tasks/refundapprove"><span class="glyphicon glyphicon-check"></span> Refund Credit Approval</a></li>
+								<li ng-if="session.rights['showCreditReturnApproval']"><a href="#/credit/credit_return"><span class="glyphicon glyphicon-none"></span> Return Penalty Credit</a></li>
+							</ul>
+						</li>
+						<li ng-if="session.rights['showResource']" class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Resource <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li ng-if="session.rights['showSearchSafPersonnel']" class="divider"></li>
+								<li ng-if="session.rights['showSearchSafPersonnel']"><a href="#/personnels"><span class="glyphicon glyphicon-search"></span> Search SAF Personnel</a></li>
+								<li ng-if="session.rights['showSearchDrivers'] || session.rights['showDriverAvailability']"class="divider"></li>
+								<li ng-if="session.rights['showSearchDrivers']"><a href="#/drivers"><span class="glyphicon glyphicon-search"></span> Search TO / Drivers</a></li>
+								<li ng-if="session.rights['showDriverAvailability']"><a href="#/driver_avail"><span class="glyphicon glyphicon-calendar"></span> TO Availability</a></li>
+								<li ng-if="session.rights['showDriverSkillApproval'] || session.rights['showDriverRewardVerification'] || session.rights['showDriverRewardRecommendation'] || session.rights['showDriverRewardApproval'] || session.rights['showDriverAttachmentEndorsement'] || session.rights['showDriverAttachmentApproval']" class="divider"></li>
+								<li ng-if="session.rights['showDriverSkillApproval']"><a href="#/driver_skill_approval"><span class="glyphicon glyphicon-check"></span> TO Skill Approval</a></li>
+								<li ng-if="session.rights['showDriverRewardVerification']"><a href="#/driver_reward_verification"><span class="glyphicon glyphicon-check"></span> TO Reward Verification</a></li>
+								<li ng-if="session.rights['showDriverRewardRecommendation']"><a href="#/driver_reward_recommendation"><span class="glyphicon glyphicon-check"></span> TO Reward Recommendation</a></li>
+								<li ng-if="session.rights['showDriverRewardApproval']"><a href="#/driver_reward_approval"><span class="glyphicon glyphicon-check"></span> TO Reward Approval</a></li>
+								<li ng-if="session.rights['showDriverAttachmentEndorsement']"><a href="#/driver_attachment_endorsement"><span class="glyphicon glyphicon-check"></span> TO Attachment Endorsement</a></li>
+								<li ng-if="session.rights['showDriverAttachmentApproval']"><a href="#/driver_attachment_approval"><span class="glyphicon glyphicon-check"></span> TO Attachment Approval</a></li>
+								<li ng-if="session.rights['showSearchVehicles'] || session.rights['showSearchVehicleTypes'] || session.rights['showVehicleAvailability']" class="divider"></li>
+								<li ng-if="session.rights['showSearchVehicles']"><a href="#/vehicles"><span class="glyphicon glyphicon-search"></span> Search Vehicles</a></li>
+								<li ng-if="session.rights['showSearchVehicleTypes']"><a href="#/vehicle_types"><span class="glyphicon glyphicon-search"></span> Search Vehicle Type Specifications</a></li>
+								<li ng-if="session.rights['showNewVehicleType']"><a href="#/vehicle_type_new"><span class="glyphicon glyphicon-plus"></span> New Vehicle Type Specifications</a></li>
+								<li ng-if="session.rights['showVehicleAvailability']"><a href="#/vehicle_avail"><span class="glyphicon glyphicon-calendar"></span> Vehicle Availability</a></li>
+								<li ng-if="session.rights['showNewTransportLeaderAccount'] || session.rights['showSearchTransportLeaderAccounts']" class="divider"></li>
+								<li ng-if="session.rights['showNewTransportLeaderAccount']"><a href="#/transport_leader_account_new"><span class="glyphicon glyphicon-plus"></span> New Transport Leader Account</a></li>
+								<li ng-if="session.rights['showSearchTransportLeaderAccounts']"><a href="#/transport_leader_account_search"><span class="glyphicon glyphicon-search"></span> Search Transport Leader Accounts</a></li>
+								<li ng-if="session.rights['showVehicleTLoanEndorsement'] || session.rights['showVehicleTLoanApproval']" class="divider"></li>
+								<li ng-if="session.rights['showVehicleTLoanEndorsement']"><a href="#/vehicle_loan_endorsement" ng-click="selectedPage=''"><span class="glyphicon glyphicon-check"></span> Vehicle T-Loan Endorsement</a></li>
+								<li ng-if="session.rights['showVehicleTLoanApproval']"><a href="#/vehicle_loan_approval" ng-click="selectedPage=''"><span class="glyphicon glyphicon-check"></span> Vehicle T-Loan Approval</a></li>
+							</ul></li>
+						<li  ng-if="session.rights['showCredit']" class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-usd"></span> Credit <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+							<li ng-if="session.rights['showCreditStatus']" class="divider"></li>
+								<li ng-if="session.rights['showCreditStatus']"><a href="#/credit/credit_status"><span class="glyphicon glyphicon-search"></span> Search Credit Statuses</a></li>
+								<li ng-if="session.rights['showCreditAllocationHq'] || session.rights['showCreditAllocationDivFmn']" class="divider"></li>
+								<li ng-if="session.rights['showCreditAllocationHq']"><a href="#/credit/credit_allocation_hq"><span class="glyphicon glyphicon-none"></span> Credit Allocation/Transfer (HQ Transport)</a></li>
+								<li ng-if="session.rights['showCreditAllocationDivFmn']"><a href="#/credit/credit_allocation_div_fmn"><span class="glyphicon glyphicon-none"></span> Credit Allocation/Transfer (Div/Fmn)</a></li>
+							</ul></li>
+						<li  ng-if="session.rights['showPermit']"class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-credit-card"></span> Permit <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li ng-if="session.rights['showSearchSafDrivingPermits'] || session.rights['showNewSafDrivingPermit']" class="divider"></li>
+								<li ng-if="session.rights['showNewSafDrivingPermit']"><a href="#/driver_permit_new"><span class="glyphicon glyphicon-plus"></span> New SAF Driving Permit</a></li>
+								
+								<li ng-if="session.rights['showSearchSafDrivingPermits']"><a href="#/driver_permits"><span class="glyphicon glyphicon-search"></span> Search SAF Driving Permits</a></li>
+								<li ng-if="session.rights['showSearchCdlConversions'] || session.rights['showNewCdlConversion']" class="divider"></li>
+								<li ng-if="session.rights['showNewCdlConversion']"><a href="#/cdlc_new"><span class="glyphicon glyphicon-plus"></span> New CDL Conversion</a></li> 
+								<li ng-if="session.rights['showSearchCdlConversions']"><a href="#/cdlcs"><span class="glyphicon glyphicon-search"></span> Search CDL Conversions</a></li>
+									<li ng-if="session.rights['manageCdlConversionData']"><a href="#/cdlcmasterdata">CDL Conversion Master Data</a></li>
+							<li ng-if="session.rights['showCdlConversionApproval']" class="divider"></li> 
+							<li ng-if="session.rights['showCdlConversionApproval']"><a href="#/cdlc_approval"><span class="glyphicon glyphicon-check"></span> 	CDL Conversion Approval</a></li> 
+							
+							
+							</ul></li>
+						<li ng-if="session.rights['showSafety']" class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-road"></span> Safety <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+ 								<li ng-if="session.rights['showSearchAccidents'] || session.rights['showNewAccident']" class="divider"></li>
+							<li ng-if="session.rights['showSearchAccidents']"><a href="#/accidents">Search Accidents</a></li>
+							<li ng-if="session.rights['showNewAccident']"><a href="#/accident">New Accident</a></li>
+							<li ng-if="session.rights['manageAccidentMasterData']"><a href="#/accidentmasterdata">Accident Master Data</a></li>
+								<li ng-if="session.rights['showSearchDriverOffences'] || session.rights['showNewDriverOffence']" class="divider"></li>
+								<li ng-if="session.rights['showNewDriverOffence']"><a href="#/driver_offence_new"><span class="glyphicon glyphicon-plus"></span> New Driver Offence</a></li>
+								<li ng-if="session.rights['showSearchDriverOffences']"><a href="#/driver_offences"><span class="glyphicon glyphicon-search"></span> Search Driver Offences</a></li>
+								<li ng-if="session.rights['showDriverOffenceApproval']" class="divider"></li>
+								<li ng-if="session.rights['showDriverOffenceApproval']"><a href="#/driver_offence_approval"><span class="glyphicon glyphicon-check"></span> Driver Offence Approval</a></li>
+								<li ng-if="session.rights['showSearchDemeritPointsReductions'] || session.rights['showNewDemeritPointsReduction']" class="divider"></li>
+								<li ng-if="session.rights['showNewDemeritPointsReduction']"><a href="#/driver_reduction_new"><span class="glyphicon glyphicon-plus"></span> New Demerit Points Reduction</a></li>
+								<li ng-if="session.rights['showSearchDemeritPointsReductions']"><a href="#/driver_reductions"><span class="glyphicon glyphicon-search"></span> Search Demerit Points Reductions</a></li>
+								<li ng-if="session.rights['showDemeritPointsReductionApproval']" class="divider"></li>
+								<li ng-if="session.rights['showDemeritPointsReductionApproval']"><a href="#/driver_reduction_approval"><span class="glyphicon glyphicon-check"></span> Demerit Points Reduction Approval</a></li>
+							</ul></li>
+						<li ng-if="session.rights['showReport']" class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown" data-submenu><span class="glyphicon glyphicon-stats"></span> Report <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li ng-if="session.rights['showSearchDetailReport']"><a href="#/report/detailsheet"><span class="glyphicon glyphicon-file"></span> Detail Sheet</a></li>
+								<li ng-if="session.rights['showSearchAllOrdersReport']"><a href="#/report/all_orders"><span class="glyphicon glyphicon-file"></span> All Orders</a></li>
+								<li ng-if="session.rights['showTaskFulfilmentReport']"><a href="#/report/task_fulfilment_report"><span class="glyphicon glyphicon-file"></span> Task Fulfilment Report</a></li>
+								<li ng-if="session.rights['showCreditStatusReport']"><a href="#/report/credit_status_report"><span class="glyphicon glyphicon-file"></span> Credit Status Report</a></li>
+								<li ng-if="session.rights['showSupportedPurposesReport']"><a href="#/report/supported_purposes_report"><span class="glyphicon glyphicon-file"></span> Supported Purposes Report</a></li>
+								<li ng-if="session.rights['showTOUtilisationRateReport']"><a href="#/report/to_utilisation_rate_report"><span class="glyphicon glyphicon-file"></span> TO Utilisation Rate Report</a></li>
+								<li ng-if="session.rights['showVehicleUtilisationRateReport']"><a href="#/report/vehicle_utilisation_rate_report"><span class="glyphicon glyphicon-file"></span> Vehicle Utilisation Rate Report</a></li>
+								<li ng-if="session.rights['showTOMileageReport']"><a href="#/report/to_mileage_report"><span class="glyphicon glyphicon-file"></span> TO Mileage Report</a></li>
+								<li ng-if="session.rights['showVehicleMileageReport']"><a href="#/report/vehicle_mileage_report"><span class="glyphicon glyphicon-file"></span> Vehicle Mileage Report</a></li>
+								<li ng-if="session.rights['showAdhocReport']"><a href="#/report/adhoc_report"><span class="glyphicon glyphicon-file"></span> Ad-hoc Report</a></li>
+							</ul></li>
+						<li ng-if="session.rights['showAdmin']" class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown" data-submenu><span class="glyphicon glyphicon-cog"></span> Admin <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li ng-if="session.rights['showSearchUsers'] || session.rights['showNewUser']" class="divider"></li>
+								<li ng-if="session.rights['showNewUser']"><a href="#/user"><span class="glyphicon glyphicon-plus"></span> New User</a></li>
+								<li ng-if="session.rights['showSearchUsers']"><a href="" ng-click="go('/users')" data-dismiss="modal"><span class="glyphicon glyphicon-search"></span> Search Users</a></li>
+								<li ng-if="session.rights['showUserRegistrationApproval'] || session.rights['showUserReactivationApproval']"class="divider"></li>
+								<li ng-if="session.rights['showUserRegistrationApproval']"><a href="#/user/registration_approval"><span class="glyphicon glyphicon-check"></span> User Registration Approval</a></li>
+								<li ng-if="session.rights['showUserReactivationApproval']"><a href="#/user/reactivation_approval"><span class="glyphicon glyphicon-check"></span> User Reactivation Approval</a></li>
+								<li ng-if="session.rights['showManageRoles'] || session.rights['showManageSupportStructure'] || session.rights['showManageMasterData'] || session.rights['showManageNotifications'] || session.rights['showManageParameters']" class="divider"></li>
+								<li ng-if="session.rights['showManageRoles']"><a href="#/roles"><span class="glyphicon glyphicon-none"></span> Manage Roles</a></li>
+								<li ng-if="session.rights['showManageSupportStructure']"><a href="#/support_structure"><span class="glyphicon glyphicon-none"></span> Manage Support Structure</a></li>
+								<li ng-if="session.rights['showManageMasterData']"><a href="#/master_data"><span class="glyphicon glyphicon-none"></span> Manage Master Data</a></li>
+								<li ng-if="session.rights['showManageNotifications']"><a href="#/notifications"><span class="glyphicon glyphicon-none"></span> Manage Notifications</a></li>
+								<li ng-if="session.rights['showManageParameters']"><a href="#/parameters"><span class="glyphicon glyphicon-none"></span> Manage Parameters</a></li>
+							</ul></li>
+						<li class="dropdown" ng-if="session.userRole.cat === 'Unit'"><a target="_blank" href="help/ITMS_User_Guide_Customer_Unit.pdf"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+						<li class="dropdown" ng-if="session.userRole.cat === 'Hub' || session.userRole.cat === 'Node' || session.userRole.role === 'HQ Controller' || session.userRole.role === 'Super User' "><a target="_blank" href="help/ITMS_User_Guide_Hub_Node.pdf"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+						<li class="dropdown" ng-if="session.userRole.role === 'System Administrator'"><a target="_blank" href="help/ITMS_User_Guide_System_Administrator.pdf"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+						<li class="dropdown" ng-if="session.userRole.role.startsWith('Driving Permit')"><a target="_blank" href="help/ITMS_User_Guide_Driving_Permit.pdf"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+						<li class="dropdown" ng-if="session.userRole.role === 'Transport Credit Account Manager' || session.userRole.role === 'Div/Fmn Transport Credit Controller'"><a target="_blank" href="help/ITMS_User_Guide_Transport_Credit.pdf"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+						<li class="dropdown" ng-if="session.userRole.role === 'Transport Safety Controller' || session.userRole.role === 'Transport Safety Executive'"><a target="_blank" href="help/ITMS_User_Guide_Safety.pdf"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+						<!-- TODO: MES User Guide -->
+						<!-- TODO: Safety User Guide -->
+					</ul>
+					<ul class="nav navbar-nav navbar-right" style="padding-right:5px">
+						<li style="text-align:right" ng-if="session.name">
+							<a ng-if="isUat" style="padding-top:5px; padding-right:0px; padding-bottom:0px" href="" ng-click="showUatLogin()" uib-tooltip="Last login on {{session.lastLoginDate}}" tooltip-placement="left">
+								Welcome, {{session.name}}
+							</a>
+							<a ng-if="!isUat" style="padding-top:5px; padding-right:0px; padding-bottom:0px" href="" uib-tooltip="Last login on {{session.lastLoginDate}}" tooltip-placement="left">
+								Welcome, {{session.name}}
+							</a>
+							Logged in as:
+							<select ng-model="session.userRole.id" ng-options="userRole.id as userRole.name for userRole in session.userRoles" ng-change="changeLogin(false, true)"></select>
+						</li>
+						<li style="text-align:right" ng-if="!session.name && isUat">
+							<a style="padding-top:5px; padding-bottom:0px" href="" ng-click="showUatLogin()">Change Login</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="confirmDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:600px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Confirm</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-bind-html="confirmDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="confirmDialogAction(confirmDialogParam)">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="infoDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:600px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-info-sign"></span> Info</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-bind-html="infoDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="errorDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:600px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-alert"></span> Error</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-bind-html="errorDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="internalErrorDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:800px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-alert"></span> Internal Server Error</h4>
+				</div>
+				<div class="modal-body small">
+					<div ng-bind-html="internalErrorDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="uatLoginDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:800px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Login As (UAT only)</h4>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">NRIC No.</label>
+								<div class="col-sm-8">
+									<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+										typeahead-on-select="loginId = $item.code" ng-model="loginId" />
+								</div>
+							</div>
+							<div class="form-group">
+								<table class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr><td>S9100001A</td><td>TRANSPORT CREDIT ACCOUNT MANAGER</td><td></td></tr>
+									<tr><td>S9110001A</td><td>HQ CONTROLLER</td><td></td></tr>
+									<tr><td>S9400001A</td><td>TRANSPORT SAFETY ADMINISTRATOR</td><td></td></tr>
+									<tr><td>S9410001A</td><td>TRANSPORT SAFETY OFFICER</td><td></td></tr>
+									<tr><td>S9500001A</td><td>DRIVING PERMIT CONTROLLER</td><td></td></tr>
+									<tr><td>S9510001A</td><td>DRIVING PERMIT EXECUTIVE</td><td></td></tr>
+									<tr><td>S9600001A</td><td>MES USER</td><td></td></tr>
+									<tr><td>S9700001A</td><td>SYSTEM ADMINISTRATOR</td><td></td></tr>
+									<tr><td>S1234567A</td><td>SUPER USER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>DIV/FMN TRANSPORT CREDIT CONTROLLER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>REQUESTER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>RECOMMENDER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB CONTROLLER (OPS/TRG)</td><td>S3</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB CONTROLLER (MANPOWER)</td><td>S1</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB CONTROLLER (VEHICLE)</td><td>S4</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB COMMANDER</td><td>CO</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB EXECUTIVE</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE CONTROLLER (OPS/TRG)</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE CONTROLLER (VEHICLE)</td><td>Maintenance WO</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE COMMANDER</td><td>Head Transport Node / OC</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE SERGEANT MAJOR</td><td>NSM / CSM</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE EXECUTIVE</td><td>ITMS Spec</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE ASA</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>DUTY TRANSPORT LEADER</td><td></td></tr>
+								</table>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-3">
+									<input class="form-control" ng-model="testEmailNricNo" placeholder="NRIC No.">
+								</div>
+								<div class="col-sm-1">
+									<button ng-disabled="!testEmailNricNo || testEmailClicked" class="btn btn-default" ng-click="testEmail()">Send Test Email</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="changeLogin(false, false)">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="templatesDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:600px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">New Indent By Template</h4>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<form class="form-horizontal">
+							<table class="table table-striped table-bordered table-responsive table-condensed small"><!--  st-table="records" st-pipe="paginate" -->
+								<tr>
+									<th class="text-center">#</th>
+									<th width="300px">Template Name</th>
+									<th width="150px">Access Rights</th>
+									<th class="text-center">Create</th>
+								</tr>
+								<tr ng-repeat="template in templates">
+									<td class="text-center">{{$index + 1}}</td>
+									<td>{{template.name}}</a></td>
+									<td>{{template.value}}</td> 
+									<td class="text-center">
+										<button type="button" class="btn btn-default btn-xs" ng-click="indentByTemplate(template.id)">
+											<div><span class="glyphicon glyphicon-plus"></span> GO</div>
+											
+										</button>
+									</td>
+								</tr>
+			
+							</table>
+				 		</form>
+					</div>
+				</div>	
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="lib/moment.min.js"></script>
+	<script src="lib/underscore.min.js"></script>
+	<!-- Required by Restangular -->
+	<script src="lib/Chart.min.js"></script>
+ 	<script src="lib/Chart.StackedBar.js"></script>
+	<script src="lib/jquery/jquery.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-dist/js/bootstrap.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-daterangepicker/js/bootstrap-daterangepicker.js"></script>
+	<script src="lib/bootstrap/bootstrap-select2/js/bootstrap-select2.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-touchspin/js/bootstrap-touchspin.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-typeahead/js/bootstrap-typeahead.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-fileinput/js/bootstrap-fileinput.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-summernote/js/bootstrap-summernote.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-submenu/js/bootstrap-submenu.min.js"></script>
+	<script src="lib/jquery/fullcalendar/fullcalendar.min.js"></script>
+	<script src="lib/angular/angular.min.js"></script>
+	<script src="lib/angular/angular-animate.min.js"></script>
+	<script src="lib/angular/angular-ui-router.min.js"></script>
+	<script src="lib/angular/restangular/restangular.min.js"></script>
+	<script src="lib/angular/angular-chart.min.js"></script>
+	<script src="lib/angular/angular-mocks.js"></script>
+	<script src="lib/angular/ui-bootstrap-tpls.min.js"></script>
+	<script src="lib/angular/ng-table-master/dist/ng-table.min.js"></script>
+	<script src="lib/angular/ng-file-upload/ng-file-upload.min.js"></script>
+	<script src="lib/angular/smart-table-master/dist/smart-table.min.js"></script>
+	<script src="lib/angular/angular-sanitize.min.js"></script>
+	<script src="lib/angular/angular-drag-and-drop-lists.min.js"></script>
+	
+	<!-- HandsonTable downloaded from https://github.com/handsontable. We have some customization in handsontable.full.js, please search for "Don@WizVision" in the file. -->
+	<script src="lib/angular/handsontable/handsontable.full.js"></script>
+	<script src="lib/angular/ngHandsontable/ngHandsontable.min.js"></script>
+
+	<!-- All these should be minified into app.min.js eventually -->
+	<script src="scripts/data.js"></script>
+	<script src="scripts/routes.js"></script>
+	<script src="scripts/app.js"></script>
+	<script src="scripts/constants.js"></script>
+	<script src="scripts/directives.js"></script>
+
+	<script src="scripts/services/AdminService.js"></script>
+	<script src="scripts/controllers/AdminController.js"></script>
+	<script src="scripts/services/CdlcService.js"></script>
+	<script src="scripts/controllers/CdlcController.js"></script>
+	<script src="scripts/services/CommonService.js"></script>
+	<script src="scripts/services/CreditService.js"></script>
+	<script src="scripts/controllers/CreditController.js"></script>
+	<script src="scripts/services/DashboardService.js"></script>
+	<script src="scripts/controllers/DashboardController.js"></script>
+	<script src="scripts/services/IndentService.js"></script>
+	<script src="scripts/controllers/IndentController.js"></script>
+	<script src="scripts/services/DriverService.js"></script>
+	<script src="scripts/controllers/DriverController.js"></script>
+	<script src="scripts/services/DriverAvailService.js"></script>
+	<script src="scripts/controllers/DriverAvailController.js"></script>
+	<script src="scripts/services/DriverPermitService.js"></script>
+	<script src="scripts/controllers/DriverPermitController.js"></script>
+	<script src="scripts/services/PersonnelService.js"></script>
+	<script src="scripts/controllers/PersonnelController.js"></script>
+	<script src="scripts/services/ReportService.js"></script>
+	<script src="scripts/controllers/ReportController.js"></script>
+	<script src="scripts/services/SafetyService.js"></script>
+	<script src="scripts/controllers/SafetyController.js"></script>
+	<script src="scripts/services/TaskService.js"></script>
+	<script src="scripts/controllers/TaskController.js"></script>
+	<script src="scripts/services/UserService.js"></script>
+	<script src="scripts/controllers/UserController.js"></script>
+	<script src="scripts/services/SystemService.js"></script>
+	<script src="scripts/controllers/SystemController.js"></script>
+	<script src="scripts/services/VehicleService.js"></script>
+	<script src="scripts/controllers/VehicleController.js"></script>
+	<script src="scripts/services/VehicleAvailService.js"></script>
+	<script src="scripts/controllers/VehicleAvailController.js"></script>
+	<script src="scripts/services/SelfServiceService.js"></script>
+	<script src="scripts/controllers/SelfServiceController.js"></script>
+	<script src="scripts/controllers/UserRegisterController.js"></script>
+	<script src="scripts/services/AccidentService.js"></script>
+	<script src="scripts/controllers/AccidentController.js"></script>
+	<script src="scripts/services/TlAccountService.js"></script>
+	<script src="scripts/controllers/TlAccountController.js"></script>
+	<!-- These should be removed in production -->
+	<script src="scripts/test/mock-backend.js"></script>
+</body>
+</html>

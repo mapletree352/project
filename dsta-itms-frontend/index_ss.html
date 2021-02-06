@@ -1,0 +1,218 @@
+<html ng-app="itms">
+<head>
+<title>SAF ITMS</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-daterangepicker/css/bootstrap-daterangepicker.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-select2/css/bootstrap-select2.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-touchspin/css/bootstrap-touchspin.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-fileinput/css/bootstrap-fileinput.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-summernote/css/bootstrap-summernote.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-vertical-tabs/css/bootstrap.vertical-tabs.min.css">
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-submenu/css/bootstrap-submenu.min.css">
+<link rel="stylesheet" href="lib/jquery/fullcalendar/fullcalendar.min.css">
+<link rel="stylesheet" href="lib/jquery/fullcalendar/fullcalendar.print.css" media='print'>
+<link rel="stylesheet" href="lib/angular/angular-chart.min.css">
+<link rel="stylesheet" href="lib/angular/ng-table-master/dist/ng-table.min.css">
+<link rel="stylesheet" media="screen" href="lib/angular/handsontable/handsontable.full.min.css">
+<!-- Optional theme -->
+<link rel="stylesheet" href="lib/bootstrap/bootstrap-dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="styles/default.css">
+</head>
+<body>
+	<div id="main-div" class="container-fluid" ng-view ui-view></div>
+	<div id="menu-div">
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+					</button>
+					<div class="loader" ng-show="loading"></div>
+					<div class="navbar-brand" style="white-space: nowrap">
+						<strong><a style="color:grey" href="/ITMS">ITMS</a></strong>
+					</div>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="#/self_service" ng-click="selectedPage='components/dashboard/dashboard_default.html'">Driver Self-Service Console </a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right" style="padding-right:5px">
+						<li style="text-align:right" ng-if="session.name">
+							<a ng-if="isUat" style="padding-top:5px; padding-right:0px; padding-bottom:0px" href="" ng-click="showUatLogin()" uib-tooltip="Last login on {{session.lastLoginDate}}" tooltip-placement="left">
+								Welcome, {{session.name}}
+							</a>
+							<a ng-if="!isUat" style="padding-top:5px; padding-right:0px; padding-bottom:0px" href="" uib-tooltip="Last login on {{session.lastLoginDate}}" tooltip-placement="left">
+								Welcome, {{session.name}}
+							</a>
+							Logged in as:
+							<select ng-model="session.userRole.id" ng-options="userRole.id as userRole.name for userRole in session.userRoles" ng-change="changeLogin(true, true)"></select>
+						</li>
+						<li style="text-align:right" ng-if="!session.name && isUat">
+							<a style="padding-top:5px; padding-bottom:0px" href="" ng-click="showUatLogin()">Change Login</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="confirmDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:450px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Confirm</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-bind-html="confirmDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="confirmDialogAction()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="infoDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:450px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-info-sign"></span> Info</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-bind-html="infoDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="errorDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:450px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"><span class="glyphicon glyphicon-alert"></span> Error</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-bind-html="errorDialogMessage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="uatLoginDialog" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" style="width:600px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Login As (UAT only)</h4>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">NRIC No.</label>
+								<div class="col-sm-8">
+									<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
++										typeahead-on-select="loginId = $item.code" ng-model="loginId" />
+								</div>
+							</div>
+							<div class="form-group">
+								<table class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr><td>S9100001A</td><td>TRANSPORT CREDIT ACCOUNT MANAGER</td><td></td></tr>
+									<tr><td>S9110001A</td><td>HQ CONTROLLER</td><td></td></tr>
+									<tr><td>S9400001A</td><td>TRANSPORT SAFETY ADMINISTRATOR</td><td></td></tr>
+									<tr><td>S9410001A</td><td>TRANSPORT SAFETY OFFICER</td><td></td></tr>
+									<tr><td>S9500001A</td><td>DRIVING PERMIT CONTROLLER</td><td></td></tr>
+									<tr><td>S9510001A</td><td>DRIVING PERMIT EXECUTIVE</td><td></td></tr>
+									<tr><td>S9600001A</td><td>MES USER</td><td></td></tr>
+									<tr><td>S9700001A</td><td>SYSTEM ADMINISTRATOR</td><td></td></tr>
+									<tr><td>S1234567A</td><td>SUPER USER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>DIV/FMN TRANSPORT CREDIT CONTROLLER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>REQUESTER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>RECOMMENDER</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB CONTROLLER (OPS/TRG)</td><td>S3</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB CONTROLLER (MANPOWER)</td><td>S1</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB CONTROLLER (VEHICLE)</td><td>S4</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB COMMANDER</td><td>CO</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>HUB EXECUTIVE</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE CONTROLLER (OPS/TRG)</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE CONTROLLER (VEHICLE)</td><td>Maintenance WO</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE COMMANDER</td><td>Head Transport Node / OC</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE SERGEANT MAJOR</td><td>NSM / CSM</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE EXECUTIVE</td><td>ITMS Spec</td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>NODE ASA</td><td></td></tr>
+									<tr><td><a href="" ng-click="go('/users')" data-dismiss="modal">Search Users</a></td><td>DUTY TRANSPORT LEADER</td><td></td></tr>
+								</table>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="changeLogin(true, false)">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="lib/moment.min.js"></script>
+	<script src="lib/underscore.min.js"></script>
+	<!-- Required by Restangular -->
+	<script src="lib/Chart.min.js"></script>
+	<script src="lib/Chart.StackedBar.js"></script>
+	<script src="lib/jquery/jquery.min.js"></script> 
+	<script src="lib/bootstrap/bootstrap-dist/js/bootstrap.min.js"></script> 
+	<script src="lib/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-daterangepicker/js/bootstrap-daterangepicker.js"></script>
+	<script src="lib/bootstrap/bootstrap-select2/js/bootstrap-select2.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-touchspin/js/bootstrap-touchspin.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-typeahead/js/bootstrap-typeahead.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-fileinput/js/bootstrap-fileinput.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-summernote/js/bootstrap-summernote.min.js"></script>
+	<script src="lib/bootstrap/bootstrap-submenu/js/bootstrap-submenu.min.js"></script>
+	<script src="lib/jquery/fullcalendar/fullcalendar.min.js"></script> 
+	<script src="lib/angular/angular.min.js"></script>
+	<script src="lib/angular/angular-animate.min.js"></script>
+	<script src="lib/angular/angular-ui-router.min.js"></script>
+	<script src="lib/angular/restangular/restangular.min.js"></script>
+	<script src="lib/angular/angular-chart.min.js"></script>
+	<script src="lib/angular/angular-mocks.js"></script>
+	<script src="lib/angular/ui-bootstrap-tpls.min.js"></script> 
+	<script src="lib/angular/ng-table-master/dist/ng-table.min.js"></script>
+	<script src="lib/angular/ng-file-upload/ng-file-upload.min.js"></script>
+	<script src="lib/angular/smart-table-master/dist/smart-table.min.js"></script>
+	<script src="lib/angular/angular-sanitize.min.js"></script>
+	
+	<!-- HandsonTable downloaded from https://github.com/handsontable. We have some customization in handsontable.full.js, please search for "Don@WizVision" in the file. -->
+	<script src="lib/angular/handsontable/handsontable.full.js"></script>
+	<script src="lib/angular/ngHandsontable/ngHandsontable.min.js"></script>
+
+	<!-- All these should be minified into app.min.js eventually -->
+	<script src="scripts/data.js"></script>
+	<script src="scripts/routes.js"></script>
+	<script src="scripts/app.js"></script>
+	<script src="scripts/constants.js"></script>
+	<script src="scripts/directives.js"></script>
+	<script src="scripts/services/SelfServiceService.js"></script>
+	<script src="scripts/controllers/SelfServiceController.js"></script>
+	<script src="scripts/services/TaskService.js"></script>
+	<script src="scripts/controllers/TaskController.js"></script>
+	<script src="scripts/services/CommonService.js"></script>
+	<script src="scripts/services/IndentService.js"></script>
+
+	<!-- These should be removed in production -->
+	<script src="scripts/test/mock-backend.js"></script>
+</body>
+</html>

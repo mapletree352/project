@@ -1,0 +1,182 @@
+<div class="row page-header">
+	<h3>Search Credit Statuses</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position: absolute; width: 130px; right: 20px; z-index: 998">
+				<button type="button" class="btn btn-block btn-primary" ng-click="search()" ng-disabled="loading">Search</button>
+				<button type="button" class="btn btn-block btn-default" ng-click="reset()">Clear</button>
+				<br />
+				<a href="" ng-click="advSearchCollapsed = !advSearchCollapsed" class="pull-right">Advanced Search...</a>
+			</div>
+			<div style="padding-right: 160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Work Year</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-model="searchDTO.workYear">
+								<option ng-repeat="n in _.range(currentYear - 9, currentYear + 1)" value="{{n}}">{{n}} (1 Apr {{n}} - 31 Mar {{n + 1}})</option>
+							</select>
+						</div>
+						<label class="col-sm-2 control-label">Unit</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Unit' || session.userRole.formationCode">
+							<typeahead placeholder="Unit Code or Name" uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+								typeahead-on-select="searchDTO.unitCode = $item.code" ng-blur="searchDTO.unitCode = unit ? searchDTO.unitCode : undefined" ng-model="unit" />
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Unit' && !session.userRole.formationCode">
+							<input class="form-control" ng-model="session.userRole.unitNameAndCode" readonly />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Supporting Hub</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-model="searchDTO.hubCode" ng-options="hub.code as hub.name for hub in hubs">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Hub' || session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.hub" readonly/>
+						</div>
+						<label class="col-sm-2 control-label">Supporting Node</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-model="searchDTO.nodeId" ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.hubCode)">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.node" readonly/>
+						</div>
+					</div>
+					<div uib-collapse="advSearchCollapsed">
+						<hr>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Division / Formation</label>
+							<div class="col-sm-4" ng-if="!session.userRole.formationCode">
+								<select class="form-control" ng-model="searchDTO.formationCode" ng-options="formation.code as formation.name for formation in formations">
+									<option />
+								</select>
+							</div>
+							<div class="col-sm-4" ng-if="session.userRole.formationCode">
+								<input class="form-control" ng-model="session.userRole.formation" readonly />
+							</div>
+							<label class="col-sm-2 control-label">Balance</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.remainingAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.remainingAmtTo" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Initial Provision</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.allocatedAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.allocatedAmtTo" />
+								</div>
+							</div>
+							<label class="col-sm-2 control-label">Pre-Committed</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.precommittedAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.precommittedAmtTo" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Committed</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.committedAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.committedAmtTo" />
+								</div>
+							</div>
+							<label class="col-sm-2 control-label">Refunded</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.refundedAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" class="form-control" ng-model="searchDTO.refundedAmtTo" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Penalty</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.penaltyAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.penaltyAmtTo" />
+								</div>
+							</div>
+							<label class="col-sm-2 control-label">Returned</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.returnedAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.returnedAmtTo" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">+</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.transferredInAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.transferredInAmtTo" />
+								</div>
+							</div>
+							<label class="col-sm-2 control-label">-</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.transferredOutAmtFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.transferredOutAmtTo" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<div class="row">
+	<div>
+		<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+			<tr>
+				<th no-sort>#</th>
+				<th sort property="unit.name">Unit</th>
+				<th sort property="formation.name">Division / Formation</th>
+				<th sort property="workYear">Work Year</th>
+				<th sort property="allocatedAmt">Initial Provision</th>
+				<th sort property="transferredInAmt">+</th>
+				<th sort property="transferredOutAmt">-</th>
+				<th no-sort>Latest Provision <span class="glyphicon glyphicon-info-sign" tooltip-placement="top" uib-tooltip="Initial Provision + Added Provision - Subtracted Provision"/></th>
+				<th sort property="precommittedAmt">Pre-Committed</th>
+				<th sort property="committedAmt">Committed</th>
+				<th sort property="penaltyAmt">Penalty</th>
+				<th no-sort>Balance <span class="glyphicon glyphicon-info-sign" tooltip-placement="top" uib-tooltip="Latest Provision - PreCommitted - Committed - Penalty"/></th>
+				<th sort property="refundedAmt">Refunded <span class="glyphicon glyphicon-info-sign" tooltip-placement="left" uib-tooltip="In the event when the task is unfulfilled by the node, a Refund will reduce credits from the Committed Pool"/></th>
+				<th sort property="returnedAmt">Returned <span class="glyphicon glyphicon-info-sign" tooltip-placement="left" uib-tooltip="In the event when penalty credit is required to be returned to the customer unit, a Return will reduce credits from the Penalty Pool"/></th>
+			</tr>
+			<tr ng-repeat="record in records">
+				<td>{{$index + searchDTO.startIndex + 1}}</td>
+				<td><a href="#/credit/credit_movement/{{record.unitCode}}/{{record.unit}}/{{record.workYear}}">{{record.unit}}</a></td>
+				<td>{{record.formation}}</td>
+				<td>{{record.workYear}}</td>
+				<td>{{record.allocatedAmt | number: 2}}</td>
+				<td>{{record.transferredInAmt | number: 2}}</td>
+				<td>{{record.transferredOutAmt| number: 2}}</td>
+				<td style="color:blue">{{record.allocatedAmt + record.transferredInAmt - record.transferredOutAmt | number: 2}}</td>
+				<td>{{record.precommittedAmt | number: 2}}</td>
+				<td>{{record.committedAmt | number: 2}}</td>
+				<td>{{record.penaltyAmt | number: 2}}</td>
+				<td style="color:blue">{{record.remainingAmt | number: 2}}</td>
+				<td>{{record.refundedAmt | number: 2}}</td>
+				<td>{{record.returnedAmt | number: 2}}</td>
+			</tr>
+			<tfoot>
+				<tr>
+					<td colspan="15" ng-if="records && records.length > 0">
+						<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+						<ul class="pagination">
+							<li>
+								<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+							</li>
+						</ul>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>

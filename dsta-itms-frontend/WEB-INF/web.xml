@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://java.sun.com/xml/ns/javaee"
+		xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+		id="WebApp_ID" version="3.0">
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Restricted HTTP methods.</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method-omission>GET</http-method-omission>
+			<http-method-omission>POST</http-method-omission>
+		</web-resource-collection>
+		<auth-constraint />
+	</security-constraint>
+	<filter>
+		<filter-name>ClickjackFilter</filter-name>
+		<filter-class>gov.dsta.itms.filters.ClickjackFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>SiteMinderHeaderFilter</filter-name>
+		<filter-class>gov.dsta.itms.filters.SiteMinderHeaderFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ClickjackFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>SiteMinderHeaderFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+</web-app> 

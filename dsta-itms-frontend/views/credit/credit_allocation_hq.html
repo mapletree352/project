@@ -1,0 +1,132 @@
+<div class="row page-header">
+	<h3>Credit Allocation/Transfer (HQ Transport)</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-action">
+		<div class="panel panel-default">
+			<div class="panel-body" ng-if="totalAmt">
+				<button class="btn btn-primary btn-block" ng-click="checkRemainingCredits()">Allocate/Transfer Credits</button>
+				<button class="btn btn-default btn-block" ng-click="getAllocationsHq()">Clear</button>
+				<hr>
+				<button class="btn btn-default btn-block" data-toggle="modal" data-target="#hqCreditStatusModal">Reset Total</button>
+			</div>
+			<div class="panel-body" ng-if="!totalAmt">
+				<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#hqCreditStatusModal">Set Total</button>
+			</div>
+		</div>
+	</div>
+	<div class="panel-main">
+		<form class="form-horizontal">
+			<div class="alert alert-info">
+				<p>
+					<span class="glyphicon glyphicon-info-sign"></span> By default, initial provision of credits are automatically computed based on the past 3 years' average utilization. <br><span class="glyphicon glyphicon-info-sign"></span> To enable Transport indent of new work year, the system allows unit to use up to 20% advance credits based on last work year's latest provision.  
+				</p>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Work Year</label>
+				<div class="col-sm-9">
+					<select class="form-control" ng-model="newDTO.workYear" ng-change="getAllocationsHq()">
+						<option value="{{currentYear - 1}}" >{{currentYear - 1}} (1 Apr {{currentYear - 1}} - 31 Mar {{currentYear}})</option>
+						<option value="{{currentYear}}" >{{currentYear}} (1 Apr {{currentYear}} - 31 Mar {{currentYear + 1}})</option>
+						<option value="{{currentYear + 1}}">{{currentYear + 1}} (1 Apr {{currentYear + 1}} - 31 Mar {{currentYear + 2}})</option> 
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Total Credits</label>
+				<div class="col-sm-3 control-value">
+					{{totalAmt ? (totalAmt | number: 2) : 'Total credits not set'}}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Remaining Credits</label>
+				<div class="col-sm-3 control-value">
+					{{totalAmt ? (remainingAmt | number: 2): 'Total credits not set'}}
+				</div>
+			</div>
+			<div ng-if="totalAmt">
+				<table class="table table-bordered table-responsive table-condensed">
+					<tr>
+						<th rowspan="2">Division / Formation</th>
+						<th colspan="{{allocations.length + 3}}" class="text-center">Credits</th>
+					</tr>
+					<tr>
+						<th class="text-center" ng-repeat="allocation in allocations">
+							<div ng-if="allocation.allocationLevel === 0 && !allocation.remarks">Initial Provision<br>({{allocation.createDate}})</div>
+							<div ng-if="allocation.allocationLevel !== 0 && !allocation.remarks">+ / -<br>({{allocation.createDate}})</div>
+							<div ng-if="allocation.allocationLevel === 0 && allocation.remarks"><a uib-tooltip="{{allocation.remarks}}" tooltip-placement="top">Initial Provision</a><br>({{allocation.createDate}})</div>
+							<div ng-if="allocation.allocationLevel !== 0 && allocation.remarks"><a uib-tooltip="{{allocation.remarks}}" tooltip-placement="top">+ / -</a><br>({{allocation.createDate}})</div>
+						</th>
+						<th class="text-center">{{ newDTO.allocationLevel === 0 ? 'Initial Provision' : '+ / -' }}<br>({{newDTO.createDate}})<br></th>
+						<th class="text-center">Latest Provision</th>
+						<th class="text-center"><a uib-tooltip="All Units Latest Provision - PreCommitted - Committed - Penalty" tooltip-placement="top">Balance</a><br>({{todayDate}})<br></th>
+					</tr>
+					<tr ng-repeat="distribution in newDTO.distributions">
+						<td>{{distribution.formationName}}</td>
+						<td class="text-center" ng-repeat="allocation in allocations">{{getPastCredits(allocation, distribution.formationCode) | number: 2}}</td>
+						<td><input decimalbox min="-10000000" step="0.5" class="form-control" ng-model="distribution.credits" ng-change="computeTotalCredits(distribution)"></td>
+						<td class="text-center">{{(newDTO.allocationLevel === 0 ? distribution.credits : distribution.allocatedTotal) | number: 2}}</td>
+						<td class="text-center">{{distribution.usableCredits | number: 2}}</td>
+					</tr>
+					<tfoot>
+						<th>Total</th>
+						<th class="text-center" ng-repeat="allocation in allocations">{{allocation.totalCredits | number: 2}}</th>
+						<th class="text-center">{{newAllocationTotal | number: 2}}</th>
+						<th class="text-center">{{getLatestTotalProvision(newDTO.distributions) | number: 2}}</th>
+						<th class="text-center">{{getLatestTotalUsableCredits(newDTO.distributions) | number: 2}}</th>
+					</tfoot>
+				</table>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="modal fade" id="hqCreditStatusModal" tabindex="-1">
+	<div class="modal-dialog" style="width: 600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">{{ total ? 'Reset' : 'Set' }} Work Year Total Credits</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Work Year</label>
+							<div class="col-sm-9 control-value">{{newDTO.workYear}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Total Credits</label>
+							<div class="col-sm-9">
+								<input type="number" oninput="maxChk(this)" class="form-control" ng-model="hqCreditStatusDTO.allocatedAmt" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-click="saveOrUpdateHqCreditStatus()">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="allocateCreditsModal" tabindex="-1">
+	<div class="modal-dialog" style="width: 600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Allocate / Transfer Credits</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>Please specify the remarks (if any) for the allocation / transfer of credits:</p>
+					<textarea class="form-control" ng-model="newDTO.remarks"></textarea>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-click="saveAllocationsHq()">OK</button>
+			</div>
+		</div>
+	</div>
+</div>

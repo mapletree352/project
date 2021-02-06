@@ -1,0 +1,43 @@
+<div class="row page-header">
+	<h3><span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> Credit Movement <small>{{unit}}</small></h3>
+</div>
+<div class="row page-body">
+	<div class="col-sm-12">
+		<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+			<tr>
+				<th sort initial="desc" property="id">Id</th>
+				<th sort initial="desc" property="status.workYear">Work Year</th>
+				<th sort initial="desc" property="txnTime">Date/Time</th>
+				<th sort initial="desc" property="type.name">Action</th>
+				<th sort initial="desc" property="indentNo">Indent ID</th>
+				<th sort initial="desc" property="actualAmt">Actual Credits (+/-)</th>
+				<th sort initial="desc" property="balanceAmt">Balance Credits</th>
+				<th sort initial="desc" property="reservedAmt">Reserved Credits (+/-)</th>
+				<th sort initial="desc" property="usableAmt">Balance Credits (Usable) </th>
+			</tr>
+			<tr ng-repeat="record in records">
+				<td>{{record.id}}</td>
+				<td>{{record.workYear}}</td>
+				<td>{{record.txnTime}}</td>
+				<td>{{record.creditTxnType}}</a></td>
+				<td><a href="#/indent/{{record.indentNo}}">{{record.indentNo}}</a></td>
+				<td>{{record.actualAmt > 0 ? '+' : ''}}{{record.actualAmt | number: 2}}</td>
+				<td style="color:blue">{{record.balanceAmt | number: 2}}</td>
+				<td>{{record.reservedAmt > 0 ? '+' : ''}}{{record.reservedAmt | number: 2}}</td>
+				<td style="color:blue">{{record.usableAmt | number: 2}}</td>
+			</tr>
+			<tfoot>
+				<tr>
+					<td colspan="13" ng-if="records && records.length > 0">
+						<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+						<ul class="pagination">
+							<li>
+								<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+							</li>
+						</ul>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>

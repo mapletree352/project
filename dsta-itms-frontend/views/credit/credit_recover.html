@@ -1,0 +1,54 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> Penalty Credits Recovery
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-action">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<strong></strong>
+			</div>
+			<div class="panel-body">
+				<button type="button" class="btn btn-primary btn-block" ng-click="submitRefund()">Recover Credits</button>
+				<button type="button" class="btn btn-default btn-block">Reset</button>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 panel-main">
+		<div class="alert alert-info" role="alert">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign"></span> All fields are mandatory.
+			</p>
+		</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label for="" class="col-sm-3 control-label">Unit</label>
+				<div class="col-sm-5">
+					<div class="input-group">
+						<input class="form-control" placeholder="Unit Name or Unit Code" autocomplete="off" typeahead-min-length="2" typeahead-wait-ms="500"
+							uib-typeahead="unit as unit.name + ' (' + unit.code + ')'+ unit.credit for unit in searchUnits($viewValue)" typeahead-on-select="onSelectUnit($item, $model, $label)"
+							ng-model="searchDTO.unit" /> <span class="input-group-addon glyphicon glyphicon-search" id="basic-addon2"></span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label  class="col-sm-3 control-label required">Total Penalty Credits</label>
+				<div class="col-sm-9 control-value">{{refund.penaltyCredit}}</div>
+				<input type="hidden" class="form-control"  value="{{refund.unitCode}}" />
+			</div>
+			<div class="form-group">
+				<label for="" class="col-sm-3 control-label required">Credits to Recover</label>
+				<div class="col-sm-3">
+					<input decimalbox class="form-control decimalbox text-right"  data-ng-model="refund.recoverCredits">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="" class="col-sm-3 control-label">Reason</label>
+				<div class="col-sm-9">
+					<textarea class="form-control"  rows="3" data-ng-model="{{refund.reason}}"></textarea>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

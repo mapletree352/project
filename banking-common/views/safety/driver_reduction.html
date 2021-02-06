@@ -1,0 +1,86 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> Demerit Point Reduction <small>{{dto.id}}</small>
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#reduction" data-toggle="tab" ng-click="tab='reduction'">Reduction</a></li>
+			<li><a href="" data-target="#auditLog" data-toggle="tab" ng-click="tab='audit'">Audit Log</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div style="text-align:center">
+							<img src="images/personnels/personnel.gif" style="height:120px; padding-bottom:5px" />
+							<br>
+							<strong><big><a href="#/driver/{{dto.driverNricNo}}">{{dto.driverNricNo}}</a></big></strong>
+							<br>
+							<p>{{dto.driverName}}</p>
+							<hr>
+						</div>
+						<div ng-if="dto.status=='Pending'">
+							<button type="button" class="btn btn-default btn-block" ng-click="confirmDialog('Are you sure you want to update this Demerit Points Reduction?', update)">Save</button>
+							<button type="button" class="btn btn-danger btn-block" ng-click="confirmDialog('Are you sure you want to delete this Demerit Points Reduction?', delete)">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="reduction">
+				<form class="form-horizontal">
+					<fieldset>						
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Demerit Points Reduction Id</label>
+							<div class="col-sm-3 control-value">{{dto.id}}</div>
+							<label class="col-sm-2 control-label">Status</label>
+							<div class="col-sm-4 control-value" ng-if="dto.status != 'Rejected'">{{dto.status}}</div>
+						<div class="col-sm-4 control-value" ng-if="dto.status == 'Rejected'"><a uib-tooltip="{{dto.rejectionReason}}">{{dto.status}}</a></div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Reduction Points</label>
+							<div class="col-sm-3" ng-if="dto.status=='Pending'" >
+								<input intbox min="-24" max="0" class="form-control" ng-model="dto.reductionPoints" />
+							</div>
+							<div class="col-sm-3 control-value" ng-if="dto.status != 'Pending'">{{dto.reductionPoints}}</div>
+							<label class="col-sm-2 control-label required">Reduction Reason</label>
+							<div class="col-sm-4" ng-if="dto.status=='Pending'">
+								<textarea class="form-control" ng-model="dto.reductionReason"></textarea>
+							</div>
+							<div class="col-sm-4 control-value" ng-if="dto.status != 'Pending'">{{dto.reductionReason}}</div>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+			<div ng-if="tab=='audit'" class="tab-pane fade" id="auditLog">
+				<table st-table="records" st-pipe="getAuditLog" class="table table-striped table-bordered table-responsive table-condensed small">
+					<tr>
+						<th no-sort>#</th>
+						<th no-sort>Action Date</th>
+						<th no-sort>Action By</th>
+						<th no-sort>Action</th>
+						<th no-sort>New Value</th>
+						<th no-sort>Old Value</th>
+					</tr>
+					<tr ng-repeat="record in records">
+						<td>{{$index + searchDTO.startIndex + 1}}</td>
+						<td>{{record.createdDate}}</td>
+						<td>{{record.createdBy}}</td>
+						<td>{{record.action === "I" ? "INSERT" : "UPDATE"}}</td>
+						<td>{{record.newValue}}</td>
+						<td>{{record.oldValue}}</td>
+					</tr>
+					<tfoot>
+						<tr>
+							<td colspan="6">
+								<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

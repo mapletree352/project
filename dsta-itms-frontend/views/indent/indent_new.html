@@ -1,0 +1,1214 @@
+<div class="row" style="height:80px;background:white;z-index:999">
+	<div class="page-header" style="position:fixed;width:100%;background:white;z-index:999">
+		<h3>
+			<div ng-if="isEditTemplate !== 'Y'">{{ dto.status != null ? null : 'New'}} Indent <small>{{dto.templateFlag == 'Y' ? null : dto.indentNo}}</small></div>
+			<div ng-if="isEditTemplate === 'Y'"> <span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()"/>Edit Template <small>{{dto.templateName | uppercase}}</small></div>
+		</h3>
+	</div>
+</div>
+
+<div class="row">
+	<div class="panel-action">
+		<div class="panel panel-default" ng-if="isEditTemplate !== 'Y'">
+			<div class="panel-heading" ng-if="dto.status == null"><strong><center>NEW</center></strong></div>
+			<div class="panel-heading" ng-if="dto.status != null"><strong>{{dto.status | uppercase}}</strong></div>
+				
+			<div class="panel-body">
+				<div ng-if="dto.status != null">
+					<strong><big>{{dto.indentNo}}</big></strong><br>
+					<small>{{dto.status == 'Draft' ? '' : 'Previously'}} Submitted on <br>{{dto.submitDate}}</small><br>
+					<small>by {{dto.submittedBy}}</small><br>
+					<hr>
+				</div>
+				<button type="submit" class="btn btn-primary btn-block" data-toggle="modal"  ng-click="setWaitingListFlag()" ng-disabled="loading">Submit</button>
+				<button type="submit" class="btn btn-default btn-block" data-toggle="modal" ng-click="template()" ng-disabled="loading">{{dto.templateFlag == 'Y' ? 'Edit and Save Template' : 'Save as Template'}}</button>
+				<button type="submit" class="btn btn-default btn-block" ng-if="dto.status == null || dto.status == 'Draft'" data-toggle="modal" ng-click="draft()" ng-disabled="loading">Save as Draft</button>
+				<button type="submit" class="btn btn-default btn-block" ng-if="dto.status == 'Draft'" data-toggle="modal" data-target="#deleteDraftModal" ng-disabled="loading">Delete Draft</button>
+			</div>  	
+		</div>
+		<div class="panel panel-default" ng-if="isEditTemplate === 'Y'">
+			<div class="panel-heading"><strong>{{dto.templateName | uppercase}}</strong></div>				
+			<div class="panel-body">
+				<div>
+					<strong><big>{{dto.templateType}}</big></strong><br>
+					<small>Created On {{dto.submitDate}}</small><br>
+					<small>By {{dto.submittedBy}}</small><br>
+					<hr>
+				</div>
+				<button type="submit" class="btn btn-primary btn-block" data-toggle="modal" ng-click="template()" >Save</button>
+				<button type="submit" class="btn btn-danger btn-block" data-toggle="modal" data-target="#deleteTemplateModal">Delete</button>
+			</div>
+		</div>
+		<div class="alert alert-info" ng-if="isEditTemplate !== 'Y'">
+			<p><span class="glyphicon glyphicon-exclamation-sign"></span>Asterisk* Fields are Mandatory.</p>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 panel-main">
+		<form class="form-horizontal">
+			<div class="form-group" ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+				<label class="col-sm-3 control-label required">Activity Type</label>
+				<div class="col-sm-5"  ng-if="session.rights['showOpsTrgAdmOpt'] && session.rights['showMTAdminOpt'] && session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId" 
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-5"  ng-if="session.rights['showOpsTrgAdmOpt'] && !session.rights['showMTAdminOpt'] && !session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId" 
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities | filter: { type: '!MT Admin' && '!Urgent Admin' }">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-5"  ng-if="!session.rights['showOpsTrgAdmOpt'] && session.rights['showMTAdminOpt'] && !session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId" 
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities  | filter: { type: 'MT Admin' }">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-5"  ng-if="!session.rights['showOpsTrgAdmOpt'] && !session.rights['showMTAdminOpt'] && session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId" 
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities  | filter: { type: 'Urgent Admin' }">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-5"  ng-if="!session.rights['showOpsTrgAdmOpt'] && session.rights['showMTAdminOpt'] && session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId" 
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities  | filter: { type: 'MT Admin' && 'Urgent Admin' }">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-5"  ng-if="session.rights['showOpsTrgAdmOpt'] && !session.rights['showMTAdminOpt'] && session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId" 
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities  | filter: { type: '!MT Admin' }">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-5"  ng-if="session.rights['showOpsTrgAdmOpt'] && session.rights['showMTAdminOpt'] && !session.rights['showUrgentAdminOpt']">
+					<select class="form-control" ng-change="setSelectedActivityType()" ng-model="dto.activityId"
+						ng-options="activity.id as (activity.type + (activity.name ? ' - ' + activity.name : '')) for activity in activities  | filter: { type: '!Urgent Admin' }">
+						<option></option>
+					</select>
+				</div>
+				<div class="col-sm-4 checkbox" ng-if="dto.activityId !='' && (dto.activityType == 'Training' || selectedActivityType == 'OperationsOthers') && dto.activityType != 'MT Admin'">
+					<label>
+						<input type="checkbox" ng-model="dto.overseasFlag" ng-true-value="'Y'" ng-false-value="'N'" ng-change="resetIsOverseasFields(dto.overseasFlag)">Overseas
+					</label>
+				</div>
+			</div>
+			
+			<div class="form-group" ng-if="dto.status === 'Reverted' || dto.status === 'Recalled'">
+				<label class="col-sm-3 control-label required">Activity Type</label>
+				<div class="col-sm-6 control-value">{{dto.activityType}} - {{dto.activity}}</div>
+			</div>
+				
+			<div ng-if="checkBlank == 'N' && dto.activityId">
+			
+				<div class="form-group" ng-if="dto.activityType != 'MT Admin'">
+					<label class="col-sm-3 control-label required">Activity Name</label>
+					<div class="col-sm-8">
+						<input class="form-control" ng-model="dto.activityName" placeholder="Name of Training, Exercise or Event">
+					</div>
+				</div>
+			
+				<div class="form-group" ng-if="dto.activityType == 'MT Admin'">
+					<label class="col-sm-3 control-label required required">Activity Purpose</label>
+					<div class="col-sm-8">
+						<input class="form-control" ng-model="dto.activityName" placeholder="Purpose of MT Admin">
+					</div>
+				</div>
+			
+				<div class="form-group" ng-if="(session.userRole.cat === 'Hub' || session.userRole.cat === 'HQ')">
+					<label class="col-sm-3 control-label required">Customer Unit
+						<span class="glyphicon glyphicon-info-sign" uib-tooltip="Credits will be charged to this unit."/>
+					</label>
+					<div class="col-sm-5">
+						<div class="input-group">
+						<typeahead uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"
+							typeahead-on-select="getUnitCredits($item.code, $item.type)" placeholder="Unit Code or Name" ng-blur="dto.unitCode = unit ? dto.unitCode : undefined" ng-model="unit"/>
+							<span class="input-group-addon glyphicon glyphicon-search"></span>
+						</div>
+					</div>
+					<div  ng-if="dto.unitCode != null && dto.activityType != 'MT Admin'">
+						<label class="col-sm-1 control-label">Sub Unit</label>
+						<div class="col-sm-2">		
+							<select class="form-control" ng-model="dto.subUnit" ng-options="subUnit.id as subUnit.name for subUnit in subUnits | filter: { type: dto.unitCode }">
+								<option></option>
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group" ng-if="dto.unitCode != null && (session.userRole.cat === 'Hub' || session.userRole.cat === 'HQ')  && dto.activityType != 'MT Admin'">
+					<label class="col-sm-3 control-label">Available Credits 
+						<span class="glyphicon glyphicon-info-sign" uib-tooltip="Minimum of 2 credits is required"/>
+					</label>
+					<div class="col-sm-5">
+						<div>
+							<label class="control-label">Work Year {{workYearCredits.currentWorkYear}}</label>
+							: {{workYearCredits.currentWorkYearAllocatedCredits != null ? workYearCredits.currentWorkYearAllocatedCredits : 'Not'}} Allocated, {{workYearCredits.currentWorkYearRemainingCredits != null ? workYearCredits.currentWorkYearRemainingCredits : 'No'}} Remaining
+						</div>
+						<div>
+							<label class="control-label">Work Year {{workYearCredits.nextWorkYear}}</label>
+							: {{workYearCredits.nextWorkYearAllocatedCredits != null ? workYearCredits.nextWorkYearAllocatedCredits : 'Not'}} {{ advance == null ? 'Allocated' : 'Advanced Credits'}}, {{workYearCredits.nextWorkYearRemainingCredits != null ? workYearCredits.nextWorkYearRemainingCredits : 'No'}} Remaining
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div>
+							<label class="control-label">Div / Formation</label>
+							&nbsp;&nbsp;&nbsp;: {{unitFormation}}
+						</div>
+						<div>
+							<label class="control-label">Supporting Node</label>
+							: {{unitNode}}
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group" ng-if="(session.userRole.cat === 'Unit' || session.userRole.cat === 'Node')  && dto.activityType != 'MT Admin'">
+					<label class="col-sm-3 control-label required">Customer Unit
+						<span class="glyphicon glyphicon-info-sign" uib-tooltip="Credits will be charged to this unit."/>
+					</label>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<input class="form-control" ng-model="dto.unit" readonly/>
+							<span class="input-group-addon glyphicon glyphicon-search"></span>
+						</div>
+					</div>
+					<div>
+						<label class="col-sm-1 control-label">Sub Unit</label>
+						<div class="col-sm-2">
+							<select class="form-control" ng-model="dto.subUnit" ng-options="subUnit.id as subUnit.name for subUnit in subUnits | filter: { type: dto.unitCode }">
+								<option></option>
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group" ng-if="(session.userRole.cat === 'Unit' || session.userRole.cat === 'Node')  && dto.activityType != 'MT Admin'">
+					<label class="col-sm-3 control-label">Available Credits
+						<span class="glyphicon glyphicon-info-sign" uib-tooltip="Minimum of 2 credits is required"></span>
+					</label>
+					<div class="col-sm-5">
+						<div>
+							<label class="control-label">Work Year {{workYearCredits.currentWorkYear}}</label>
+							: {{workYearCredits.currentWorkYearAllocatedCredits != null ? workYearCredits.currentWorkYearAllocatedCredits : 'Not'}} Allocated, {{workYearCredits.currentWorkYearRemainingCredits != null ? workYearCredits.currentWorkYearRemainingCredits : 'No'}} Remaining
+						</div>
+						<div>
+							<label class="control-label">Work Year {{workYearCredits.nextWorkYear}}</label>
+							: {{workYearCredits.nextWorkYearAllocatedCredits != null ? workYearCredits.nextWorkYearAllocatedCredits : 'Not'}} {{ advance == null ? 'Allocated' : 'Advanced Credits'}}, {{workYearCredits.nextWorkYearRemainingCredits != null ? workYearCredits.nextWorkYearRemainingCredits : 'No'}} Remaining
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div>
+							<label class="control-label">Div / Formation</label>
+							&nbsp;&nbsp;&nbsp;: {{unitFormation}}
+						</div>
+						<div>
+							<label class="control-label">Supporting Node</label>
+							: {{unitNode}}
+						</div>
+					</div>
+				</div>
+
+				<!-- TODO: hide this for demo : to check unit's NS flag -->
+				<div class="form-group" ng-if="dto.activityType != 'MT Admin' && ns.isNsFlag == 'Y'">
+					<label class="col-sm-3 control-label required">NS Indent</label>
+					<div class="col-sm-2">
+						<div class="radio radio-inline">
+							<label>
+								<input type="radio" value="N" ng-model="dto.nsIndent">No
+							</label>
+						</div>
+						<div class="radio radio-inline">
+							<label>
+								<input type="radio" value="Y" ng-model="dto.nsIndent">Yes
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div ng-if="checkBlank == 'N' && dto.activityId && dto.unitCode && !unitNode ">
+				<hr>
+				<div>
+					<div class="form-group">
+						<label class="col-sm-3"></label>
+						<div class="col-sm-9 control-value" style="color:red">Indent cannot be created as customer unit ({{dto.unitCode}}) does not have any supporting node.</div>
+					</div>
+				</div>
+			</div>
+			
+			<div ng-if="checkBlank == 'N' && dto.activityId && dto.unitCode && unitNode">
+				<hr>
+				<div>
+					<div class="form-group" ng-if="dto.overseasFlag == 'Y'">
+						<label class="col-sm-3 control-label required">Country</label>
+						<div class="col-sm-2">
+							<select class="form-control" ng-model="dto.country" ng-options="country.code as country.name for country in countries">
+								<option></option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group" ng-if="dto.activityType != 'Operations' && dto.overseasFlag == 'N'">
+					<label class="col-sm-3 control-label required">Movement</label>
+					<div class="col-sm-8">
+						<div>
+							<div class="radio radio-inline">
+								<label>
+									<input type="radio" name="movement" value="IN" ng-model="dto.campMovement">In Camp
+								</label>
+							</div>
+							<div class="radio radio-inline">
+								<label>
+									<input type="radio" name="movement" value="OUT" ng-model="dto.campMovement">Out Camp
+								</label>
+							</div>
+						</div>
+						<div class="alert alert-warning" style="margin-bottom:0" ng-if="dto.campMovement === 'OUT'">
+							<span class="glyphicon glyphicon-exclamation-sign"></span>
+							Out Camp is not permitted during No-Move period* unless authorized.
+							*(Weekdays 0730-0930 & 1730-1930 hrs)
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group"  ng-if="((dto.activityType != 'Training' && dto.activityType != 'Operations' && dto.activityType != 'Allocated Resource') && dto.status !== 'Reverted' && dto.status !== 'Recalled') && session.userRole.role!='Super User'">
+					<label class="col-sm-3 control-label required">Indent Period</label>
+					<div class="col-sm-5">
+						<div class='input-group valueColumn date'>
+							<input class="form-control" datetimerangebox min-date="1" max-date="15" ng-model="dto.dateRange" ng-change="otfIndentDates(dto.dateRange)"/>
+							<label class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group"  ng-if="((dto.activityType == 'Training' || dto.activityType == 'Operations') && dto.status !== 'Reverted' && dto.status !== 'Recalled') && session.userRole.role!='Super User'">
+					<label class="col-sm-3 control-label required">Indent Period</label>
+					<div class="col-sm-5">
+						<div class="input-group valueColumn date">
+							<input class="form-control" datetimerangebox min-date="1" max-date="120" ng-model="dto.dateRange" ng-change="otfIndentDates(dto.dateRange)" />
+							<label class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group"  ng-if="(dto.activityType == 'Allocated Resource' && dto.status !== 'Reverted' && dto.status !== 'Recalled') && session.userRole.role!='Super User'">
+					<label class="col-sm-3 control-label required">Indent Period</label>
+					<div class="col-sm-5">
+						<div class='input-group valueColumn date'>
+							<input  class="form-control" datetimerangebox min-date="1" max-date="160" ng-model="dto.dateRange" ng-change="otfIndentDates(dto.dateRange)"/>
+							<label class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group"  ng-if="(dto.status === 'Reverted' || dto.status === 'Recalled') && session.userRole.role!='Super User'">
+					<label class="col-sm-3 control-label required">Indent Period</label>
+					<div class="col-sm-5">
+						<div class="input-group valueColumn date">
+							<input class="form-control" datetimerangebox min-datetime='minDateTime' max-datetime='maxDateTime' ng-model="dto.dateRange" ng-change="otfIndentDates(dto.dateRange)"/>
+							<label class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group"  ng-if="session.userRole.role=='Super User'">
+					<label class="col-sm-3 control-label required">Indent Period</label>
+					<div class="col-sm-5">
+						<div class="input-group valueColumn date">
+							<input class="form-control" datetimerangebox ng-model="dto.dateRange" ng-change="otfIndentDates(dto.dateRange)"/>
+							<label class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-12">
+					<div class="form-group" ng-if="dto.activityType != 'MT Admin'">
+						<label class="col-sm-3 control-label required">Reporting Venue Type</label>
+						<div class="col-sm-5">
+							<select class="form-control" ng-model="dto.reportingVenueTypeId" ng-change="filterReportingVenues(dto.reportingVenueTypeId, true)" required ng-options="venueType.id as venueType.name for venueType in venueTypes">
+								<option></option>
+							</select>
+						</div>
+					</div>
+					<div  ng-if="dto.activityType != 'MT Admin' && dto.reportingVenueTypeId != null">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Reporting Venue
+								<span class="glyphicon glyphicon-info-sign" uib-tooltip="For 'Others', please key in venue in the reporting info field."/>
+							</label>
+							<div class="col-sm-5">
+								<select class="form-control" ng-model="dto.reportingVenueId" required ng-options="venue.id as venue.name for venue in reportingVenues">
+									<option></option>
+								</select>
+							</div>
+						</div>
+	
+						<div class="form-group" ng-if="dto.activityType != 'MT Admin'">
+							<label class="col-sm-3 control-label required">Reporting Info</label>
+							<div class="col-sm-8">
+								<textarea class="form-control" ng-model="dto.reportingInfo" rows="2" placeholder="Reporting point e.g. Blk 2A, in front of Parade Square"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" ng-if="dto.overseasFlag === 'N'">
+						<label class="col-sm-3 control-label required">Reporting Destination Type</label>
+						<div class="col-sm-5">
+							<select class="form-control" ng-model="dto.destinationVenueTypeId" ng-change="filterDestinationVenues(dto.destinationVenueTypeId, true)" required ng-options="venueType.id as venueType.name for venueType in venueTypes">
+								<option></option>
+							</select>
+						</div>
+					</div>
+					<div ng-if="dto.destinationVenueTypeId != null">
+						<div class="form-group" ng-if="dto.overseasFlag === 'N'">
+							<label class="col-sm-3 control-label required">Destination Venue
+								<span class="glyphicon glyphicon-info-sign" uib-tooltip="For 'Others', please key in venue in the additional info field."/>
+							</label>
+							<div class="col-sm-5">
+								<select class="form-control" ng-model="dto.destinationVenueId" ng-options="venue.id as venue.name for venue in destinationVenues">
+									<option></option>
+								</select>
+							</div>
+						</div>					
+						<div class="form-group" ng-if="dto.overseasFlag === 'N'">
+							<label class="col-sm-3 control-label required">Additional Info</label>
+							<div class="col-sm-8">
+								<textarea class="form-control" ng-model="dto.additionalInfo" ng-change="resetIsOverseasFields({{!dto.overseasFlag}})" rows="3" 
+								placeholder="Stop-over points e.g. Day 1 - Destination 1, Day 2 - Destination 2, Day 3 - Destination 3, Concurrent live-firing at different locations."></textarea>
+							</div>
+						</div>
+					</div>
+					
+					<fieldset class="col-sm-12" ng-if="dto.activityType != 'MT Admin'">
+						<legend>Point-of-Contact</legend>
+
+						<div class="form-group" ng-if="manual.manualEntry == 'N'">
+							<label class="col-sm-3 control-label required">Reporting Point-of-Contact 
+								<span class="glyphicon glyphicon-info-sign" uib-tooltip="Vehicle will be reporting to this person on the ground."/>
+							</label>
+							<div class="col-sm-6">
+								<div class="input-group">
+									<typeahead uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+										typeahead-on-select="setPoc($item.code, $item.type, $item.value)" placeholder="NRIC No. or Name" ng-model="dto.poc"/>									
+									<span class="input-group-addon glyphicon glyphicon-search"></span>
+								</div>
+							</div>
+							<div class="col-sm-3 checkbox">
+								<label>
+									<input type="checkbox" ng-model="manual.manualEntry" ng-true-value="'Y'" ng-false-value="'N'" ng-change="resetPoc()">Manual Entry
+									<span class="glyphicon glyphicon-info-sign" uib-tooltip="Reporting poc, office no. and hp no. will be manually keyed."></span>
+								</label>
+							</div>
+						</div>
+						
+						<div class="form-group" ng-if="manual.manualEntry == 'Y'">
+							<label class="col-sm-3 control-label required">Reporting Point-of-Contact 
+								<span class="glyphicon glyphicon-info-sign" uib-tooltip="Vehicle will be reporting to this person on the ground."></span>
+							</label>
+							<div class="col-sm-6">							
+								<input class="form-control" ng-model="dto.poc">
+							</div>
+							<div class="col-sm-3 checkbox">
+								<label>
+									<input type="checkbox" ng-model="manual.manualEntry" ng-true-value="'Y'" ng-false-value="'N'" ng-change="resetPoc()">Manual Entry
+									<span class="glyphicon glyphicon-info-sign" uib-tooltip="Reporting poc, office no. and hp no. will be manually keyed."></span>
+								</label>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Office Number</label>
+							<div class="col-sm-2">
+								<input class="form-control" ng-model="dto.pocOfficeNo">
+							</div>
+							<label class="col-sm-2 control-label required">Mobile Number</label>
+							<div class="col-sm-2">
+								<input class="form-control" ng-model="dto.pocMobileNo">
+							</div>
+						</div>
+					</fieldset>
+				</div>
+
+				<fieldset class="col-sm-12">
+					<legend>Resources
+						<button type="button" class="btn btn-default btn-xs"  ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'" ng-click="showIndentResourceModal(null)"><div class="glyphicon glyphicon-plus"></div> Add Resource</button>
+						<button type="button" class="btn btn-default btn-xs" ng-click="removeIndentResources()"><div class="glyphicon glyphicon-minus"></div> Remove Selected Resources</button>
+					</legend>
+
+					<table class="table table-bordered table-responsive table-condensed" ng-show="dto.indentResources">
+						<thead>
+							<tr>
+								<th rowspan="2" class="text-center"><input type="checkbox" ng-model="checkboxes.all" ng-click="checkAll()"></th>
+								<th rowspan="2" class="text-center">#</th>
+								<th rowspan="2">Vehicle Type</th>
+								<th rowspan="2">Resource Type</th>
+								<th rowspan="2" class="text-center">Quantity</th>
+								<th rowspan="2" class="text-center">Park-Down</th>
+								<th rowspan="2" class="text-center">Credits</th>
+								<th colspan="2" ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'" class="text-center">Node Availability</th>
+							</tr>
+							<tr>
+								<th ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'" class="text-center">TO</th>
+								<th ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'" class="text-center">Veh.</th>
+							</tr>
+						</thead>
+						<tr ng-repeat="record in dto.indentResources" data-toggle="modal" data-target="#resourceModal" > <!-- data-toggle="modal" data-target="#resourceModal" class="clickable" -->
+							<td class="text-center"><input type="checkbox" ng-model="checkboxes.records[record.id]" ng-click="checkboxes.all = false"></td>
+							<td class="text-center"><button type="button" class="btn btn-default btn-xs" ng-click="showIndentResourceModal(record.id)">View</button></td>
+							<td>{{record.vehicleTypeName}}</td>
+							<td ng-if="record.resourceType === 'DRV'">Transport Operator Only</td>
+							<td ng-if="record.resourceType === 'VEH'">Vehicle Only</td>
+							<td ng-if="record.resourceType === 'VEH_DRV'">Vehicle and Transport Operator</td>
+							<td class="text-center">{{record.vehicleQuantity || record.operatorQuantity}}</td>
+							<td class="text-center">{{record.parkdownFlag == 'N' ? 'No' : 'Yes (' + (record.parkdownCredits | number: 1) + ' Credits)'}}</td>
+							<td class="text-center">{{record.credits | number: 1}}</td>
+							<td class="text-center" ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'">{{record.drvNodeAvail != null ? record.drvNodeAvail : '-'}}</td>
+							<td class="text-center" ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'">{{record.vehNodeAvail != null ? record.vehNodeAvail : '-'}}</td>
+						</tr>
+						<tfoot>
+							<tr>
+								<td class="text-right" colspan="6"><strong>Total Credits: </strong></td>
+								<td class="text-center">{{dto.credits | number: 1}}</td>
+								<td ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'"></td>
+								<td ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'"></td>
+							</tr>
+						</tfoot>
+					</table>
+					<br>
+				</fieldset>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="indentResourceModal">
+	<div class="modal-dialog" style="width:800px">
+		<div class="modal-content">
+		
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Add Resource</h4>
+			</div>
+			
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Request Period</label>	
+							<div class="col-sm-6 control-value">{{dto.dateRange}}</div>
+						</div>
+
+						<div class="form-group" ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled' && dto.activityType !== 'Allocated Resource'">
+							<label class="col-sm-3 control-label required">Resource Type</label>
+							<div class="col-sm-9">
+								<div class="radio" data-ng-repeat="resourceType in resourceTypes | filter: filterResourceTypes(dto.overseasFlag)">
+									<label>
+    									<input name="resourceType" type="radio" ng-value="resourceType.code" ng-model="indentResource.resourceType" ng-change="resetCodeFields(indentResource.resourceType)"/>
+    									{{resourceType.name}}
+									</label> 
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group" ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled' && dto.activityType === 'Allocated Resource'">
+							<label class="col-sm-3 control-label required">Resource Type</label>
+							<div class="col-sm-9">
+								<div class="radio" data-ng-repeat="resourceType in resourceTypes | filter: filterResourceTypes(dto.activityType)">
+									<label>
+    									<input name="resourceType" type="radio" ng-value="resourceType.code" ng-model="indentResource.resourceType" ng-change="resetCodeFields(indentResource.resourceType)"/>
+    									{{resourceType.name}}
+									</label> 
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group" ng-if="dto.status === 'Reverted' || dto.status === 'Recalled'">
+							<label class="col-sm-3 control-label required">Resource Type</label>
+							<div class="col-sm-6 control-value">{{indentResource.resourceTypeName}}</div>
+						</div>
+
+						<div class="form-group" ng-if="(indentResource.resourceType=='VEH_DRV' || indentResource.resourceType=='VEH') && 
+						dto.activityType != 'Operations' && dto.activityType != 'Allocated Resource' && dto.activityType != 'MT Admin' && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Vehicle Purpose</label>
+							<div class="col-sm-7">		
+								<select class="form-control" ng-model="indentResource.purpose" ng-change="filterVehicleTypes(indentResource.purpose)" required ng-options="purpose.id as purpose.name for purpose in purposes"></select>
+							</div>
+						</div>
+
+						<div class="form-group" ng-if="(indentResource.resourceType === 'VEH_DRV' || indentResource.resourceType === 'VEH') && dto.status === 'Reverted' || dto.status === 'Recalled'">
+							<label class="col-sm-3 control-label">Vehicle Purpose</label>
+							<div class="col-sm-7 control-value">{{indentResource.purposeName != null ? indentResource.purposeName : dto.activityType}}</div>
+						</div>
+						
+						<div class="form-group" ng-if="indentResource.resourceType != null && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Vehicle Type
+							<span class="glyphicon glyphicon-info-sign" uib-tooltip="F1/R5 means 1 Front Passenger and 5 Rear Passengers"></span></label>
+							<div class="col-sm-7">
+								<select class="form-control" ng-model="indentResource.vehicleType" ng-change="otfVehicleType()" required ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes"></select>
+							</div>
+							<div class="col-sm-1" ng-if="indentResource.vehicleTypeName != null">
+								<img src="images/vehicles/14.jpg" class="clickable" style="border:solid 2px silver;height:34px" uib-tooltip-html="vehicleTypeTooltip" tooltip-placement="bottom" ng-click="openVehicleImage()"/>
+							</div>
+						</div>
+
+						<div class="form-group" ng-if="dto.status === 'Reverted' || dto.status === 'Recalled'">
+							<label class="col-sm-3 control-label required">Vehicle Type</label>
+							<div class="col-sm-8 control-value">{{indentResource.vehicleTypeName}}</div>
+						</div>
+						
+						<div class="form-group" ng-if="dto.status === 'Reverted' || dto.status === 'Recalled'">
+							<label class="col-sm-3 control-label required">Required Quantity</label>
+							
+							<div ng-if="indentResource.resourceType === 'DRV'">
+								<div class="col-sm-2" ng-if="indentResource.operatorQuantity !== 1">
+									<input intbox class="text-right no-animation" ng-model="indentResource.operatorQuantity" ng-change="checkLimit(indentResource.operatorQuantity, maxQty, false, true)"> 
+								</div>
+								
+								<div class="col-sm-2 control-value"  ng-if="indentResource.operatorQuantity === 1">{{indentResource.operatorQuantity}}</div>
+								
+								<div class="col-sm-6" style="margin-left:42px; margin-top:8px;" ng-if="indentResource.operatorQuantity != 0 && dto.dateRange != null">
+									<label>Indent Availability :</label>
+									<a style="margin-left:10px;" class="clickable" ng-click="dto.showAvailability =! dto.showAvailability">Show</a>
+								</div>
+							</div>	
+							
+							<div ng-if="indentResource.resourceType === 'VEH'">
+								<div class="col-sm-2" ng-if="indentResource.vehicleQuantity !== 1">
+									<input intbox class="text-right no-animation" ng-model="indentResource.vehicleQuantity" ng-change="checkLimit(indentResource.vehicleQuantity, maxQty, true, false)">	
+								</div>
+								
+								<div class="col-sm-2 control-value"  ng-if="indentResource.vehicleQuantity === 1">{{indentResource.vehicleQuantity}}</div>
+								
+								<div class="col-sm-6" style="margin-left:52px; margin-top:8px;" ng-if="indentResource.vehicleQuantity != 0 && dto.dateRange != null">
+									<label>Indent Availability :</label>
+									<a style="margin-left:10px;" class="clickable" ng-click="dto.showAvailability =! dto.showAvailability">Show</a>
+									
+								</div>
+							</div>
+							
+							<div ng-if="indentResource.resourceType === 'VEH_DRV'">
+								<div class="col-sm-2"  ng-if="indentResource.vehicleQuantity !== 1">
+									<input intbox class="text-right no-animation" ng-model="indentResource.vehicleQuantity" ng-change="checkLimit(indentResource.vehicleQuantity, maxQty, true, true)"> 
+										
+								</div>
+								<div class="col-sm-2 control-value"  ng-if="indentResource.vehicleQuantity === 1">{{indentResource.vehicleQuantity}}</div>
+								
+								<div class="col-sm-6" style="margin-left:60px; margin-top:8px;" ng-if="indentResource.vehicleQuantity != 0 && dto.dateRange != null">
+									<label>Indent Availability :</label>
+									<a style="margin-left:10px;" class="clickable" ng-click="dto.showAvailability =! dto.showAvailability">Show</a>
+								</div>
+							</div>			   					
+						</div>
+						
+						<div class="form-group" ng-if="(dto.status === 'Reverted' || dto.status === 'Recalled') && indentResource.parkdownFlag === 'N'">
+							<label class="col-sm-3 control-label">Park-Down Required</label>
+							<div class="col-sm-2 control-value">No</div>
+						</div>
+						
+						<div class="form-group" ng-if="(dto.status === 'Reverted' || dto.status === 'Recalled') && indentResource.parkdownFlag === 'Y'">
+							<label class="col-sm-3 control-label">Park-Down Date/Time</label>
+							<div class="col-sm-3 control-value">{{indentResource.parkdownTime}}</div>
+						<label class="col-sm-2 control-label">within</label>
+							<div class="col-sm-1 control-value">{{indentResource.parkdownDuration / 2}} Hours</div>
+							<div class="col-sm-2 control-value" style="text-align:left" >({{indentResource.parkdownQuantity}} TOs required)</div>
+						</div>
+						
+						<div class="form-group" ng-if="indentResource.resourceType === 'VEH_DRV' && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Required Quantity <span class="glyphicon glyphicon-info-sign" uib-tooltip="12 - BME 12/16 - HQ 2PDF & BME "></span></label>
+							
+							<div class="col-sm-2">								
+								<div ng-if="indentResource.purposeName == 'Troop Lift' && (selectedActivityType == 'TrainingATEC Evaluation' || selectedActivityType == 'TrainingBrigade Training')" class="no-animation">
+									<div class="radio radio-inline" ng-if="dto.unitCode != 'P10K'">
+										<label>
+											<input type="radio" value="12" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(indentResource.vehicleQuantity)">12
+										</label>
+									</div>
+									
+									<div class="radio radio-inline" ng-if="dto.unitCode == 'P10K'">
+										<label>
+											<input type="radio" name="quantity1" value="12" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(indentResource.vehicleQuantity)">12
+										</label>
+										<label>
+											<input type="radio" name="quantity1" value="16" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(indentResource.vehicleQuantity)">16
+										</label>
+									</div>
+								</div>
+								<input intbox class="text-right no-animation" ng-if="!(indentResource.purposeName == 'Troop Lift' && (selectedActivityType == 'TrainingATEC Evaluation' || selectedActivityType == 'TrainingBrigade Training'))" 
+									   ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(indentResource.vehicleQuantity)"> 
+							</div>
+							<div class="col-sm-5 control-value" ng-if="indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null">
+								<label>Availability:</label>
+								<span style="margin-right:6px; margin-left:8px;">{{indentResource.vehNodeAvail}} Vehicles</span>
+								<span style="margin-right:10px; margin-left:8px;">{{indentResource.drvNodeAvail}} TOs</span>
+								<a class="clickable" ng-click="dto.showAvailability =! dto.showAvailability">Show</a>
+							</div>
+							<div ng-if="chartLoading" style="float:right; margin-top:6px; margin-right:90px;"><div class="loader-sm"></div></div>					
+						</div>
+								
+						<div class="form-group" ng-if="indentResource.resourceType == 'VEH_DRV' && indentResource.vehicleType != null">
+							<div ng-if="dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+								<label class="col-sm-3 control-label required">Park-Down Required</label>
+								<div class="col-sm-9">
+									<div class="radio radio-inline">
+										<label>
+											<input type="radio" name="parkdown" value="N" ng-model="indentResource.parkdownFlag" ng-change="resetParkdownFields(indentResource.parkdownFlag)">No
+										</label>
+									</div>
+									<div class="radio radio-inline">
+										<label>
+											<input type="radio" name="parkdown" value="Y" ng-model="indentResource.parkdownFlag" ng-change="resetParkdownFields(indentResource.parkdownFlag)">Yes
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group" ng-if="indentResource.parkdownFlag =='Y' && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Park-Down Within Supporting Node Complex</label>
+							<div class="col-sm-9">
+								<div class="radio radio-inline">
+									<label>
+										<input type="radio" value="OUT" ng-model="indentResource.parkdownCampMovement" ng-change="otfParkdownMovement()">No
+									</label>
+								</div>
+								<div class="radio radio-inline">
+									<label>
+										<input type="radio" value="IN" ng-model="indentResource.parkdownCampMovement" ng-change="otfParkdownMovement()">Yes
+									</label>
+								</div>				
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<div class="alert alert-warning text-left" ng-if="indentResource.parkdownCampMovement === 'OUT'">
+								<span class="glyphicon glyphicon-exclamation-sign"></span>
+								Out Camp is not permitted during No-Move period* unless authorized.
+								*(Weekdays 0730-0930 & 1730-1930 hrs)
+							</div>
+						</div>
+
+						<div class="form-group" ng-if="indentResource.parkdownCampMovement != null && indentResource.parkdownFlag == 'Y'  && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Park-Down Date/Time<span class="glyphicon glyphicon-info-sign" uib-tooltip="The system will determine the minimum number of TOs required to park-down the selected vehicles within the specified duration. A TO requires an estimated 30 minutes to parkdown each vehicle within the Node's default camp premises. For vehicles moving out of camp premises, every vehicle requires a dedicated TO."></span></label>
+							<div class="col-sm-4">
+								<div class='input-group valueColumn date'>
+								<input datetimebox  min-date="minDate" max-date="maxDate" class="form-control" id="parkdown" ng-model="indentResource.parkdownTime" ng-change="otfParkdownTime()"/>
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>
+								</div>
+							</div>
+						<div class="col-sm-1 control-label" style="text-align:center">within</div>
+							<div class="col-sm-2">
+								<select class="form-control" ng-model="indentResource.parkdownDuration" ng-change="otfParkdownDuration()">
+									<option value="30">30 minutes</option>
+									<option value="1">1 hour</option>
+									<option value="2">2 hours</option>
+									<option value="3">3 hours</option>
+									<option value="4">4 hours</option>
+									<option value="5">5 hours</option>
+									<option value="6">6 hours</option>
+									<option value="7">7 hours</option>
+									<option value="8">8 hours</option>
+								</select>
+							</div>
+							<div class="col-sm-2 control-label" style="text-align:left" >({{indentResource.parkdownQuantity}} TOs required)</div>
+						</div>
+																		
+						<div class="form-group" ng-if="indentResource.resourceType === 'VEH_DRV' && !chartLoading">
+							
+							<div class="alert alert-warning text-left" ng-if="(indentResource.vehicleQuantity > indentResource.vehNodeAvail || indentResource.vehicleQuantity > indentResource.drvNodeAvail) && dto.activityType != 'MT Admin' && dto.activityType != 'Operations' && dto.activityType != 'MT Maint'  && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+								<p><span class="glyphicon glyphicon-warning-sign"></span> There is a lack of resources to meet your requirement. Please select an alternative date, alternative vehicle type or reduce your resource requirements.</p>
+								<p>Upon submission, your indent will be placed on the waiting list and subjected to resource availability. The system will inform you of the outcome 14 days from the execution date.</p>
+							</div>
+	
+							<div style="width:600px;margin-left:80px;" class="alert alert-warning text-left" ng-if="(dto.status === 'Reverted' || dto.status === 'Recalled') && dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null">
+								<p class="text-center"><span class="glyphicon glyphicon-exclamation-sign"></span> Resource availability chart includes the original booked resources of this indent.</p>
+							</div>
+							
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<label class="col-sm-3 control-label">Vehicle Availability</label>
+								<div class="form-group">
+									<label class="col-sm-6 control-label"></label>
+									<div class="col-sm-8" style="padding-left:55px;padding-top:4px">
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#FF0000;width:20px;height:15px;float:left;margin-right:5px;"/> Indented</div>
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#0000ff;width:20px;height:15px;float:left;margin-right:5px;"/> Balance</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<div class="col-sm-11" style="margin-left:60px;">
+									<div type="hidden" ng-init="button='VEH-last'" >
+										<div class="glyphicon glyphicon-chevron-left" uib-tooltip="Last 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+									<div style="float:left;width:85%">
+										<canvas class="chart chart-base" chart-type="stackedBar" chart-options="options" chart-data="vehChart.chartData" chart-labels="vehChart.chartDates" chart-colours="colours" chart-series="series" height="90px"></canvas>
+									</div>
+									<div type="hidden" ng-init="button='VEH-next'" >
+										<div class="glyphicon glyphicon-chevron-right" uib-tooltip="Next 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>	
+								</div>
+							</div>
+	
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<label class="col-sm-3 control-label">Transport Operator Availability</label>
+								<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null">
+									<label class="col-sm-6 control-label"></label>
+									<div class="col-sm-8" style="padding-left:55px;padding-top:10px">
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#FF0000;width:20px;height:15px;float:left;margin-right:5px;"/> Indented</div>
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#0000ff;width:20px;height:15px;float:left;margin-right:5px;"/> Balance</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<div class="col-sm-11" style="margin-left:60px;">
+									<div type="hidden" ng-init="button='DRV-last'" >
+										<div class="glyphicon glyphicon-chevron-left" uib-tooltip="Last 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+									<div style="float:left;width:85%">
+										<canvas class="chart chart-base" chart-type="stackedBar" chart-options="options" chart-data="drvChart.chartData" chart-labels="drvChart.chartDates" chart-colours="colours" chart-series="series" height="90px"></canvas>
+									</div>
+									<div type="hidden" ng-init="button='DRV-next'" >
+										<div class="glyphicon glyphicon-chevron-right" uib-tooltip="Next 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						
+						<div class="form-group" ng-if="indentResource.resourceType === 'VEH' && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Required Quantity <span class="glyphicon glyphicon-info-sign" uib-tooltip="12 - BME 12/16 - HQ 2PDF & BME "></span></label>
+							
+							<div class="col-sm-2">								
+								<div ng-if="indentResource.purposeName == 'Troop Lift' && (selectedActivityType == 'TrainingATEC Evaluation' || selectedActivityType == 'TrainingBrigade Training')" class="no-animation">
+									<div class="radio radio-inline" ng-if="dto.unitCode != 'P10K'">
+										<label>
+											<input type="radio" value="12" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(null)">12
+										</label>
+									</div>
+									
+									<div class="radio radio-inline" ng-if="dto.unitCode == 'P10K'">
+										<label>
+											<input type="radio" value="12" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(null)">12
+										</label>
+										<label>
+											<input type="radio" name="quantity1" id="quantity1" value="16" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(null)">16
+										</label>
+									</div>
+								</div>
+								<input intbox class="text-right no-animation" ng-model="indentResource.vehicleQuantity" ng-change="otfVehDrvQty(null)"
+									   ng-if="!(indentResource.purposeName == 'Troop Lift' && (selectedActivityType == 'TrainingATEC Evaluation' || selectedActivityType == 'TrainingBrigade Training'))"> 
+							</div>
+							<div class="col-sm-7 control-value" ng-if="indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null">
+								<label>Availability:</label>
+								<span style="margin-right:10px; margin-left:8px;">{{indentResource.vehNodeAvail}} Vehicles</span>
+								<a class="clickable" ng-click="dto.showAvailability =! dto.showAvailability">Show</a>
+							</div>
+							<div ng-if="chartLoading" style="float:right; margin-top:6px; margin-right:90px;"><div class="loader-sm"></div></div>	
+						</div>
+						
+						<div class="form-group" ng-if="indentResource.resourceType === 'VEH' && !chartLoading">
+							
+							<div class="alert alert-warning text-left" ng-if="indentResource.vehicleQuantity > indentResource.vehNodeAvail  && dto.activityType != 'MT Admin' && dto.activityType != 'Operations' && dto.activityType != 'MT Maint'  && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+								<p><span class="glyphicon glyphicon-warning-sign"></span> There is a lack of resources to meet your requirement. Please select an alternative date, alternative vehicle type or reduce your resource requirements.</p>
+								<p>Upon submission, your indent will be placed on the waiting list and subjected to resource availability. The system will inform you of the outcome 14 days from the execution date.</p>
+							</div>
+							
+							<div style="width:600px;margin-left:80px;" class="alert alert-warning text-left" ng-if="(dto.status === 'Reverted' || dto.status === 'Recalled') && dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null">
+								<p class="text-center"><span class="glyphicon glyphicon-exclamation-sign"></span> Resource availability chart includes the original booked resources of this indent.</p>
+							</div>
+	
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<label class="col-sm-3 control-label">Vehicle Availability</label>
+								<div class="form-group">
+									<label class="col-sm-6 control-label"></label>
+									<div class="col-sm-8" style="padding-left:55px;padding-top:4px">
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#FF0000;width:20px;height:15px;float:left;margin-right:5px;"/> Indented</div>
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#0000ff;width:20px;height:15px;float:left;margin-right:5px;"/> Balance</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.vehicleQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<div class="col-sm-11" style="margin-left:60px;">
+									<div type="hidden" ng-init="button='VEH-last'" >
+										<div class="glyphicon glyphicon-chevron-left" uib-tooltip="Last 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+									<div style="float:left;width:85%">
+										<canvas class="chart chart-base" chart-type="stackedBar" chart-options="options" chart-data="vehChart.chartData" chart-labels="vehChart.chartDates" chart-colours="colours" chart-series="series" height="90px"></canvas>
+									</div>
+									<div type="hidden" ng-init="button='VEH-next'" >
+										<div class="glyphicon glyphicon-chevron-right" uib-tooltip="Next 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						 <div class="form-group" ng-if="indentResource.resourceType === 'DRV' && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+							<label class="col-sm-3 control-label required">Required Quantity<span class="glyphicon glyphicon-info-sign" uib-tooltip="12 - BME 12/16 - HQ 2PDF & BME "></span></label>
+							<!-- Troop Lift special case- DRV if needed -->
+							<div class="col-sm-2">								
+								<div ng-if="indentResource.purposeName == 'Troop Lift' && (selectedActivityType == 'TrainingATEC Evaluation' || selectedActivityType == 'TrainingBrigade Training')" class="no-animation">
+									<div class="radio radio-inline" ng-if="dto.unitCode != 'P10K'">
+										<label>
+											<input type="radio" value="12" ng-model="indentResource.operatorQuantity" ng-change="otfVehDrvQty(null)">12
+										</label>
+									</div>
+									
+									<div class="radio radio-inline" ng-if="dto.unit == 'P10K'">
+										<label>
+											<input type="radio" value="12" ng-model="indentResource.operatorQuantity" ng-change="otfVehDrvQty(null)">12
+										</label>
+										<label>
+											<input type="radio" value="16" ng-model="indentResource.operatorQuantity" ng-change="otfVehDrvQty(null)">16
+										</label>
+									</div>
+								</div>
+								<input intbox class="text-right no-animation" ng-model="indentResource.operatorQuantity" ng-change="otfVehDrvQty(null)"
+									   ng-if="!(indentResource.purposeName == 'Troop Lift' && (selectedActivityType == 'TrainingATEC Evaluation' || selectedActivityType == 'TrainingBrigade Training'))"> 
+							</div>
+							<div class="col-sm-7 control-value" ng-if="indentResource.operatorQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null">
+								<label>Availability:</label>
+								<span style="margin-right:10px; margin-left:8px;">{{indentResource.drvNodeAvail}} TOs</span>
+								<a class="clickable" ng-click="dto.showAvailability =! dto.showAvailability">Show</a>
+							</div>
+							<div ng-if="chartLoading" style="float:right; margin-top:6px; margin-right:90px;"><div class="loader-sm"></div></div>	
+						</div>
+						
+						<div class="form-group" ng-if="indentResource.resourceType === 'DRV' && !chartLoading">
+							
+							<div class="alert alert-warning text-left" role="alert" ng-if="indentResource.operatorQuantity > indentResource.drvNodeAvail  && dto.activityType != 'MT Admin' && dto.activityType != 'Operations' && dto.activityType != 'MT Maint'  && dto.status !== 'Reverted' && dto.status !== 'Recalled'">
+								<p><span class="glyphicon glyphicon-warning-sign"></span> There is a lack of resources to meet your requirement. Please select an alternative date, alternative vehicle type or reduce your resource requirements.</p>
+								<p>Upon submission, your indent will be placed on the waiting list and subjected to resource availability. The system will inform you of the outcome 14 days from the execution date.</p>
+							</div>
+							
+							<div style="width:600px;margin-left:80px;" class="alert alert-warning text-left" ng-if="(dto.status === 'Reverted' || dto.status === 'Recalled') && dto.showAvailability && indentResource.operatorQuantity != 0 && dto.dateRange != null">
+								<p class="text-center"><span class="glyphicon glyphicon-exclamation-sign"></span> Resource availability chart includes the original booked resources of this indent.</p>
+							</div>
+	
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.operatorQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<label class="col-sm-3 control-label">Transport Operator Availability</label>
+								<div class="form-group" ng-if="dto.showAvailability && indentResource.operatorQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null">
+									<label class="col-sm-3 control-label"></label>
+									<div class="col-sm-8" style="padding-left:55px;padding-top:10px">
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#FF0000;width:20px;height:15px;float:left;margin-right:5px;"/> Indented</div>
+										<div style="float:left;font-size:smaller;margin-right:10px;font-weight:bold;color:gray"><div style="border:solid 2px #AAA;background-color:#0000ff;width:20px;height:15px;float:left;margin-right:5px;"/> Balance</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group" ng-if="dto.showAvailability && indentResource.operatorQuantity != 0 && dto.dateRange != null && indentResource.vehicleType != null"> 
+								<div class="col-sm-11" style="margin-left:60px;">
+									<div type="hidden" ng-init="button='DRV-last'" >
+										<div class="glyphicon glyphicon-chevron-left" uib-tooltip="Last 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+									<div style="float:left;width:85%">
+										<canvas class="chart chart-base" chart-type="stackedBar" chart-options="options" chart-data="drvChart.chartData" chart-labels="drvChart.chartDates" chart-colours="colours" chart-series="series" height="90px"></canvas>
+									</div>
+									<div type="hidden" ng-init="button='DRV-next'" >
+										<div class="glyphicon glyphicon-chevron-right" uib-tooltip="Next 7 days" style="float:left;font-size:30;margin-top:40" ng-click="getButtonChart(button, dto.dateRange, indentResource.vehicleType)"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+				<!-- 	<div class="col-sm-1">
+							<span class="glyphicon glyphicon-info-sign" uib-tooltip="Troop Lift for Battalion Training will be fulfilled by 1st Transport Battalion / Transport Hub North"/>
+						</div> -->
+						
+						<div class="form-group" ng-if="indentResource.resourceType == 'VEH_DRV' || indentResource.resourceType == 'DRV'">
+							<label class="col-sm-3 control-label">Tow Types</label>
+							<div class="col-sm-8">
+								<select tagbox multiple class="form-control" ng-model="indentResource.towTypeList" ng-options="towType.id as towType.name for towType in towTypes">
+									<option></option>
+                                </select>
+							</div>
+						</div>
+
+						<div class="form-group" ng-if="indentResource.resourceType == 'VEH_DRV' || indentResource.resourceType == 'DRV'">
+							<label class="col-sm-3 control-label">Soldier Proficiencies</label>
+							<div class="col-sm-8">
+								<select tagbox multiple class="form-control" ng-model="indentResource.proficiencyList" ng-options="proficiency.id as proficiency.name for proficiency in proficiencies">
+									<option></option>
+                                 </select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Remarks</label>
+							<div class="col-sm-8">
+								<textarea class="form-control" rows="3" ng-model="indentResource.remarks" placeholder="E.g. Vehicle to come with camo net, TO to come with FBO, Equipments for drivers, cargo or passenger ferrying, additional location"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" ng-click="addOrEditIndentResource(dto.status)">Add Resource</button>
+			</div>																			
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="recallOrRevertModalDialog" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Confirm?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>By clicking on 'Confirm', all reduced changes will be finalize and will not able to increase anymore.</p>
+					<p>Proceed to confirm?</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addOrEditIndentResource('new')">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="confirmSubmitModal" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Confirm?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<!--					<p>Please note that CAT C drivers who have accumulated mileage of less that 1,000 km will require V-Commander supervision for every move at all times.</p>-->				
+					<div ng-if="dto.activityType !== 'MT Admin'"><p>Please note that a 50% credit charge will be incurred if the indent is cancelled 45 days from the execution date.</p> </div>
+					<div ng-if="dto.waitinglistFlag === 'Y'"><p>Your indent will be placed on the waiting list and subjected to resource availability. The system will inform you of the outcome 14 days from the execution date.</p></div>
+					<p>Proceed to submit Indent?</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="create()">Submit Indent</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="indentDraftModal" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Confirm?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>Are you sure you want to save Indent as Draft?</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveAsDraft()">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="deleteDraftModal" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Confirm?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>Deleted Draft cannot be retrieved.<br>Proceed to delete draft?</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="deleteDraft()">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="indentTemplateModal" tabindex="-1">
+	<div class="modal-dialog" style="width: 500px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Save as Template</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Template Name</label>
+							<div class="col-sm-9">
+								<input class="form-control" placeholder="Custom Template XX" ng-model="dto.templateName">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Template Type</label>
+							<div class="col-sm-5 control-value required" ng-if="session.rights['showGlobalTemplateOpt']">
+								<div ng-model="dto.templateType" ng-init="dto.templateType = 'Global'">Global</div>
+							</div>
+							<div class="col-sm-5 control-value" ng-if="!session.rights['showGlobalTemplateOpt']">
+								<div ng-model="dto.templateType" ng-init="dto.templateType = 'Role-Based'">Role-Based</div>
+							</div>
+						</div>
+						<div ng-if="dto.templateType=='Global'" class="form-group">
+							<label class="col-sm-3 control-label">Access Rights</label>
+							<div class="col-sm-9 control-value">Global</div>
+						</div>
+						<div ng-if="dto.templateType=='Role-Based'" class="form-group">
+							<div ng-if="session.userRole.cat === 'Unit'">
+								<label class="col-sm-3 control-label">Access Rights</label>
+								<div class="col-sm-9 control-value">{{dto.unit}}</div>
+							</div>
+							<div ng-if="session.userRole.cat === 'Node'">
+								<label class="col-sm-3 control-label">Access Rights</label>
+								<div class="col-sm-9 control-value">{{session.userRole.node}}</div>
+							</div>
+							<div ng-if="session.userRole.cat === 'Hub'">
+								<label class="col-sm-3 control-label">Access Rights</label>
+								<div class="col-sm-9 control-value">{{session.userRole.hub}}</div>
+							</div>
+							<div ng-if="session.userRole.cat === 'HQ'">
+								<label class="col-sm-3 control-label">Access Rights</label>
+								<div class="col-sm-9 control-value">Global</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveAsTemplate()">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="remindParkdownModal" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Reason Required?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>Please state the reason for early park-down (more than 1 day in advance) in the Remarks field.</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="infoUrlDialog" class="modal fade" tabindex="-1">
+	<div class="modal-dialog" style="width:450px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><span class="glyphicon glyphicon-info-sign"></span> Info</h4>
+			</div>
+			<div class="modal-body">
+				<div>{{message}}
+					<a href='{{url}}' class="clickable" ng-click="infoUrlDialogOk(false)">{{indentNo}}</a>.
+					<br>
+					<p>*Take note that Indent can only be <b>recalled</b> before it gets approved.</p>
+				</div>	
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" ng-click="infoUrlDialogOk(true)">OK</button>
+				<button type="button" class="btn btn-primary" ng-if="showSimilarIndent" ng-click="similarIndent()">Similar Indent</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="templateDialog" class="modal fade" tabindex="-1">
+	<div class="modal-dialog" style="width:450px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><span class="glyphicon glyphicon-info-sign"></span> Info</h4>
+			</div>
+			<div class="modal-body">
+				<div>{{message}}</div>	
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="">Stay on Page</button>
+				<button type="button" class="btn btn-primary" ng-click="goToManageTemplates()">Go to Manage Templates</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="deleteTemplateModal" tabindex="-1">
+	<div class="modal-dialog" style="width:500px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Confirm</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<p>Are you sure you want to delete Template <b>{{dto.templateName}}</b>?</p>
+						</div>
+					</form>
+				</div>
+	        </div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="deleteTemplate()">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="openImageModal" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">{{indentResource.vehicleTypeName}}</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="col-sm-8" style="height:200px;">
+								<img src="images/vehicles/14.jpg" style="border:solid 2px silver;height:150px;position:absolute;left:30%;"/>
+						</div>
+						<div class="col-sm-10">- Description to be added</div>
+					</form>
+				</div>
+	        </div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+			</div>
+		</div>
+	</div>
+</div>

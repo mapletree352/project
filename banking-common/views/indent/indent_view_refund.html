@@ -1,0 +1,683 @@
+<div class="row page-header">
+	<h3>
+		<div ng-if="indentSet.referenceNo"><span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()"/> {{indentSet.name}} <small>{{indentSet.referenceNo}}</small></div>
+		<div ng-if="!indentSet.referenceNo">New Indent Set</div>
+	</h3>
+</div>
+
+<div class="row page-body">
+	<div class="panel-action">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>PENDING EXECUTION</strong></div>
+			<div class="panel-body">
+				<div ng-show="indentSet.referenceNo">
+					<strong><big>{{indentSet.referenceNo}}</big></strong><br>
+					<small>Submitted on {{indentSet.submissionDate | date: 'd MMM yyyy, h:mm a'}}</small><br>
+					<small>by {{indentSet.submittedBy}}</small><br>
+					<hr>
+				</div>
+				<button type="button" class="btn btn-primary btn-block">Confirm Refund Approval</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 panel-main">
+		<ul class="nav nav-tabs">
+			<li><a href="" data-target="#overview" data-toggle="tab">Overview</a></li>
+			<li><a href="" data-target="#indents" data-toggle="tab">Indents</a></li>
+			<li class="active"><a href="" data-target="#tasks" data-toggle="tab">Tasks</a></li>
+			<li><a href="" data-target="#log" data-toggle="tab">Audit Log</a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div class="tab-pane fade" id="overview">
+
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">Activity</label>
+						<div class="col-sm-9 control-value">Exercise - Company Exercise</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">Indent Set Name</label>
+						<div class="col-sm-9 control-value">{{indentSet.name}}</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">Customer Unit 
+							<span class="glyphicon glyphicon-info-sign" uib-tooltip="Credits will be charged towards this unit"/>
+						</label>
+						<div class="col-sm-9 control-value">"A" MEDICAL LESS FIT HOLDING LIST</div>
+					</div>
+					<div class="form-group" id="availableCreditsDiv">
+						<label class="col-sm-3 control-label">Available Credits 
+							<span class="glyphicon glyphicon-info-sign" uib-tooltip="Minimum of 2 credits is required"/>
+						</label>
+						<div class="col-sm-3">
+							<div><label class="control-label">FY2015</label>: 10.5 / 120.0</div>
+							<div><label class="control-label">FY2016</label>: 36.0 / 120.0</div>
+						</div>
+					</div>
+					<hr>
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">Reporting Point-of-Contact <span class="glyphicon glyphicon-info-sign" uib-tooltip="Vehicle will be reporting to this person on the ground"/></label>
+						<div class="col-sm-9 control-value">3SG TAI KOK YONG</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label required">Office Number</label>
+						<div class="col-sm-2 control-value">6234 2345</div>
+						
+						<label class="col-sm-2 control-label required">Mobile Number</label>
+						<div class="col-sm-2 control-value">9173 7343</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="tab-pane fade" id="indents">
+<!--				<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#indentModal"><div class="glyphicon glyphicon-plus" /> Add Indent</button>-->
+				
+				<table class="table table-responsive table-condensed" style="font-size:14px">
+					<tr ng-repeat="row in indents" class="indentsTr">
+						<!--		<td ><input type="checkbox"></td>-->
+<!--						<td class="text-center"><input type="checkbox" ng-model="checkboxes.items[row.id]"></td>-->
+
+						<td class="text-right">{{row.id}}.</td>
+
+						<td>
+							<div data-toggle="modal" data-target="#indentModal" class="clickable">
+								<span class="glyphicon glyphicon-transfer"/> <strong>{{row.type}}</strong> - {{row.movement}}<br>
+								<span class="glyphicon glyphicon-calendar"/> {{row.reportTime}} ({{row.duration | number : 1}} hrs)<br>
+								<span class="glyphicon glyphicon-map-marker"/> {{row.reportVenue}}
+								<span ng-show="row.destinationVenue != ''"><span class="glyphicon glyphicon-arrow-right"/> {{row.destinationVenue}}</span>
+								<span ng-show="row.preParking != 'YES'"> (Pre-Parking required)</span>
+							</div>
+
+<!--							<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#resourceModal"><div class="glyphicon glyphicon-plus" /> Add Resource</button>-->
+
+							<table class="table table-bordered table-hover table-responsive table-condensed resourcesTable">
+								<tr>
+									<th rowspan="2">#</th>
+									<th rowspan="2">Vehicle Type</th>
+									<th rowspan="2">Resource Type</th>
+									<th rowspan="2" class="text-center">Quantity</th>
+									<th colspan="2" class="text-center">Node Availability</th>
+									<th colspan="2" class="text-center">Hub Availability</th>
+								</tr>
+								<tr>
+									<th class="text-center">TO</th>
+									<th class="text-center">Veh.</th>
+									<th class="text-center">TO</th>
+									<th class="text-center">Veh.</th>
+								</tr>
+								<tr ng-repeat="resource in row.resources" data-toggle="modal" data-target="#resourceModal" class="clickable">
+									<td class="text-right">{{resource.id}}.</td>
+									<td>{{resource.vehicleType}}</td>
+									<td>{{resource.resourceType}}</td>
+									<td class="text-center">{{resource.quantity}}</td>
+									<td class="text-center">4</td>
+									<td class="text-center">9</td>
+									<td class="text-center">13</td>
+									<td class="text-center">21</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+				<script type="text/ng-template" id="checkboxheader.html">
+					<input type="checkbox" ng-model="checkboxes.checked" id="select_all" name="filter-checkbox" value="">
+				</script>
+			</div>
+
+			<div class="tab-pane fade in active" id="tasks">
+				<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#cancelResourceModal"><div class="glyphicon glyphicon-tick" /> Approve Selected Refunds</button>
+				<button type="button" class="btn btn-default navbar-btn btn-xs" data-toggle="modal" data-target="#cancelResourceModal"><div class="glyphicon glyphicon-remove" /> Reject Selected Refunds</button>
+
+				<table class="table table-striped table-bordered table-responsive table-condensed small">
+					<tr>
+						<th class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>
+						<th class="text-center">#</th>
+						<th>Task ID</th>
+						<th>Status</th>
+						<th>Driver</th>
+						<th>Driver Node</th>
+						<th>Vehicle Type</th>
+						<th>Vehicle No.</th>
+						<th>Vehicle Node</th>
+						<th>Start Date/Time</th>
+						<th>End Date/Time</th>
+					</tr>
+					<tr ng-repeat="task in tasks">
+						<td class="text-center"><input type="checkbox" ng-if="task.driverName=='-'"></td>
+						<!--				<td class="text-center"><input type="checkbox" ng-model="checkboxes.items[indentSet.id]"></td>-->
+						<td class="text-right">{{task.id}}.</td>
+						<td><a href="#/task">{{task.taskId}}</a></td>
+						<td>{{task.status}}</td>
+						<td>{{task.driverName}}</td>
+						<td>{{task.driverNode}}</td>
+						<td>{{task.vehicleType}}</td>
+						<td>{{task.vehicleNo}}</td>
+						<td>{{task.vehicleNode}}</td>
+<!--
+						<td>-</td>
+						<td>-</td>
+						<td>{{task.vehicleType}}</td>
+						<td>-</td>
+						<td>-</td>
+-->
+						<td>{{task.startTime}}</td>
+						<td>{{task.endTime}}</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="tab-pane fade" id="log">
+				<table class="table table-striped table-bordered table-responsive table-condensed small">
+					<tr>
+						<th class="text-center">#</th>
+						<th>Date/Time</th>
+						<th>Modified By</th>
+						<th>Description</th>
+					</tr>
+					<tr ng-repeat="audit in audits">
+						<td>{{audit.id}}</td>
+						<td>{{audit.dateTime}}</td>
+						<td>{{audit.modifiedBy}}</td>
+						<td>{{audit.description}}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="rejectIndentModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Reject Indent</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Reason</label>
+						<div class="col-sm-9">
+							<select id="" class="form-control">
+								<option></option>
+								<option>Invalid activity specified</option>
+								<option>Insufficient resource quantity specified</option>
+								<option>Excess resource quantity specified</option>
+								<option>Invalid period specified</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Other Remarks</label>
+						<div class="col-sm-9">
+							<textarea class="form-control" id="" rows="3" placeholder=""></textarea>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Reject Indent</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="cancelResourceModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Refund Resources</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Selected Tasks</label>
+						<div class="col-sm-8 control-value">
+							<div>100726</div>
+							<div>100727</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Reason</label>
+						<div class="col-sm-8">
+							<select id="" class="form-control">
+								<option></option>
+								<option>Unable to fulfill requirement for Vehicle</option>
+								<option>Unable to fulfill requirement for Transport Operator</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Credits to be Refunded</label>
+						<div class="col-sm-8 control-value">2.0</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Refund Resources</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="indentTemplateModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Save as Template</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Template Name</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" placeholder="" value="Custom Template 5">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="allocateDriverModal" tabindex="-1">
+	<div class="modal-dialog" style="width:900px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Allocate Driver</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Indent Period</label>
+							<div class="col-sm-5">
+								<div class='input-group valueColumn date'>
+									<input datetimerangebox="{startDate: '31-Mar-2016 23:30', endDate: '01-Apr-2016 22:00'}" class="form-control"/>
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Driver Origin</label>
+							<div class="col-sm-9">
+								<div class="radio radio-inline">
+									<label>
+										<input type="radio" name="driverOrigin" value="option1">Transport Operator
+									</label>
+								</div>
+								<div class="radio radio-inline">
+									<label>
+										<input type="radio" name="driverOrigin" value="option2">Other SAF
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Include in Search</label>
+							<div class="col-sm-9">
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include1" value="option1">Buffer Transport Operators
+									</label>
+								</div>
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include2" value="option2">Transport Leaders
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Exclude from Search</label>
+							<div class="col-sm-9">
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include1" value="option1" checked>Allocated Transport Operators
+									</label>
+								</div>
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include2" value="option2" checked>Driver Trainees
+									</label>
+								</div>
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include2" value="option2" checked>2 Hours No-Rest Drivers
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Type</label>
+							<div class="col-sm-5">
+								<select class="form-control" ng-model="driverSearch.vehicleType" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+									<option></option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Tow Types</label>
+							<div class="col-sm-9">
+								<select class="form-control selectbox" multiple="multiple">
+									<option ng-repeat="towType in towTypes" value="{{towType.id}}">{{towType.name}}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Soldier Proficiencies</label>
+							<div class="col-sm-9">
+								<select class="form-control selectbox col-sm-12" multiple="multiple">
+									<option ng-repeat="proficiency in proficiencies" value="{{proficiency.id}}">{{proficiency.name}}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="col-sm-3">
+						</div>
+						<div class="col-sm-9">
+							<a href="" ng-click="driverSearch.isCollapsed = !driverSearch.isCollapsed">More Criteria...</a>
+						</div>
+
+						<div uib-collapse="driverSearch.isCollapsed">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Active Status</label>
+								<div class="col-sm-9">
+									<div class="checkbox checkbox-inline">
+										<label>
+											<input type="checkbox" name="include" id="include2" value="option2">Active
+										</label>
+									</div>
+									<div class="checkbox checkbox-inline">
+										<label>
+											<input type="checkbox" name="include" id="include2" value="option2">NS
+										</label>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Node</label>
+								<div class="col-sm-3">
+									<select id="" class="form-control" ng-model="driverSearch.node" ng-options="node.id as node.name for node in nodes">
+										<option></option>
+									</select>
+								</div>
+
+								<label class="col-sm-2 control-label">Unit</label>
+								<div class="col-sm-4">
+									<select id="" class="form-control" ng-model="driverSearch.unit" ng-options="unit.code as unit.name for unit in units">
+										<option></option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Rank</label>
+								<div class="col-sm-2">
+									<select id="" class="form-control" ng-model="driverSearch.rank" ng-options="rank.code for rank in ranks">
+										<option></option>
+									</select>
+								</div>
+
+								<label class="col-sm-3 control-label">PES</label>
+								<div class="col-sm-2">
+									<select id="" class="form-control" ng-model="driverSearch.pes" ng-options="pes.code for pes in peses">
+										<option></option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Driver NRIC No.</label>
+								<div class="col-sm-2">
+									<input id="" class="form-control" ng-model="driverSearch.nricNo" placeholder="">
+								</div>
+
+								<label class="col-sm-3 control-label">Driver Name</label>
+								<div class="col-sm-4">
+									<input id="" class="form-control" ng-model="driverSearch.name" placeholder="">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Security CAT</label>
+								<div class="col-sm-3">
+									<select id="" class="form-control" ng-model="driverSearch.securityCategory" ng-options="securityCategory.code for securityCategory in securityCategories">
+										<option></option>
+									</select>
+								</div>
+
+								<label class="col-sm-2 control-label">License CAT</label>
+								<div class="col-sm-2">
+									<select id="" class="form-control" ng-model="driverSearch.licenseCategory" ng-options="licenseCategory.code for licenseCategory in licenseCategories">
+										<option></option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<button type="button" class="btn btn-primary btn-sm pull-right" onClick="showDriverResults()" style="margin-left:5px">Search</button>
+						<button type="button" class="btn btn-primary btn-sm pull-right" onClick="showDriverResults()">Best Match</button>
+						<br>
+					</form>
+
+					<!--					<uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" boundary-link-numbers="true" rotate="false"></uib-pagination>-->
+
+					<table class="table table-striped table-bordered table-responsive table-condensed small">
+						<tr>
+							<th class="text-center">#</th>
+							<th>Driver</th>
+							<th>NRIC No.</th>
+							<th>Driver Node</th>
+							<th>Race</th>
+							<th>Religion</th>
+							<th>PES</th>
+							<th>Available From</th>
+							<th>Available To</th>
+							<th></th>
+						</tr>
+						<tr class="driversTr" ng-repeat="driver in drivers" style="display:none">
+							<td class="text-right">{{driver.id}}.</td>
+							<td>{{driver.name}}</td>
+							<td>{{driver.nricNo}}</td>
+							<td>{{driver.node}}</td>
+							<td>{{driver.race}}</td>
+							<td>{{driver.religion}}</td>
+							<td>{{driver.pes}}</td>
+							<td style="white-space:nowrap">{{driver.startTime}}</td>
+							<td style="white-space:nowrap">{{driver.endTime}}</td>
+							<td><button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#confirmSwapModal">Allocate</button></td>
+						</tr>
+					</table>
+
+					<uib-pagination class="driversTr" style="display:none" total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" boundary-link-numbers="true" rotate="false"></uib-pagination>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<!--				<button type="button" class="btn btn-primary">Swap Driver</button>-->
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="allocateVehicleModal" tabindex="-1">
+	<div class="modal-dialog" style="width:900px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Allocate Vehicle</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Indent Period</label>
+							<div class="col-sm-5">
+								<div class='input-group valueColumn date'>
+									<input datetimerangebox="{startDate: '31-Mar-2016 23:30', endDate: '01-Apr-2016 22:00'}" id="period" class="form-control"/>
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Origin</label>
+							<div class="col-sm-9">
+								<div class="radio radio-inline">
+									<label>
+										<input type="radio" name="vehicleOrigin" id="include1" value="option1">Military Vehicle
+									</label>
+								</div>
+								<div class="radio radio-inline">
+									<label>
+										<input type="radio" name="vehicleOrigin" id="include2" value="option2">CR Vehicle
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Include in Search</label>
+							<div class="col-sm-9">
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include1" value="option1">Buffer Vehicles
+									</label>
+								</div>
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include2" value="option2" checked>Unallocated Vehicles
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle Type</label>
+							<div class="col-sm-5">
+								<select id="" class="form-control" ng-model="driverSearch.vehicleType" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+									<option></option>
+								</select>
+							</div>
+						</div>
+
+
+						<!--
+<div class="col-sm-3">
+</div>
+<div class="col-sm-9">
+<a href="" ng-click="driverSearch.isCollapsed = !driverSearch.isCollapsed">More Criteria...</a>
+</div>
+-->
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Require MDT</label>
+							<div class="col-sm-9">
+								<div class="checkbox checkbox-inline">
+									<label>
+										<input type="checkbox" name="include" id="include1" value="option1">
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Node</label>
+							<div class="col-sm-3">
+								<select id="" class="form-control" ng-model="driverSearch.node" ng-options="node.id as node.name for node in nodes">
+									<option></option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Vehicle No.</label>
+							<div class="col-sm-2">
+								<input id="" class="form-control" ng-model="driverSearch.nricNo" placeholder="">
+							</div>
+						</div>
+
+						<button type="button" class="btn btn-primary btn-sm pull-right" onClick="showVehicleResults()" style="margin-left:5px">Search</button>
+						<button type="button" class="btn btn-primary btn-sm pull-right" onClick="showVehicleResults()">Best Match</button>
+						<br>
+					</form>
+
+					<!--					<uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" boundary-link-numbers="true" rotate="false"></uib-pagination>-->
+
+					<table class="table table-striped table-bordered table-responsive table-condensed small">
+						<tr>
+							<th class="text-center">#</th>
+							<th>Vehicle No.</th>
+							<th>Description</th>
+							<th>Vehicle Node</th>
+							<th>Available From</th>
+							<th>Available To</th>
+							<th></th>
+						</tr>
+						<tr class="vehiclesTr" ng-repeat="vehicle in vehicles" style="display:none">
+							<td class="text-right">{{vehicle.id}}.</td>
+							<td>{{vehicle.vehicleNo}}</td>
+							<td>{{vehicle.name}}</td>
+							<td>{{vehicle.node}}</td>
+							<td style="white-space:nowrap">{{vehicle.startTime}}</td>
+							<td style="white-space:nowrap">{{vehicle.endTime}}</td>
+							<td><button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#confirmSwapModal">Allocate</button></td>
+						</tr>
+					</table>
+
+					<uib-pagination class="driversTr" style="display:none" total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" boundary-link-numbers="true" rotate="false"></uib-pagination>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<!--				<button type="button" class="btn btn-primary">Swap Driver</button>-->
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+	init();
+	
+	//							$('#myModal').on('shown.bs.modal', function () {
+	//								$('#myInput').focus()
+	//							})
+
+	function showIndents() {
+		$('.indentsTr').show();
+	}
+	function showResources() {
+		$('.resourcesTable').show();
+	}
+
+	function showDriverResults() {
+		$('.driversTr').show();
+	}
+
+	function showVehicleResults() {
+		$('.vehiclesTr').show();
+	}
+</script>
+<!--</div>-->

@@ -1,0 +1,102 @@
+<div class="row" style="height:80px;background:white;z-index:999">
+	<div class="page-header" style="position:fixed;width:100%;background:white;z-index:999">
+		<h3>
+			<div>New User</div>
+		</h3>
+	</div>
+</div>
+
+<div class="row">
+	<div class="panel-action">
+		<div class="panel panel-default">
+			<div class="panel-heading" style="text-align:center"><strong>{{user.person.statusName | uppercase}}</strong></div>
+			<div class="panel-body">
+				<!-- <div style="text-align:center" ng-if="user.person.nricNo"> -->
+				<div style="text-align:center" ng-if="userDetails.unit">
+					<img src="images/personnels/personnel.gif" style="height:120px; padding-bottom:5px" />
+					<hr>
+				</div>
+				<button type="button" class="btn btn-primary btn-block" ng-click="createUser(user)" ng-if="session.rights['showCreateUserBtn']">Create</button>
+				<button type="button" class="btn btn-default btn-block" ng-click="cancelUser()">Cancel</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-xs-12 panel-main">
+		<form class="form-horizontal" name="newUserForm">
+			<div class="form-group">
+				<label class="col-sm-2 control-label required">Person</label>
+				<div class="col-sm-6">
+					<div class="input-group">
+							<typeahead uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+								typeahead-on-select="onSelectUser($item)" placeholder="NRIC No. or Name" ng-model="user.nricName" />
+								 
+						<span class="input-group-addon glyphicon glyphicon-search" id="basic-addon1"></span>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group" ng-if="user.nricName">
+				<label class="col-sm-2 control-label required">Unit</label>
+				<div class="col-sm-3 control-value" >{{userDetails.unitName}}</div>
+				<label class="col-sm-2 control-label required">Appointment</label>
+				<div class="col-sm-4 control-value">{{userDetails.appointment}}</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label required">Status</label>
+				<div class="col-sm-2">
+					<select class="form-control" ng-model="user.statusName" ng-options = "status.name as status.name for status in statuses">
+					<option value="" disabled selected></option>
+					
+					</select>
+				</div>
+				<label class="col-sm-3 control-label required">Valid Until</label>
+				<div class="col-sm-2">
+					<select class="form-control" ng-model="user.validityEndDate" ng-options="validDate.validDate as validDate.validDate for validDate in validDates">
+					<option value="" disabled selected></option>
+					</select>
+				</div>
+			</div>
+			<fieldset>
+				<legend>Assigned Roles</legend>
+				<div class="col-sm-12" ng-if="user.nricName">
+				<div ng-repeat="userRoleDto in userRoleDTOs track by $index">
+				<div style="clear:both;padding-top:5px">
+					<div class="col-sm-3">
+						<select class="form-control" ng-model="userRoleDto.roleId" ng-change="roleChange(userRoleDto)" required ng-options="role.id as role.name group by role.category for role in roles">
+						<option value="" disabled selected>Please select Role</option>
+						</select>
+					</div>
+					<div class="col-sm-2" ng-if="userRoleDto.hub">
+						<select class="form-control" ng-model="userRoleDto.hubCode" required ng-options="hub.code as hub.name for hub in hubs">
+						<option value="" disabled selected>Please select Hub</option>
+						</select>
+					</div>
+					<div class="col-sm-2" ng-if="userRoleDto.node && userRoleDto.hubCode">
+						<select class="form-control" ng-model="userRoleDto.nodeId" required ng-options="node.id as node.name for node in nodes | filter:nodeFilter(userRoleDto.hubCode)">
+						<option value="" disabled selected>Please select Node</option>
+						</select>
+					</div>
+					<div class="col-sm-3" ng-if="userRoleDto.unit">
+						<select class="form-control" ng-model="userRoleDto.unitCode" required ng-options="unit.code as unit.name for unit in units">
+						<option value="" disabled selected>Please select Unit</option>
+						</select>
+					</div>
+					<div class="col-sm-2" ng-if="userRoleDto.unit && userRoleDto.unitCode">
+						<select class="form-control" ng-model="userRoleDto.subunitId" required ng-options="subunit.id as subunit.name for subunit in subunits | filter:subunitFilter(userRoleDto.unitCode)">
+							<option value="" disabled selected>Please select Company</option>
+						</select>
+					</div>
+							<button type="button" class="btn btn-danger btn-sm" ng-show="!$first" ng-click="removeAssignRole($index)"><span class="glyphicon glyphicon-remove"/></button>
+					</div>
+					</div>
+					<div class="col-sm-12">
+						<button type="button" class="btn btn-primary btn-xs navbar-btn" ng-click="addAssignRole()"><span class="glyphicon glyphicon-plus"/> Add Another Role</button>
+					</div>
+					
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>

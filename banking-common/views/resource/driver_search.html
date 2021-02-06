@@ -1,0 +1,563 @@
+<div class="row page-header">
+	<h3>Search Transport Operators / Drivers</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position: absolute; width: 130px; right: 20px; z-index: 998">
+				<button class="btn btn-block btn-primary" ng-click="search()" ng-disabled="loading">Search</button>
+				<button class="btn btn-block btn-default" ng-click="reset()">Clear</button>
+				<br> <a href="" ng-click="advSearchCollapsed = !advSearchCollapsed" class="pull-right">Advanced Search...</a>
+			</div>
+			<div style="padding-right: 160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Driver</label>
+						<div class="col-sm-4">
+							<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+								typeahead-on-select="searchDTO.nricNo = $item.code" ng-blur="searchDTO.nricNo = driver ? searchDTO.nricNo : undefined" ng-model="driver" />
+						</div>
+						<label class="col-sm-2 control-label">Driver Origin</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-model="searchDTO.driverTypeCode" ng-options="driverType.code as driverType.name for driverType in driverTypes" >
+							<option value="" ></option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group" ng-if="searchDTO.driverTypeCode !== 'NS' && searchDTO.driverTypeCode !== 'DV' && searchDTO.driverTypeCode !== 'LOA'">
+						<label class="col-sm-2 control-label">Hub</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-model="searchDTO.hubCode" ng-options="hub.code as hub.name for hub in hubs">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Hub' || session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.hub" readonly/>
+						</div>
+						<label class="col-sm-2 control-label">Node</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-model="searchDTO.nodeId" ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.hubCode)">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.node" readonly/>
+						</div>
+					</div>
+					<div class="form-group" ng-if="searchDTO.driverTypeCode === 'NS' || searchDTO.driverTypeCode === 'DV' || searchDTO.driverTypeCode === 'LOA'">
+						<label class="col-sm-2 control-label">Hub</label>
+						<div class="col-sm-4">
+							<input class="form-control" value="" readonly/>
+						</div>
+						<label class="col-sm-2 control-label">Node</label>
+						<div class="col-sm-4">
+							<input class="form-control" value="" readonly/>
+						</div>
+					</div>
+					<div uib-collapse="advSearchCollapsed">
+						<hr>
+						<div class="col-sm-1">
+							<ul class="nav nav-tabs tabs-left">
+								<li class="active"><a href="" ng-click="tab='profile'" data-toggle="tab">Profile</a></li>
+								<li><a href="" ng-click="tab='skills'" data-toggle="tab">Skills</a></li>
+								<li><a href="" ng-click="tab='mileage'" data-toggle="tab">Mileage</a></li>
+								<li><a href="" ng-click="tab='rewards'" data-toggle="tab">Rewards</a></li>
+								<li><a href="" ng-click="tab='demeritPoints'" data-toggle="tab">Demerit Points</a></li>
+							</ul>
+						</div>
+						<div class="col-sm-11">
+							<div class="tab-content" ng-if="tab=='profile'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Attached Node</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.attachedNodeId" ng-options="node.id as node.name for node in nodes">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Vocation</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.vocationCode" ng-options="vocation.code as vocation.name for vocation in vocations">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Ops Tag Unit</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.opsTagUnitCode" ng-options="opsTagUnit.code as opsTagUnit.name for opsTagUnit in opsTagUnits">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Appointment</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.appointment" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Ops Tag Sub-Unit</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.opsTagSubunitId" ng-options="subunit.id as subunit.name for subunit in subunits">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Enlistment Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+										<input daterangebox class="form-control" id="enlist" ng-model="searchDTO.enlistmentDateRange" />
+										<label class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Platoon</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.platoon" />
+									</div>
+									<label class="col-sm-2 control-label">ORD</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input daterangebox class="form-control" id="ord" ng-model="searchDTO.ordRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Section</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.section" />
+									</div>
+									<label class="col-sm-2 control-label">Security CAT</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.securityCatCode" ng-options="securityCategory.code as securityCategory.name for securityCategory in securityCategories">
+											<option />
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab=='skills'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Type Fam</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.famVehicleTypeId" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Tow Type Fam</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.famTowTypeId" ng-options="towType.id as towType.name for towType in towTypes">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Driving CAT</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.drivingCategoryId" ng-options="drivingCategory.id as drivingCategory.name for drivingCategory in drivingCategories">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Soldier Proficiency</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.proficiencyId" ng-options="proficiency.id as proficiency.name for proficiency in proficiencies">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Skill Status</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.skillStatusCode" ng-options="skillStatus.code as skillStatus.name for skillStatus in skillStatuses">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Re-Assessment</label>
+									<div class="col-sm-4">
+										<yes-no class="form-control" ng-model="searchDTO.reassessFlag" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Driving Permit No.</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="searchDTO.driverPermitNo" />
+									</div>
+									<label class="col-sm-2 control-label">Driving Permit Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.driverPermitTypeCode" ng-options="permitType.code as permitType.name for permitType in permitTypes">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Driving Permit Class</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.driverPermitClassCode" ng-options="permitClass.code as permitClass.name for permitClass in permitClasses">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Driving Permit Status</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.driverPermitStatusCode" ng-options="permitStatus.code as permitStatus.name for permitStatus in permitStatuses">
+											<option />
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab=='mileage'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Total Mileage</label>
+									<div class="col-sm-4">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.mileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.mileageTo" />
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.vehicleTypeId" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Vehicle Type Mileage</label>
+									<div class="col-sm-4">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.vehicleTypeMileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.vehicleTypeMileageTo" />
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Vehicle Class</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.vehicleClassCode" ng-options="permitClass.code as permitClass.name for permitClass in permitClasses">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Vehicle Class Mileage</label>
+									<div class="col-sm-4">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.vehicleClassMileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.vehicleClassMileageTo" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab=='rewards'">
+								<div class="form-group">
+									<label class="col-sm-3 control-label">Reward Type</label>
+									<div class="col-sm-3">
+										<select class="form-control" ng-model="searchDTO.rewardTypeId" ng-options="rewardType.id as rewardType.name for rewardType in rewardTypes">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-3 control-label">Reward Status</label>
+									<div class="col-sm-3">
+										<select class="form-control" ng-model="searchDTO.rewardStatusCode" ng-options="rewardStatus.code as rewardStatus.name for rewardStatus in rewardStatuses">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">Mileage to Next Incentive</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.incentiveMileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.incentiveMileageTo" />
+										</div>
+									</div>
+									<label class="col-sm-3 control-label">Mileage to Safety Badge</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.safetyBadgeMileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.safetyBadgeMileageTo" />
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">Mileage Since Last TA</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.mileageSinceLastAccidentFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.mileageSinceLastAccidentTo" />
+										</div>
+									</div>
+									<label class="col-sm-3 control-label">Mileage to CL2 CDL</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl2MileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl2MileageTo" />
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">Mileage to CL2A CDL</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl2AMileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl2AMileageTo" />
+										</div>
+									</div>
+									<label class="col-sm-3 control-label">Mileage to CL2B CDL</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl2BMileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl2BMileageTo" />
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">Mileage to CL3 CDL</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl3MileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl3MileageTo" />
+										</div>
+									</div>
+									<label class="col-sm-3 control-label">Mileage to CL4 CDL</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl4MileageFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.Cl4MileageTo" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-content" ng-if="tab=='demeritPoints'">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Demerit Points</label>
+									<div class="col-sm-4">
+										<div class="input-group">
+											<input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.demeritPointsFrom" /> <label class="input-group-addon">to</label> <input type="number" oninput="maxChk(this)" class="form-control" ng-model="searchDTO.demeritPointsTo" />
+										</div>
+									</div>
+									<label class="col-sm-2 control-label">Offence Vehicle Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.offenceVehicleTypeId" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Offence Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.offenceTypeId" ng-options="offenceType.id as offenceType.name for offenceType in offenceTypes">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Offence Committed</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.offenceId" ng-options="offence.id as offence.name for offence in offences">
+											<option />
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Permit Status Change</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.permitStatusChangeCode" ng-options="permitStatus.code as permitStatus.name for permitStatus in permitStatuses">
+											<option />
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Effective Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input daterangebox class="form-control" id="effective" ng-model="searchDTO.effectiveDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Issue Date</label>
+									<div class="col-sm-4">
+										<div class="input-group valueColumn date">
+											<input daterangebox class="form-control" id="issue" ng-model="searchDTO.issueDateRange" />
+											<label class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</label>
+										</div>
+									</div>
+									<label class="col-sm-2 control-label">Issued By</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="searchDTO.offenceIssuerId" ng-options="offenceIssuer.id as offenceIssuer.name for offenceIssuer in offenceIssuers">
+											<option />
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+		<tr>
+			<th class="text-center"><input type="checkbox" ng-model="checkboxes.all" ng-click="checkAll()"></th>
+			<th no-sort>#</th>
+			<th sort property="nricNo">NRIC No.</th>
+			<th sort property="name">Name</th>
+			<th sort property="vocation.name">Vocation</th>
+			<th sort property="personnel.appointment">Appointment</th>
+			<th sort property="ehrNode.name">Node</th>
+			<th sort property="opsTagUnit.name">Ops Tag Unit</th>
+			<th sort property="category.name">Driving<br>CAT</th>
+			<th sort property="mileage">Total<br>Mileage</th>
+			<th sort property="mileageSinceLastAccident">Mileage Since<br>Last TA</th>
+			<th sort property="demeritPoints">Demerit<br>Points</th>
+			<th sort property="driverType.code">Driver<br>Origin</th>
+		</tr>
+		<tr ng-repeat="record in records">
+			<td class="text-center"><input type="checkbox" ng-model="checkboxes.records[record.nricNo]" ng-click="checkboxes.all=false"></td>
+			<td>{{$index + searchDTO.startIndex + 1}}</td>
+			<td><a href="#/driver/{{record.nricNo}}">{{record.nricNo}}</a></td>
+			<td>{{record.name}}</td>
+			<td>{{record.vocation}}</td>
+			<td>{{record.appointment}}</td>
+			<td>{{record.node}}</td>
+			<td>{{record.opsTagUnit}}</td>
+			<td>{{record.drivingCat}}</td>
+			<td>{{record.mileage}}</td>
+			<td>{{record.mileageSinceLastAccident}}</td>
+			<td>{{record.demeritPoints}}</td>
+			<td>{{record.driverTypeCode}}</td>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="13" ng-if="records && records.length > 0">
+					<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+					<ul class="pagination">
+						<li>
+							<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+						</li>
+						<li class="dropup">
+							<a href="" style="color:black" data-toggle="dropdown" >
+								<span class="glyphicon glyphicon-open"></span>&nbsp;&nbsp;Batch Update...
+								<ul class="dropdown-menu">
+									<li ng-if="session.rights['showDriverOpsTagUnitOpt']"><a href="" data-toggle="modal" ng-click="setSelection('Ops Tag Unit')">Update Ops Tag Unit</a></li>
+									<li ng-if="session.rights['showDriverOpsTagUnitOpt']"><a href="" data-toggle="modal" ng-click="setSelection('ITMS Node')">Update ITMS Node</a></li>
+									<li ng-if="session.rights['showDriverOthersOpt']"><a href="" data-toggle="modal" ng-click="setSelection('Platoon')">Update Platoon</a></li>
+									<li ng-if="session.rights['showDriverOthersOpt']"><a href="" data-toggle="modal" ng-click="setSelection('Section')">Update Section</a></li>
+									<li ng-if="session.rights['showDriverSkillBtn']" class="divider"></li>
+									<li ng-if="session.rights['showDriverSkillBtn']"><a href="" data-toggle="modal" ng-click="setSelection('Recommend Vehicle Familiarisation')">Recommend Vehicle Familiarisation</a></li>
+									<li ng-if="session.rights['showDriverSkillBtn']"><a href="" data-toggle="modal" ng-click="setSelection('Recommend Driving Category')">Recommend Driving Category</a></li>
+									<li ng-if="session.rights['showDriverSkillBtn']"><a href="" data-toggle="modal" ng-click="setSelection('Recommend Soldier Proficiency')">Recommend Skill / Qualification</a></li>
+								</ul>
+							</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+	<br>
+</div>
+<div class="modal fade" id="batchUpdateModal" tabindex="-1">
+	<div class="modal-dialog" style="width:600px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title" ng-if="!batchUpdate.startsWith('Recommend')">Update {{batchUpdate}} by Batch</h4>
+				<h4 class="modal-title" ng-if="batchUpdate.startsWith('Recommend')">{{batchUpdate}} by Batch</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group" ng-if="batchUpdate === 'Ops Tag Unit'">
+							<label class="col-sm-3 control-label">Ops Tag Unit</label>
+							<div class="col-sm-9">
+								<select class="form-control" ng-model="dto.opsTagUnitCode" ng-options="opsTagUnit.code as opsTagUnit.name for opsTagUnit in opsTagUnits">
+									<option />
+								</select>
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdate === 'Platoon'">
+							<label class="col-sm-3 control-label required">{{batchUpdate}}</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" ng-model="dto.platoon" />
+							</div>
+						</div>
+						<div class="form-group" ng-if="batchUpdate === 'Section'">
+							<label class="col-sm-3 control-label required">{{batchUpdate}}</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" ng-model="dto.section" />
+							</div>
+						</div>
+						<div ng-if="batchUpdate.startsWith('Recommend')" >
+							<div class="form-group" ng-if="batchUpdate === 'Recommend Vehicle Familiarisation'">
+								<label class="col-sm-4 control-label required">*Vehicle Type</label>
+								<div class="col-sm-8">
+									<select class="form-control" ng-model="dto.vehicleTypeId" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes">
+										<option />
+									</select>
+								</div>
+							</div>
+							<div class="form-group" ng-if="batchUpdate === 'Recommend Vehicle Familiarisation'">
+								<label class="col-sm-4 control-label">*Tow Types</label>
+								<div class="col-sm-8">
+									<select class="form-control" ng-model="dto.towTypeId" ng-init="dto.towTypeId=1" ng-options="towType.id as towType.name for towType in towTypes">
+										<option />
+									</select>
+								</div>
+							</div>
+							<div class="form-group" ng-if="batchUpdate === 'Recommend Driving Category'">
+								<label class="col-sm-4 control-label">*Driving Category</label>
+								<div class="col-sm-8">
+									<select class="form-control" ng-model="dto.categoryId" ng-options="drivingCategory.id as drivingCategory.name for drivingCategory in drivingCategories">
+										<option />
+									</select>
+								</div>
+							</div>
+							<div class="form-group" ng-if="batchUpdate === 'Recommend Soldier Proficiency'">
+								<label class="col-sm-4 control-label">*Skill / Qualification</label>
+								<div class="col-sm-8">
+									<select class="form-control" ng-model="dto.proficiencyId" ng-options="proficiency.id as proficiency.name for proficiency in proficiencies">
+										<option />
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">*Status <span class="glyphicon glyphicon-info-sign" uib-tooltip="Driver is eligible to drive the vehicle type as long as there is an APPROVED record with PASS status. Hence, if he is deemed ineligible, please withdraw any previous APPROVED record with PASS status."></span></label>
+								<div class="col-sm-8">
+									<select class="form-control" ng-model="dto.assessmentStatusCode" ng-init="dto.assessmentStatusCode='P'" ng-options="assessmentStatus.code as assessmentStatus.name for assessmentStatus in assessmentStatuses" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">*Reassessment</label>
+								<div class="col-sm-8">
+									<yes-no-only class="form-control" ng-model="dto.reassessFlag" ng-init="dto.reassessFlag='N'"  />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">*Assessed On</label>
+								<div class="col-sm-8">
+									<input datebox max-date="today" class="form-control" ng-model="dto.assessDate" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">*Assessed By</label>
+								<div class="col-sm-8">
+									<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" ng-model="dto.assessedBy" />
+								</div>
+							</div>
+						</div>
+						<hr>
+						<table st-table="selectedRecords" st-safe-src="selectedDrivers" class="table table-striped table-bordered table-responsive table-condensed small">
+							<tr>
+								<th no-sort>#</th>
+								<th st-sort="name">NRIC</th>
+								<th st-sort="name">Name</th>
+							</tr>
+							<tr ng-repeat="selectedRecord in selectedRecords">
+								<td>{{$index + 1}}</td>
+								<td>{{selectedRecord.nricNo}}</td>
+								<td>{{selectedRecord.name}}</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal" ng-click="batchUpdateFunction()">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>

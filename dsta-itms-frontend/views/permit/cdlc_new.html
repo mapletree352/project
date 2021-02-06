@@ -1,0 +1,225 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> New CDL Conversion
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#applicaton" ng-click="cdlcTab='A'" data-toggle="tab">Application</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<button type="button" class="btn btn-primary btn-block" ng-click="saveUpdateCdlcApplication()">Create Application</button>
+						<button type="button" class="btn btn-default btn-block">Clear</button>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="applicaton">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Application Details</legend>	
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Applicant</label>
+							<div class="col-sm-4"	 >
+									<typeahead placeholder="NRIC No. or Name"    
+															uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+															typeahead-on-select="cdlcDTO.applicant = $item.code "
+															ng-blur="cdlcDTO.applicant = driver ? cdlcDTO.applicant : undefined"
+															ng-model="driver" />
+								</div>	
+									<span  style="padding: 2px 5px;">
+									 	<button type="button" class="btn btn-default btn-block col-sm-3"  style="width:auto; font-size: 18px; padding: 3px 6px;" ng-if="cdlcDTO.applicant!=null && driver!=null"  ng-click="cdlcViewPanel()">More</button>
+									</span>	
+		
+							<label class="col-sm-2 control-label">Application Status :</label>
+							<div class="col-sm-1 control-value">New</div>	
+						</div>	
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">CDL Conversion Type</label>
+							<div class="col-sm-4">
+		
+								<select class="form-control" ng-model="cdlcDTO.cdlcTypeId">
+									<option></option>
+									<option ng-repeat="cdlClass in cdlClasses" value="{{cdlClass.id}}">{{cdlClass.name}}</option>
+								</select>
+							</div>
+							<label class="col-sm-2 control-label">Remarks</label>
+							<div class="col-sm-4">
+								<textarea class="form-control" ng-model="cdlcDTO.remarks"/>
+								
+							</div>
+						</div>
+						<br>
+						<legend>Recommendation Details</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Recommended By</label>
+							<div class="col-sm-4">
+					
+							
+							
+
+	<typeahead    placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" typeahead-on-select="cdlcDTO.recommendedBy = $item.code " ng-blur="cdlcDTO.recommendedBy = personnel ? cdlcDTO.recommendedBy : undefined" ng-model="personnel" />
+				</div>
+				
+				
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Unit</label>
+							<div class="col-sm-4">
+								<typeahead   placeholder="Unit Code or Name" uib-typeahead="unit.name + ' (' + unit.code + ')' for unit in searchUnits($viewValue)"  typeahead-on-select="cdlcDTO.unitCode = $item.code" ng-blur="cdlcDTO.unitCode = unit ? cdlcDTO.unitCode : undefined" ng-model="unit" />
+						</div>
+							<label class="col-sm-2 control-label required">Appointment</label>
+							<div class="col-sm-4">
+							
+									
+							
+								<input type="text" class="form-control" ng-model="cdlcDTO.appointment" />
+							</div>
+						</div>
+						<div class="form-group">					
+							<label class="col-sm-2 control-label required">Contact No.</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" ng-model="cdlcDTO.contactNo"/>
+							</div>				
+						</div>
+						<br>
+						<legend>Processing Details</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Processed By</label>
+							<div class="col-sm-4">
+				<typeahead    placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" typeahead-on-select="cdlcDTO.processBy = $item.code " ng-blur="cdlcDTO.processBy = processBy ? cdlcDTO.processBy : undefined" ng-model="processBy" />
+							</div>			
+							<label class="col-sm-2 control-label">Processing Remarks</label>
+								<div class="col-sm-4">
+									<textarea  class="form-control" ng-model="cdlcDTO.processRemarks"/>
+								</div>	
+								
+							
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">TP Screen Date</label>
+								<div class="col-sm-4">
+								 <span class="input-group valueColumn date">
+									<input datebox class="form-control"  ng-model="cdlcDTO.tpScreenDate"/>
+										<label class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span>
+										</label>
+								</span>
+								</div>			
+							<label class="col-sm-2 control-label  required">TP Screen Outcome</label>
+							<div class="col-sm-4">
+								<select class="form-control" ng-model="cdlcDTO.tpScreenOutComeId">
+									<option ng-repeat="tpScreeningOutcome in tpScreeningOutcomes" value="{{tpScreeningOutcome.id}}">{{tpScreeningOutcome.name}}</option>
+								</select>
+							</div>					
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">TP Outcome Remarks</label>
+								<div class="col-sm-4">
+									<textarea  class="form-control" ng-model="cdlcDTO.tpScreenRemark"/>
+								
+								</div>		
+								
+							
+						</div>
+						<div class="modal fade" id="cdlcViewPanel" tabindex="-1">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button class="close" data-dismiss="modal"><span>&times;</span></button>
+										<h4 class="modal-title"> {{driver}} </h4>
+									</div>
+									<div class="modal-body">
+										<div class="container-fluid">
+											<form class="form-horizontal">
+												<div class="form-group">
+														<label class="col-sm-3 control-label">Vocation</label>
+														<div></div>
+														<div class="col-sm-4 control-value">{{driverDTO.vocation}}</div>			
+												</div>
+												<div class="form-group">
+														<label class="col-sm-3 control-label">Contact Number</label>
+														<div></div>
+														<div class="col-sm-4 control-value">{{driverDTO.mobilePhoneNo}}</div>
+														
+													</div>
+													<div class="form-group">
+														<label class="col-sm-3 control-label">Demerit Points</label>
+														<div></div>
+														<div class="col-sm-4 control-value">{{cdlcDTOs.demeritPoints}}</div>
+														
+													</div>
+													
+											
+												<div class="form-group">
+														<label class="col-sm-3 control-label">Service Type</label>
+														<div></div>
+															<div class="col-sm-4 control-value">{{driverDTO.serviceType}}</div>
+														
+													</div>
+												
+												<div class="form-group">
+														<label class="col-sm-3 control-label">Date of birth</label>
+													<div></div>
+														<div class="col-sm-4 control-value">{{driverDTO.birthDate}}</div>
+														
+													</div>
+													
+												<div class="form-group">
+														<label class="col-sm-3 control-label">ORD</label>
+													<div></div>
+														<div class="col-sm-4 control-value">{{driverDTO.ord}}</div>
+														
+													</div>
+													
+													
+												<div class="form-group">
+													<label class="control-label">CDL Conversion Applications</label>
+													<table class="table table-striped table-bordered table-responsive table-condensed small">
+														<tr>
+															<th no-sort>Application No.</th>
+															<th no-sort>CDL Conversion Type</th>
+															<th no-sort>Application Status</th>
+														
+														</tr>
+														<tr ng-repeat="cdlc in cdlcDTOs">
+															<td>{{cdlc.applicaionId}}</td>
+															<td>{{cdlc.cdlcTypeName}}</td>
+															<td>{{cdlc.status}}</td>
+														
+														</tr>
+													</table>
+												</div>
+											
+											
+												
+						
+											</form>
+											
+										</div>
+										
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
+						
+					</div>
+
+						
+						
+						
+						
+						
+					</fieldset>
+					<br>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

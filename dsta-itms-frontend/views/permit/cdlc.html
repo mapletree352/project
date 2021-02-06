@@ -1,0 +1,765 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable"
+			ng-click="back()" /> CDL Conversion
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#applicaton"
+				ng-click="cdlcTab='A'" data-toggle="tab">Application</a></li>
+			<li><a href="" data-target="#profile" ng-click="cdlcTab='P'"
+				data-toggle="tab">Profile</a></li>
+			<li><a href="" data-target="#skills" ng-click="cdlcTab='P'"
+				data-toggle="tab">Skills</a></li>
+			<li><a href="" data-target="#mileage" ng-click="cdlcTab='M'"
+				data-toggle="tab">Mileage</a></li>
+			<li><a href="" data-target="#demerit" ng-click="cdlcTab='D'"
+				data-toggle="tab">Demerit Points</a></li>
+			<li><a href="" data-toggle="tab">Audit Log</a></li>
+		</ul>
+		<div class="tab-content"> 
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div style="text-align: center">
+							<img src="{{photo}}" style="height: 120px; padding-bottom: 5px" />
+							<br> <strong><big>{{driverDTO.nricNo}}</big></strong> <br>
+							<p>{{driverDTO.name}}</p>
+							<hr>
+						</div>
+							<button 
+								data-toggle="modal" ng-if="cdlcDTO.statusCode=='CDLC_NEW' && cdlcDTO.tpScreenDate==null && cdlcDTO.tpScreenOutCome==null && cdlcDTO.tpScreenRemark==null"
+								class="btn btn-primary btn-block" ng-click="updateTpScreenDetails()">Submit</button>
+							<br/>
+						<div ng-if="cdlcTab == 'A' && cdlcDTO.statusCode=='CDLC_SUB' && session.rights['manageCDLConversion'] ">
+							
+							<button 
+								data-toggle="modal" data-target="#approveCDLC"
+								class="btn btn-primary btn-block">Approve Application</button>
+							<button
+								data-toggle="modal" data-target="#holdCdlc"
+								class="btn btn-default btn-block">Hold Application</button>		
+							<button
+								 	data-toggle="modal" data-target="#rejectCdlc" class="btn btn-default btn-block">Reject Application</button>
+						</div>
+						<div ng-if="cdlcTab == 'A' && cdlcDTO.statusCode=='CDLC_PEN'&& session.rights['manageCDLConversion'] ">
+						<button 
+							class="btn btn-primary btn-block"
+							ng-click="updateCdlcUnHoldApplication()	">Unhold Application</button>
+						
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="applicaton">
+				<form class="form-horizontal">
+					<fieldset>
+
+
+						<legend>Application Details</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Application No.</label>
+							<div class="col-sm-4 control-value">{{cdlcDTO.applicaionId}}</div>
+							<label class="col-sm-2 control-label">Application Status</label>
+
+							<div class="control-value">{{cdlcDTO.status}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">CDL Class</label>
+							<div >	</div>
+							<div class="col-sm-4 control-value">{{cdlcDTO.cdlcTypeName}}</div>
+							<label class="col-sm-2 control-label">Remarks</label>
+							<div></div>
+							<div class="col-sm-4 control-value" >{{cdlcDTO.remarks}}</div>
+						</div>
+							<div class="form-group"  ng-if="cdlcDTO.statusCode=='CDLC_PEN'">
+					
+									<label  class="col-sm-2 control-label">Hold Reason </label>
+									<div > </div>
+									<div  class="col-sm-4 control-value"> {{cdlcDTO.holdReason}}</div>
+							
+							</div>
+							<div class="form-group"  ng-if="cdlcDTO.statusCode=='CDLC_REJ'">
+					
+									<label  class="col-sm-2 control-label">Reject Reason </label>
+									<div > </div>
+									<div  class="col-sm-4 control-value">{{cdlcDTO.rejectReason}}</div>
+							
+							</div>
+									
+							
+							
+						<br>
+						<legend>Recommendation Details</legend>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Recommended By</label> <span
+								class="col-sm-4"> <typeahead ng-disabled="true " placeholder="NRIC No. or Name"	uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" typeahead-on-select="cdlcDTO.recommendedBy = $item.code " ng-blur="cdlcDTO.recommendedBy = personnel ? cdlcDTO.recommendedBy : undefined" 	ng-model="personnel" />
+							</span> <label class="col-sm-2 control-label">Recommended On</label> 
+							<div></div>
+
+							 <div 	class="col-sm-4 control-value">{{cdlcDTO.recommendDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit</label>
+							<div ></div>
+							<div class="col-sm-4 control-value">{{unit}}</div>
+							<label class="col-sm-2 control-label">Appointment</label>
+							<div></div>
+							<div  class="col-sm-4 control-value">{{cdlcDTO.appointment}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Contact No.</label>
+							<div></div>
+							<div  	class="col-sm-4 control-value">{{cdlcDTO.contactNo}}</div>
+						</div>
+						<br>
+						<legend>Processing Details</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Processed By</label>
+							<div class="col-sm-4">
+								<typeahead ng-disabled="true" 	placeholder="NRIC No. or Name"	uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)" typeahead-on-select="cdlcDTO.processBy = $item.code " ng-blur="cdlcDTO.processBy = processBy ? cdlcDTO.processBy : undefined"	ng-model="processBy" />
+								
+							</div>
+
+							<label class="col-sm-2 control-label">Processed On</label>
+							<div>	</div>
+							<div class="col-sm-4 control-value">{{cdlcDTO.processDate}}</div>
+						</div>
+						
+									
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Process Remarks</label>
+							<div></div>
+								<div class="col-sm-4 control-value">
+								{{cdlcDTO.processRemarks}}
+								</div>
+						</div>
+						
+				
+							<div class="form-group">
+								<label class="col-sm-2 control-label">TP Screen Date</label>
+								<div class="col-sm-4 control-value"  ng-if="cdlcDTO.tpScreenDate==null && cdlcDTO.statusCode=='CDLC_NEW'"> 	<input datebox class="form-control"  ng-model="cdlcUpdateDTO.tpScreenDate"/> </div>
+									<div class="col-sm-4 control-value" ng-if="cdlcDTO.tpScreenDate!=null" >
+										{{cdlcDTO.tpScreenDate}}
+									</div>			
+								<label class="col-sm-2 control-label ">TP Outcome</label>
+									<div class="col-sm-4 control-value"  ng-if="cdlcDTO.tpScreenOutCome==null && cdlcDTO.statusCode=='CDLC_NEW'"> 	
+										<select class="form-control" ng-model="cdlcUpdateDTO.tpScreenOutComeId">
+										<option ng-repeat="tpScreeningOutcome in tpScreeningOutcomes" value="{{tpScreeningOutcome.id}}">{{tpScreeningOutcome.name}}</option>
+									</select>
+								</div>
+								<div class="col-sm-4 control-value" ng-if="cdlcDTO.tpScreenOutCome!=null">
+									{{cdlcDTO.tpScreenOutCome}}
+								</div>					
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label" >TP Outcome Remarks</label>
+								<div class="col-sm-4 control-value" ng-if="cdlcDTO.tpScreenRemark==null && cdlcDTO.statusCode=='CDLC_NEW'" > 	<textarea  class="form-control" ng-model="cdlcUpdateDTO.tpScreenRemark"/> </div>
+									<div class="col-sm-4 control-value" ng-if="cdlcDTO.tpScreenRemark!=null">
+									{{cdlcDTO.tpScreenRemark}} 
+									</div>		
+										
+								
+							</div>
+				
+					
+						
+	
+			
+					</fieldset>
+					<br>
+
+					<div class="modal fade" id="holdCdlc" tabindex="-1">
+						<div class="modal-dialog" style="width: 600px">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Hold Application</h4>
+								</div>
+								<div class="modal-body">
+									<div class="container-fluid">
+										<form class="form-horizontal">
+											<div class="form-group">
+												<label class="col-sm-2 control-label required">Reasons</label>
+												<div class="col-sm-10">
+													<textarea class="form-control"
+														ng-model="cdlcDTO.holdReason"></textarea>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Cancel</button>
+									<button ng-click="updateCdlcHoldApplication()"
+										class="btn btn-primary">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="modal fade" id="rejectCdlc" tabindex="-1">
+						<div class="modal-dialog" style="width: 600px">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Reject Application</h4>
+								</div>
+								<div class="modal-body">
+									<div class="container-fluid">
+										<form class="form-horizontal">
+											<div class="form-group">
+												<label class="col-sm-2 control-label required">Reasons</label>
+												<div class="col-sm-10">
+													<textarea class="form-control"
+														ng-model="cdlcDTO.rejectReason"></textarea>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Cancel</button>
+									<button type="button" class="btn btn-primary"
+										ng-click="updateCdlcRejectApplication()">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+	
+
+
+				</form>
+			</div>
+			<div class="tab-pane fade" id="profile">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Transport Operator</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">E-HR Hub</label>
+							<div class="col-sm-4 control-value">{{driverDTO.ehrHub}}</div>
+							<label class="col-sm-2 control-label">Ops Tag Unit</label>
+							<div class="col-sm-4 control-value">{{driverDTO.opsTagUnitName}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">E-HR Node</label>
+							<div class="col-sm-4 control-value">{{driverDTO.ehrNode}}</div>
+							<label class="col-sm-2 control-label">Ops Tag Sub-Unit</label>
+							<div class="col-sm-4 control-value">{{driverDTO.opsTagSubunitName}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Node</label>
+							<div class="col-sm-4 control-value">{{driverDTO.ehrNode}}</div>
+							<label class="col-sm-2 control-label">Platoon</label>
+							<div class="col-sm-4 control-value">{{driverDTO.platoon}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Attachment Node</label>
+							<div class="col-sm-4 control-value">{{driverDTO.attachedNode}}</div>
+							<label class="col-sm-2 control-label">Section</label>
+							<div class="col-sm-4 control-value">{{driverDTO.section}}</div>
+						</div>
+					</fieldset>
+					<br>
+					<fieldset>
+						<legend>Military</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Appointment</label>
+							<div class="col-sm-4 control-value">{{driverDTO.appointment}}</div>
+							<label class="col-sm-2 control-label">Date of Appointment</label>
+							<div class="col-sm-4 control-value">{{driverDTO.appointmentDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Vocation</label>
+							<div class="col-sm-4 control-value">{{driverDTO.vocation}}</div>
+							<label class="col-sm-2 control-label">Date of Vocation</label>
+							<div class="col-sm-4 control-value">{{driverDTO.vocationDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Type of Service</label>
+							<div class="col-sm-4 control-value">{{driverDTO.serviceType}}</div>
+							<label class="col-sm-2 control-label">Date of Rank</label>
+							<div class="col-sm-4 control-value">{{driverDTO.rankDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit</label>
+							<div class="col-sm-4 control-value">{{driverDTO.unit}}</div>
+							<label class="col-sm-2 control-label">Date to Unit</label>
+							<div class="col-sm-4 control-value">{{driverDTO.unitDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Unit Service Type</label>
+							<div class="col-sm-4 control-value">{{driverDTO.unitService}}</div>
+							<label class="col-sm-2 control-label">Date of Enlistment</label>
+							<div class="col-sm-4 control-value">{{driverDTO.enlistmentDate}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Security CAT</label>
+							<div class="col-sm-4 control-value">{{driverDTO.securityCat}}</div>
+							<label class="col-sm-2 control-label">ORD</label>
+							<div class="col-sm-4 control-value">{{driverDTO.ord}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">PES Grading</label>
+							<div class="col-sm-4 control-value">{{driverDTO.pes}}</div>
+						</div>
+					</fieldset>
+					<br>
+					<fieldset>
+						<legend>Personal</legend>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Citizenship</label>
+							<div class="col-sm-4 control-value">{{driverDTO.citizenship}}</div>
+							<label class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-4 control-value">{{driverDTO.emailAddress}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Place of Birth</label>
+							<div class="col-sm-4 control-value">{{driverDTO.birthPlace}}</div>
+							<label class="col-sm-2 control-label">Hand Phone</label>
+							<div class="col-sm-4 control-value">{{driverDTO.mobilePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Date of Birth</label>
+							<div class="col-sm-4 control-value">{{driverDTO.birthDate}}</div>
+							<label class="col-sm-2 control-label">Home Phone</label>
+							<div class="col-sm-4 control-value">{{driverDTO.homePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Race</label>
+							<div class="col-sm-4 control-value">{{driverDTO.race}}</div>
+							<label class="col-sm-2 control-label">Office Phone</label>
+							<div class="col-sm-4 control-value">{{driverDTO.officePhoneNo}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Religion</label>
+							<div class="col-sm-4 control-value">{{driverDTO.religion}}</div>
+							<label class="col-sm-2 control-label">Address</label>
+							<div class="col-sm-4 control-value">{{driverDTO.address}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Marital Status</label>
+							<div class="col-sm-4 control-value">{{driverDTO.maritalStatus}}</div>
+							<label class="col-sm-2 control-label">Alt. Address</label>
+							<div class="col-sm-4 control-value">{{driverDTO.addressAlternative}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Highest Education</label>
+							<div class="col-sm-4 control-value">{{driverDTO.highestEducation}}</div>
+							<label class="col-sm-2 control-label">Overseas Address</label>
+							<div class="col-sm-4 control-value">{{driverDTO.addressOverseas}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Next of Kin (NOK)</label>
+							<div class="col-sm-4 control-value">{{driverDTO.nextOfKin}}</div>
+							<label class="col-sm-2 control-label">NOK Contact No.</label>
+							<div class="col-sm-4 control-value">{{driverDTO.nextOfKinContact}}</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">NOK Relationship</label>
+							<div class="col-sm-4 control-value">{{driverDTO.nextOfKinRelationship}}</div>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+						<div class="tab-pane fade" id="mileage">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>Mileage Breakdown</legend>
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<div class="form-group">
+									<label class="col-sm-1 control-label">By</label>
+									<div class="col-sm-5">
+										<div class="radio radio-inline">
+											<label> <input type="radio" name="breakdownBy" id="breakdownBy1" ng-click="breakDownBy='V'">Vehicle Type
+											</label>
+										</div>
+										<div class="radio radio-inline">
+											<label> <input type="radio" name="breakdownBy" id="breakdownBy2" ng-click="breakDownBy='L'">Vehicle Permit Class
+											</label>
+										</div>
+										<div class="radio radio-inline">
+											<label> <input type="radio" name="breakdownBy" id="breakdownBy3" ng-click="breakDownBy='T'">Trip
+											</label>
+										</div>
+									</div>
+									<div ng-show="breakDownBy=='T'">
+										<label class="col-sm-2 control-label">Date Range</label>
+										<div class="col-sm-4">
+											<div class='input-group valueColumn date'>
+												<input daterangebox value="" ng-model="searchDTO.dateRange" class="form-control" limit-days="91" /> <label class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span>
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div style="width:130px;" class="pull-right">
+									<button type="button" class="btn btn-block btn-primary" ng-click="searchButton()" ng-disabled="loading">Search</button>
+								</div>
+								<br><br>
+								<a href="" ng-show="breakDownBy=='T'" ng-click="taskSearch.isCollapsed = !taskSearch.isCollapsed" class="pull-right">Advanced Search...</a>
+								<div ng-show="breakDownBy=='T'" class="form-group" style="padding-right: 0px" uib-collapse="!taskSearch.isCollapsed">
+									<hr>
+									<div class="form-group">
+										<label class="col-sm-2 control-label">Task ID</label>
+										<div class="col-sm-4">
+											<input type="text" class="form-control" ng-model="searchDTO.taskId" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label">Vehicle Type</label>
+										<div class="col-sm-4">
+											<select class="form-control" ng-options="vehicleType.id as vehicleType.name for vehicleType in vehicleTypes" ng-model="searchDTO.vehicleTypeId">
+												<option />
+											</select>
+										</div>
+										<label class="col-sm-2 control-label">Vehicle Permit Class</label>
+										<div class="col-sm-3">
+											<select class="form-control" ng-options="vehPermitClass.code as vehPermitClass.name for vehPermitClass in vehPermitClasses" ng-model="searchDTO.vehPermitClassCode">
+												<option />
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div ng-if="breakDownBy=='V'" class="col-xs-12">
+								<table st-table="records" st-pipe="searchDriverVehicleTypes" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th st-sort="vehicleType" width="25%">Vehicle Type</th>
+										<th st-sort="lastDrivenDate" width="25%">Date Last Driven</th>
+										<th st-sort="speedingCount" width="25%">Speeding Count</th>
+										<th st-sort="mileage" width="25%">Mileage</th>
+									</tr>
+									<tr ng-repeat="record in records">
+										<td>{{record.vehicleType}}</td>
+										<td>{{record.lastDrivenDate}}</td>
+										<td>{{record.speedingCount}}</td>
+										<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileageVehicleType(records.total.mileage)">{{record.mileage | number:1}}</td>
+									</tr>
+									<tr>
+										<td colspan="3" style="text-align:right"><strong>TOTAL: </strong></td>
+										<td><strong>{{totalMileageVehicleType | number:1}}</strong></td>
+									</tr>
+									<tfoot>
+										<tr>
+											<td colspan="13">
+												<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+												<ul class="pagination">
+													<li ng-if="records && records.length > 0">
+														<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+													</li>
+												</ul>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+						<div>
+							<div ng-if="breakDownBy=='L'" class="col-xs-12">
+								<table st-table="records" st-pipe="searchDriverVehicleClasses" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th st-sort="vehiclePermitClass" width="25%">Vehicle Permit Class</th>
+										<th st-sort="lastDrivenDate" width="25%">Date Last Driven</th>
+										<th st-sort="speedingCount" width="25%">Speeding Count</th>
+										<th st-sort="mileage" width="25%">Mileage</th>
+									</tr>
+									<tr ng-repeat="record in records">
+										<td>{{record.vehiclePermitClass}}</td>
+										<td>{{record.lastDrivenDate}}</td>
+										<td>{{record.speedingCount}}</td>
+										<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileageVehPermitClass(records.total.mileage)">{{record.mileage | number:1}}</td>
+									</tr>
+									<tr>
+										<td colspan="3" style="text-align:right"><strong>TOTAL: </strong></td>
+										<td><strong>{{totalMileageVehPermitClass | number:1}}</strong></td>
+									</tr>
+									<tfoot>
+										<tr>
+											<td colspan="13">
+												<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+												<ul class="pagination">
+													<li ng-if="records && records.length > 0">
+														<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+													</li>
+												</ul>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+						<div>
+							<div ng-if="breakDownBy=='T'" class="col-xs-12">
+								<table st-table="records" st-pipe="searchDriverTrips" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th no-sort>Trip ID</th>
+										<th no-sort>Task ID</th>
+										<th no-sort>Date Time Start</th>
+										<th no-sort>Date Time End</th>
+										<th no-sort>Vehicle Type</th>
+										<th no-sort>Vehicle Permit Class</th>
+										<th no-sort>Speeding Count</th>
+										<th no-sort>Mileage</th>
+									</tr>
+									<tr ng-repeat="record in records">
+										<td>{{record.tripId}}</td>
+										<td><a href="#/task/{{record.taskId}}">{{record.taskId}}</a></td>
+										<td>{{record.tripStartDate}}</td>
+										<td>{{record.tripEndDate}}</td>
+										<td>{{record.vehicleType}}</td>
+										<td>{{record.vehiclePermitClass}}</td>
+										<td>{{record.speedingCount}}</td>
+										<td ng-init="records.total.mileage = records.total.mileage + record.mileage; setTotalMileageTrip(records.total.mileage)">{{record.mileage | number:1}}</td>
+									</tr>
+									<tr>
+										<td colspan="7" style="text-align:right"><strong>TOTAL: </strong></td>
+										<td><strong>{{totalMileageTrip | number:1}}</strong></td>
+									</tr>
+									<tfoot>
+										<tr>
+											<td colspan="13">
+												<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" st-displayed-pages="paginationSize"></div>
+												<ul class="pagination">
+													<li ng-if="records && records.length > 0">
+														<a href="" style="color:black" ng-click="download()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Download to Excel</a>
+													</li>
+												</ul>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+				<div class="tab-pane fade" id="skills">
+				<form class="form-horizontal">
+					<fieldset>
+						<legend>SAF Driving Permit</legend>
+						<div>
+							<div class="col-xs-12">
+								<table st-table="driverPermits" st-safe-src="dto.driverPermits" class="table table-striped table-bordered table-responsive table-condensed small">
+									<tr>
+										<th st-sort="permitNo">Permit No.</th>
+										<th st-sort="issueDate">Issue On</th>
+										<th st-sort="permitType">Permit Type</th>
+										<th st-sort="permitStatus">Permit Status</th>
+										<th st-sort="effectiveStartDate">Status From</th>
+										<th st-sort="effectiveEndDate">Status To</th>
+										<th st-sort="permitClasses">Permit Class</th>
+									</tr>
+									<tr ng-repeat="driverPermit in driverDTO.driverPermits">
+										<td>{{driverPermit.permitNo}}</td>
+										<td>{{driverPermit.issueDate}}</td>
+										<td>{{driverPermit.permitType}}</td>
+										<td>{{driverPermit.permitStatus}}</td>
+										<td>{{driverPermit.effectiveStartDate}}</td>
+										<td>{{driverPermit.effectiveEndDate}}</td>
+										<td>{{driverPermit.permitClasses}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+					<br>
+					<fieldset>
+						<legend>Civilian Driving Licence</legend>
+						<div ng-if="driverPermit.cdlNo">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Licence No.</label>
+								<div class="col-sm-4 control-value">{{driverPermit.citizenship}}</div>
+								<label class="col-sm-2 control-label">Barcode No.</label>
+								<div class="col-sm-4 control-value">{{driverPermit.cdlBarcodeNo}}</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Issue Date</label>
+								<div class="col-sm-4 control-value">{{driverPermit.cdlIssueDate}}</div>
+								<label class="col-sm-2 control-label">Type of Classes</label>
+								<div class="col-sm-4 control-value">{{driverPermit.cdlClasses}}</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Status</label>
+								<div class="col-sm-4 control-value">{{driverPermit.cdlStatus}}</div>
+								<label class="col-sm-2 control-label">Demerit Points</label>
+								<div class="col-sm-4 control-value">{{driverPermit.cdlDemeritPoints}}</div>
+							</div>
+						</div>
+						<div ng-if="!driverPermit.cdlNo">
+							No record found.
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+	
+	
+			<div class="tab-pane fade" id="demerit">
+				<form class="form-horizontal">
+					<fieldset>
+						<div>
+							{{$scope.driverDTO}}
+							<table
+								class="table table-striped table-bordered table-responsive table-condensed small">
+								<tr>
+									<th>ID</th>
+									<th>Type</th>
+									<th>Offence Committed / Reduction Remarks</th>
+									<th width="90px">Issued<br>On
+									</th>
+									<th width="90px">Issued<br>By
+									</th>
+									<th width="90px">Submitted<br>On
+									</th>
+									<th width="90px">Submitted<br>By
+									</th>
+									<th width="90px">Demerit<br>Points
+									</th>
+								</tr>
+							
+									<tr ng-repeat="driverOffence in dto.driverOffences">
+										<td><a href=""
+											ng-click="openDemeritPointsRecord(driverOffence.counterId)">{{driverOffence.counterId}}</a></td>
+										<td>{{driverOffence.type}}</td>
+										<td>{{driverOffence.offenceOrReductionReason}}</td>
+										<td>{{driverOffence.issueDate}}</td>
+										<td>{{driverOffence.issuedBy}}</td>
+										<td>{{driverOffence.submitDate}}</td>
+										<td>{{driverOffence.submittedBy}}</td>
+										<td>{{driverOffence.demeritPoints}}</td>
+									</tr>
+							
+								<tr>
+									<td colspan="7" style="text-align: right"><strong>TOTAL:
+									</strong></td>
+									<td>{{calculateTotalDemeritPoint()}}</td>
+								</tr>
+							</table>
+						</div>
+					</fieldset>
+					<br>
+
+					<div class="modal fade" id="demeritPtsRecModal" tabindex="-1">
+						<div class="modal-dialog" style="width: 600px">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Offence Demerit Points</h4>
+								</div>
+								<div class="modal-body">
+									<div class="container-fluid">
+										<form class="form-horizontal">
+											<div class="form-group">
+												<label class="col-sm-4 control-label">ID</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.counterId}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label required">Offence
+													Type <span class="glyphicon glyphicon-info-sign"
+													uib-tooltip="Offences involving a Traffic Accident will reset all Incentive claimable mileage accumulated before the offence's Issue Date." />
+												</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.type}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Offence
+													Committed</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.offenceOrReductionReason}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Demerit Points</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.demeritPoints}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Fine ($)</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.fineAmt}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label required">Vehicle
+													Type</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.vehicleType}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Vehicle No.</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.vehicleNo}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Location</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.location}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Offence Date</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.issueDate}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label required">Offence
+													Issuer</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.issuedBy}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Submitted On</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.submitDate}}</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label required">Submitted
+													By</label>
+												<div class="col-sm-8 control-value">{{offenceDTO.submittedBy}}</div>
+											</div>
+										</form>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="modal fade" id="approveCDLC" tabindex="-1">
+	<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Confirm?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<p>Are you sure you want to approve this application for?</p>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button class="btn btn-primary"
+					ng-click="updateCdlcApproveApplication()">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+

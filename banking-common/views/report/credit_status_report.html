@@ -1,0 +1,70 @@
+<div class="row page-header">
+	<h3>Credit Status Report</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position:absolute;width:130px;right:20px;z-index:998">
+				<button type="button" class="btn btn-block btn-primary" ng-click="search()" ng-disabled="loading">Search</button>
+				<button type="button" class="btn btn-block btn-default" ng-click="exportCreditStatusReport()" ng-disabled="!records || records.length === 0 || loading">Generate Report</button>
+			</div>
+			<div style="padding-right:160px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Work Year</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-model="searchDTO.workYear">
+								<option ng-repeat="n in _.range(currentYear - 9, currentYear + 1)" value="{{n}}">{{n}} (1 Apr {{n}} - 31 Mar {{n + 1}})</option>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<table st-table="records" st-safe-src="searchCreditStatusReport" class="table table-striped table-bordered table-responsive table-condensed small">
+		<tr>
+			<th class="text-center">#</th>
+			<th>Formation</th>
+			<th>Unit</th>
+			<th>Allocated</th>
+			<th>Pre-Committed</th>
+			<th>Committed</th>
+			<th>Refunded</th>
+			<th>Transferred Out</th>
+			<th>Transferred In</th>
+			<th>Penalty</th>
+			<th>Returned</th>
+			<th>Remaining</th>
+			
+		</tr>
+		<tr ng-repeat="record in records">
+			<td class="text-right">{{$index + searchDTO.startIndex + 1}}.</td>
+			<td>{{record.formation}}</a></td>
+			<td>{{record.unit}}</td>
+			<td>{{record.allocatedAmt}}</td>
+			<td>{{record.precommittedAmt}}</td>
+			<td>{{record.committedAmt}}</td>
+			<td>{{record.refundedAmt}}</td>
+			<td>{{record.transferredOutAmt}}</td>
+			<td>{{record.transferredInAmt}}</td>
+			<td>{{record.penaltyAmt}}</td>
+			<td>{{record.returnedAmt}}</td>
+			<td>{{record.remainingAmt}}</td>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="13" ng-show="records && records.length > 0">
+					<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+					<ul class="pagination">
+						<li>
+							<a href="" style="color:black" ng-click="exportCreditStatusReport()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Generate Report</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

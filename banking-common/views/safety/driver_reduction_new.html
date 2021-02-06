@@ -1,0 +1,50 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> New Demerit Point Reduction
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#reduction" data-toggle="tab">Reduction</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<button type="button" class="btn btn-primary btn-block" ng-click="confirmDialog('Are you sure you want to create this Demerit Points Reduction and submit for approval?', save)">Create Reduction</button>
+						<button type="button" class="btn btn-default btn-block" ng-click="reset()">Clear</button>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="reduction">
+				<form class="form-horizontal">
+					<fieldset>						
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Driver</label>
+							<div class="col-sm-4">
+								<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+									typeahead-on-select="onSelectDriver($item)" ng-blur="dto.driverNricNo = driver ? dto.driverNricNo : undefined" ng-model="driver" />
+							</div>
+							<label class="col-sm-2 control-label">Current Demerit Points</label>
+							<div class="col-sm-4">
+								<div class="col-sm-4 control-value">{{currentDemeritPoints}}</div>
+							</div>	
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label required">Reduction Points</label>
+							<div class="col-sm-4">
+								<input intbox min="-20" max="-1" class="form-control" ng-model="dto.reductionPoints" />
+							</div>		
+							<label class="col-sm-2 control-label required">Reduction Reason</label>
+							<div class="col-sm-4">
+								<textarea class="form-control" ng-model="dto.reductionReason"></textarea>
+							</div>			
+						</div>
+					</fieldset>
+					<br>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

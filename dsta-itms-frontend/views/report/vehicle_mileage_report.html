@@ -1,0 +1,82 @@
+<div class="row page-header">
+	<h3>Vehicle Mileage Report</h3>
+</div>
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="position:absolute;width:130px;right:20px;z-index:998">
+				<button type="button" class="btn btn-block btn-primary" ng-click="search()" ng-disabled="loading">Search</button>
+				<button type="button" class="btn btn-block btn-default" ng-click="exportVehicleMileageReport()" ng-disabled="!records || records.length === 0 || loading">Generate Report</button>
+			</div>
+			<div style="padding-right:160px">
+				<form class="form-horizontal">
+					<div class="form-group" ng-if="session.userRole.cat !== 'Unit'">
+						<label class="col-sm-1 control-label">Hub</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Hub' && session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-model="searchDTO.hubCode" ng-options="hub.code as hub.name for hub in hubs">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Hub' || session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.hub" readonly/>
+						</div>
+						<label class="col-sm-2 control-label">Node</label>
+						<div class="col-sm-4" ng-if="session.userRole.cat !== 'Node'">
+							<select class="form-control" ng-model="searchDTO.nodeId" ng-options="node.id as node.name for node in nodes | filter:filterNodes(searchDTO.hubCode)">
+								<option />
+							</select>
+						</div>
+						<div class="col-sm-4" ng-if="session.userRole.cat === 'Node'">
+							<input class="form-control" ng-model="session.userRole.node" readonly/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Date Range</label>
+						<div class="col-sm-4">
+							<div class="input-group valueColumn date">
+								<input daterangebox limit-days="183" class="form-control" id="period" ng-model="searchDTO.dateRange" />
+								<label for="period" class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</label>
+							</div>	
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<table st-table="records" st-safe-src="searchVehicleMileageReport" class="table table-striped table-bordered table-responsive table-condensed small">
+		<tr>
+			<th class="text-center">#</th>
+			<th>Hub</th>
+			<th>Node</th>
+			<th>Vehicle Permit Class</th>
+			<th>Vehicle Type</th>
+			<th>Vehicle No.</th>
+			<th>Total Mileage</th>
+		</tr>
+		<tr ng-repeat="record in records">
+			<td class="text-right">{{$index + searchDTO.startIndex + 1}}.</td>
+			<td>{{record.hub}}</a></td>
+			<td>{{record.node}}</td>
+			<td>{{record.vehiclePermitClass}}</td>
+			<td>{{record.vehicleType}}</td>
+			<td>{{record.vehicleNo}}</td>
+			<td>{{record.mileage}}</td>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="13" ng-show="records && records.length > 0">
+					<div style="display:inline" st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+					<ul class="pagination">
+						<li>
+							<a href="" style="color:black" ng-click="exportVehicleMileageReport()"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Generate Report</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

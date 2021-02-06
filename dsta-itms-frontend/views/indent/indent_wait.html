@@ -1,0 +1,155 @@
+<div class="row page-header">
+	<h3>Indents Waiting List</h3>
+</div>
+
+<div class="row page-body">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div style="width:130px;position:absolute;right:20px;z-index:998">
+				<button type="button" class="btn btn-block btn-primary" ng-click="setSelectedPage('tender.html')">Search</button>
+				<button type="button" class="btn btn-block btn-default">Reset</button>
+			</div>
+
+			<div class="col-xs-12" style="padding-right:150px">
+				<form class="form-horizontal">
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Indent Set No.</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" style="text-transform:uppercase" id="" placeholder="" value="">
+						</div>
+						
+						<label class="col-sm-3 control-label">Indent Set Name</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" style="text-transform:uppercase" id="" placeholder="" value="">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Reporting Point-of-Contact</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" style="text-transform:uppercase" id="" placeholder="" value="">
+						</div>
+
+						<label class="col-sm-3 control-label">Customer Unit</label>
+						<div class="col-sm-3">
+							<div class="input-group">
+								<input id="unit" class="form-control" ng-model="unit" placeholder="Unit Name or Unit Code" autocomplete="off"
+									   uib-typeahead="unit as unit.name for unit in units | filter:$viewValue | limitTo:20"
+									   >
+								<span class="input-group-addon glyphicon glyphicon-search" id="basic-addon1"></span>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Submission Date</label>
+						<div class="col-sm-4">
+							<div class='input-group valueColumn date'>
+								<input daterangebox value="" class="form-control"/>
+								<label class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</label>
+							</div>
+						</div>
+
+						<label class="col-sm-2 control-label">Status</label>
+						<div class="col-sm-3">
+							<select class="form-control">
+								<option></option>
+								<option ng-repeat="status in statuses" value="{{status.code}}">{{status.name}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Execution Date</label>
+						<div class="col-sm-4">
+							<div class='input-group valueColumn date'>
+								<input daterangebox value="" class="form-control"/>
+								<label class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" boundary-link-numbers="true" rotate="false"></uib-pagination>
+
+		<table class="table table-striped table-bordered table-responsive table-condensed small">
+			<tr>
+<!--				<th class="text-center"><input type="checkbox" ng-model="checkboxes.checked" id="select_all" value=""></th>-->
+				<th class="text-center">#</th>
+				<th>Indent Set</th>
+				<th>Indents</th>
+			</tr>
+			<tr ng-repeat="indentSet in indentSets">
+<!--				<td class="text-center"><input type="checkbox" ng-model="checkboxes.items[indentSet.id]"></td>-->
+<!--				<td class="text-center"><input type="checkbox"></td>-->
+				<td class="text-right">{{indentSet.id}}.</td>
+				<td>
+					<div>
+						<a href="#/indent/view">{{indentSet.indentSetNo}}</a><br>
+						<strong><big>{{indentSet.name}}</big></strong><br>
+						{{indentSet.unit}}<br>
+<!--						{{indentSet.activity}}<br>-->
+						{{indentSet.subActivity}}<br>
+						<em>Submitted on {{indentSet.date}} by CPL Chan Wai Kit</em><br>
+						<strong>Total Credits:</strong> 16.0<br>
+<!--						<span class="status {{indentSet.status}}">{{indentSet.status}}</span><br>-->
+					</div>
+				</td>
+				<td>
+					<table class="table table-responsive table-condensed" style="background-color:transparent">
+						<tr ng-repeat="row in indentSet.indents">
+							<!--		<td ><input type="checkbox"></td>-->
+<!--							<td class="text-center"><div class="btn btn-success btn-xs glyphicon glyphicon-ok"></div></td>-->
+							<td class="text-right">{{row.id}}.</td>
+							<td>
+								<div style="width:370px; float:left">
+									<span class="glyphicon glyphicon-transfer"/> <strong>{{row.type}}</strong> - {{row.movement}}<br>
+									<span class="glyphicon glyphicon-calendar"/> {{row.reportTime}} ({{row.duration | number : 1}} hrs)<br>
+									<span class="glyphicon glyphicon-map-marker"/> {{row.reportVenue}}
+									<span ng-show="row.destinationVenue != ''"><span class="glyphicon glyphicon-arrow-right"/> {{row.destinationVenue}}</span>
+									<span ng-show="row.preParking != 'YES'"> (Pre-Parking required)</span><br>
+									<strong>Credits:</strong> 4.0 (Pre-Committed)<br>
+<!--									<div class="status" style="color:red">WITHDRAWN</div>-->
+								</div>
+								<div style="width:150px; float:left">
+									<img src="images/truck.png" height="50" style="float:left; margin-right:10px">
+									<div style="float:left">
+										<div>2 requested</div>
+										<div>2 approved</div>
+										<div>1 tasked</div>
+									</div>
+								</div>
+								<div style="width:150px; float:left">
+									<img src="images/driver.png" height="50" style="float:left; margin-right:10px">
+									<div style="float:left">
+										<div>2 requested</div>
+										<div>1 approved</div>
+										<div style="color:darkorange">0 tasked</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		
+		<uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" boundary-link-numbers="true" rotate="false"></uib-pagination>
+	</div>
+</div>
+
+
+<script>
+//	init();
+</script>

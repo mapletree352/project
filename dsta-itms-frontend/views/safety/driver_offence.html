@@ -1,0 +1,166 @@
+<div class="row page-header">
+	<h3><span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> Driver Offence <small>{{dto.id}}</small></h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#offence" data-toggle="tab" ng-click="tabName='offence'">Offence</a></li>
+			<li><a href="" data-target="#auditLog" data-toggle="tab" ng-click="tabName='audit'">Audit Log</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div style="text-align:center">
+							<img src="images/personnels/personnel.gif" style="height:120px; padding-bottom:5px" />
+							<br>
+							<strong><big><a href="#/driver/{{dto.driverNricNo}}">{{dto.driverNricNo}}</a></big></strong>
+							<br>
+							<p>{{dto.driverName}}</p>
+							<hr>
+						</div>
+						<div ng-if="isEditable">
+							<button type="button" class="btn btn-default btn-block" ng-click="confirmDialog('Are you sure you want to update this Driver Offence?', update)">Save</button>
+							<button type="button" class="btn btn-danger btn-block" ng-click="confirmDialog('Are you sure you want to <strong style=\'color:red\'>DELETE</strong> this Driver Offence?', delete)">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="offence">
+				<form class="form-horizontal">
+					<legend>Offence</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Driver Offence Id</label>
+						<div class="col-sm-4 control-value">{{dto.id}}</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Status</label>
+						<div class="col-sm-4 control-value" ng-if="dto.status != 'Rejected'">{{dto.status}}</div>
+						<div class="col-sm-4 control-value" ng-if="dto.status == 'Rejected'"><a uib-tooltip="{{dto.rejectionReason}}">{{dto.status}}</a></div>
+						<label class="col-sm-2 control-label">SAF Driving Permit No.</label>
+						<div class="col-sm-2 control-value">{{dto.driverPermitNo}}</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Vehicle</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{vehicle}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<typeahead placeholder="Vehicle No. or Type" uib-typeahead="vehicleNoType.code + ' (' + vehicleNoType.name + ')' for vehicleNoType in searchVehicleNoTypes($viewValue)"
+								typeahead-on-select="dto.vehicleNo = $item.code" ng-blur="dto.vehicleNo = vehicle ? dto.vehicleNo : undefined" ng-model="vehicle" />
+						</div>
+						<label class="col-sm-2 control-label">Accident Id</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.accidentId}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<input type="text" class="form-control" ng-model="dto.accidentId" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Offence Type</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.offenceType}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<select class="form-control" ng-options="offenceType.id as offenceType.name for offenceType in offenceTypes" ng-model="dto.offenceTypeId">
+								<option />
+							</select>
+						</div>
+						<label class="col-sm-2 control-label required">Offence Committed</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.offence}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<select class="form-control" ng-options="offence.id as offence.name for offence in offences" ng-model="dto.offenceId">
+								<option />
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Location</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.location}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<input class="form-control" ng-model="dto.location" />
+						</div>
+						<label class="col-sm-2 control-label required">Fine (S$)</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.fineAmt}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<input decimalbox class="form-control" ng-model="dto.fineAmt" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Issue Date</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.issueDate}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<input datebox class="form-control" ng-model="dto.issueDate" />
+						</div>
+						<label class="col-sm-2 control-label required">Issue By</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.offenceIssuer}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<select class="form-control" ng-options="offenceIssuer.id as offenceIssuer.name for offenceIssuer in offenceIssuers" ng-model="dto.offenceIssuerId">
+								<option />
+							</select>
+						</div>
+					</div>
+					<br>
+					<legend>Disciplinary</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Reference No.</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.referenceNo}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<input class="form-control" ng-model="dto.referenceNo" />
+						</div>
+						<label class="col-sm-2 control-label required">Demerit Points</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.demeritPoints}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<input intbox max="24" class="form-control" ng-model="dto.demeritPoints" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Permit Status Change</label>
+						<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.permitStatusChange}}</div>
+						<div class="col-sm-4" ng-if="isEditable">
+							<select class="form-control" ng-options="permitStatus.code as permitStatus.name for permitStatus in permitStatuses" ng-model="dto.permitStatusChangeCode">
+								<option />
+							</select>
+						</div>
+						<div ng-if="dto.permitStatusChangeCode=='PRMT_SUS'">
+							<label class="col-sm-2 control-label required">Effective From</label>
+							<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.effectiveDateRange}}</div>
+							<div class="col-sm-4" ng-if="isEditable">
+								<input daterangebox class="form-control" ng-model="dto.effectiveDateRange" />
+							</div>
+						</div>
+						<div ng-if="dto.permitStatusChangeCode=='PRMT_REV'">
+							<label class="col-sm-2 control-label required">Effective From</label>
+							<div class="col-sm-4 control-value" ng-if="!isEditable">{{dto.effectiveDate}}</div>
+							<div class="col-sm-4" ng-if="isEditable">
+								<input datebox class="form-control" ng-model="dto.effectiveDate" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div ng-if="tabName=='audit'" class="tab-pane fade" id="auditLog">
+				<table st-table="records" st-pipe="getAuditLog" class="table table-striped table-bordered table-responsive table-condensed small">
+					<tr>
+						<th no-sort>#</th>
+						<th no-sort>Action Date</th>
+						<th no-sort>Action By</th>
+						<th no-sort>Action</th>
+						<th no-sort>New Value</th>
+						<th no-sort>Old Value</th>
+					</tr>
+					<tr ng-repeat="record in records">
+						<td>{{$index + searchDTO.startIndex + 1}}</td>
+						<td>{{record.createdDate}}</td>
+						<td>{{record.createdBy}}</td>
+						<td>{{record.action === "I" ? "INSERT" : "UPDATE"}}</td>
+						<td>{{record.newValue}}</td>
+						<td>{{record.oldValue}}</td>
+					</tr>
+					<tfoot>
+						<tr>
+							<td colspan="6">
+								<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize"></div>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

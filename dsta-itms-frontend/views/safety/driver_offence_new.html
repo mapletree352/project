@@ -1,0 +1,115 @@
+<div class="row page-header">
+	<h3>
+		<span class="glyphicon glyphicon-chevron-left clickable" ng-click="back()" /> New Driver Offence
+	</h3>
+</div>
+<div class="row page-body">
+	<div class="panel-main-res">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#offence" data-toggle="tab">Offence</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="panel-action-res">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<button type="button" class="btn btn-primary btn-block" ng-click="confirmDialog('Are you sure you want to create this Driver Offence and submit for approval?', save)">Create Offence</button>
+						<button type="button" class="btn btn-default btn-block" ng-click="reset()">Clear</button>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade in active" id="offence">
+				<form class="form-horizontal">
+					<legend>Offence</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Driver</label>
+						<div class="col-sm-4">
+							<typeahead placeholder="NRIC No. or Name" uib-typeahead="nricName.name + ' (' + nricName.code + ')' for nricName in searchNricNames($viewValue)"
+								typeahead-on-select="onSelectDriver($item)" ng-blur="dto.driverNricNo = driver ? dto.driverNricNo : undefined" ng-model="driver" />
+						</div>
+						<label class="col-sm-2 control-label">SAF Driving Permit No.</label>
+						<div class="col-sm-2 control-value">{{driverPermitNo}}</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Vehicle</label>
+						<div class="col-sm-4">
+							<typeahead placeholder="Vehicle No. or Type" uib-typeahead="vehicleNoType.code + ' (' + vehicleNoType.name + ')' for vehicleNoType in searchVehicleNoTypes($viewValue)"
+								typeahead-on-select="dto.vehicleNo = $item.code" ng-blur="dto.vehicleNo = driver ? dto.vehicleNo : undefined" ng-model="vehicle" />
+						</div>
+						<label class="col-sm-2 control-label">Accident Id</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" ng-model="dto.accidentId" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Offence Type</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-options="offenceType.id as offenceType.name for offenceType in offenceTypes" ng-model="dto.offenceTypeId">
+								<option />
+							</select>
+						</div>
+						<label class="col-sm-2 control-label required">Offence Committed</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-options="offence.id as offence.name for offence in offences" ng-model="dto.offenceId">
+								<option />
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Location</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" ng-model="dto.location" />
+						</div>
+						<label class="col-sm-2 control-label required">Fine (S$)</label>
+						<div class="col-sm-4">
+							<input decimalbox class="form-control" ng-model="dto.fineAmt" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label required">Issue Date</label>
+						<div class="col-sm-4">
+							<input datebox class="form-control" ng-model="dto.issueDate" />
+						</div>
+						<label class="col-sm-2 control-label required">Issue By</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-options="offenceIssuer.id as offenceIssuer.name for offenceIssuer in offenceIssuers" ng-model="dto.offenceIssuerId">
+								<option />
+							</select>
+						</div>
+					</div>
+					<br>
+					<legend>Disciplinary</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Reference No.</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" ng-model="dto.referenceNo" />
+						</div>
+						<label class="col-sm-2 control-label required">Demerit Points</label>
+						<div class="col-sm-4">
+							<input intbox max="24" class="form-control" ng-model="dto.demeritPoints" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Permit Status</label>
+						<div class="col-sm-4">
+							<select class="form-control" ng-options="permitStatus.code as permitStatus.name for permitStatus in permitStatuses" ng-model="dto.permitStatusChangeCode">
+								<option />
+							</select>
+						</div>
+						<div ng-if="dto.permitStatusChangeCode=='PRMT_SUS'">
+							<label class="col-sm-2 control-label required">Effective From</label>
+							<div class="col-sm-4">
+								<input daterangebox class="form-control" ng-model="dto.effectiveDateRange" />
+							</div>
+						</div>
+						<div ng-if="dto.permitStatusChangeCode=='PRMT_REV'">
+							<label class="col-sm-2 control-label required">Effective From</label>
+							<div class="col-sm-4">
+								<input datebox class="form-control" ng-model="dto.effectiveDate" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

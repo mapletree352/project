@@ -1,0 +1,323 @@
+<div class="row page-header">
+	<h3>
+		Manage Parameters
+		<div ng-if="paramTab!='G'" class="pull-right" style="padding-right:25px">
+			<button type="button" class="btn btn-default" ng-click="reset()">Undo</button>
+			<button type="button" class="btn btn-primary" ng-click="save()">Save Changes</button>
+		</div>
+	</h3>
+</div>
+
+<div class="row page-body">
+<!--
+	<div class="panel-action">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong></strong></div>
+			<div class="panel-body">
+				<button type="button" class="btn btn-primary btn-block">Save Changes</button>
+				<button type="button" class="btn btn-default btn-block">Undo</button>
+			</div>
+		</div>
+	</div>
+-->
+
+	<div class="col-xs-12">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#general" data-toggle="tab" ng-click="paramTab='G'">General</a></li>
+			<li><a href="" data-target="#rewards" data-toggle="tab" ng-click="paramTab='R'">Rewards</a></li>
+			<li><a href="" data-target="#activities" data-toggle="tab" ng-click="paramTab='A'">Activities</a></li>
+			<li><a href="" data-target="#doubleBookout" data-toggle="tab" ng-click="paramTab='D'">Double Book-out</a></li>
+		</ul>
+		
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="general">
+				<form class="form-horizontal">
+					<table class="table table-bordered table-responsive table-condensed">
+						<tr>
+							<th rowspan="2" width="150">
+								Parameter Type<br>
+								<select class="form-control" ng-model="categorySelected" ng-change="updateCategory()" ng-options="category as category for category in categories">
+						<option value=""></option>
+						</select>
+							</th>
+							<th rowspan="2">Name</th>
+							<th colspan="2" style="text-align:center">Current</th>
+							<th colspan="2" style="text-align:center">New</th>
+							<!--						<th>Level</th>-->
+							<th rowspan="2">Description</th>
+							<th rowspan="2"></th>
+						</tr>
+						<tr>
+							<th>Value</th>
+							<th>Effective Date</th>
+							<th>Value</th>
+							<th>Effective Date</th>
+						</tr>
+						<tr ng-repeat="systemParameter in systemParameters">
+							<td>{{systemParameter.category}}</td>
+							<td>{{systemParameter.name}}</td>
+<!--							<td><input id="" class="form-control text-right" placeholder="" value="{{parameter.value}}"></td>-->
+							<td style="text-align:right">{{systemParameter.value}} {{systemParameter.metric}} </td>
+							<!--					<td><input id="" class="form-control decimalbox text-right" placeholder="" value="{{parameter.value}}"></td>-->
+							<td style="white-space:nowrap">{{systemParameter.effectiveDate}}</td>
+							<td></td>
+							<td></td>
+							<!--						<td>{{parameter.level}}</td>-->
+							<td>{{systemParameter.description}}</td>
+							<td style="white-space:nowrap">
+								<button type="button" class="btn btn-xs btn-default" ng-click="showParameter(systemParameter)" data-toggle="modal" data-target="#editModal"><div class="glyphicon glyphicon-pencil" /> Edit</button>
+								<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#logModal"><div class="glyphicon glyphicon-time" /> View Log</button>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			
+			<div class="tab-pane fade" id="rewards">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Snapshots</label>
+						<div class="col-sm-6">
+<!-- 							<select class="form-control"> -->
+<!-- 								<option>03-Mar-2016 14:35, by MWO TAN PENG SENG (S1385234D) - Current</option> -->
+<!-- 								<option>01-Jun-2014 10:25, by 1WO ANG TECK CHOON (S1832433E)</option> -->
+<!-- 								<option>13-Oct-2010 09:12, by 1WO JUHAIMI BIN SULAIMAN (S0658454A) </option> -->
+<!-- 							</select> -->
+								<select class="form-control" ng-model="snapShotRewardType" ng-change="updateReward()" ng-options="snapShotReward.id as snapShotReward.display for snapShotReward in snapShotRewards">
+								<option value="" selected hidden />
+								</select>
+						</div>
+					</div>
+					<table class="table table-bordered table-responsive table-condensed">
+						<tr>
+							<th>Reward</th>
+							<th>Mileage (km)</th>
+							<th>Accident Allowable</th>
+							<th>Max. Demerit Points</th>
+							<th>Min. Age</th>
+						</tr>
+						<tr ng-repeat="rewardParameter in rewardParameters">
+							<td style="white-space:nowrap">{{rewardParameter.name}}</td>
+							<td><input type="number" class="form-control text-right" placeholder="" ng-model="rewardParameter.minMileage"></td>
+							<td>
+								<yes-no-only class="form-control" ng-model="rewardParameter.accidentAllowedFlag" />
+							</td>
+							<td><input type="number" class="form-control text-right" placeholder="" ng-model="rewardParameter.maxDemeritPoints" ></td>
+							<td><input type="number" class="form-control text-right" placeholder="" ng-model="rewardParameter.minAge" ></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		
+			<div class="tab-pane fade" id="activities">
+				<div class="alert alert-info">
+					<p><span class="glyphicon glyphicon-info-sign"></span> Leave value blank if not applicable.</p>
+				</div>
+				
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Snapshots</label>
+						<div class="col-sm-6">
+<!-- 							<select class="form-control"> -->
+<!-- 								<option>03-Mar-2016 14:35, by MWO TAN PENG SENG (S1385234D) - Current</option> -->
+<!-- 								<option>01-Jun-2014 10:25, by 1WO ANG TECK CHOON (S1832433E)</option> -->
+<!-- 								<option>13-Oct-2010 09:12, by 1WO JUHAIMI BIN SULAIMAN (S0658454A) </option> -->
+<!-- 							</select> -->
+								<select class="form-control" ng-model="snapShotActivityType" ng-change="updateActivity()" ng-options="snapShotActivity.id as snapShotActivity.display for snapShotActivity in snapShotActivities">
+								<option value="" selected hidden />
+								</select>
+						</div>
+					</div>
+					
+					<table class="table table-bordered table-responsive table-condensed">
+						<tr>
+							<th>
+								Activity<br>
+<!-- 								<input type="text" class="form-control"> -->
+							</th>
+							<th width="10%">Indent Window</th>
+							<th width="10%">50% Penalty Cut-off Day</th>
+							<th width="10%">100% Penalty Cut-off Day</th>
+							<th width="10%">Priority</th>
+							<th>Rest Time (hrs)</th>
+						</tr>
+						<tr ng-repeat="activityParameter in activityParameters">
+							<td style="white-space:nowrap">{{activityParameter.activityTypeName}} - {{activityParameter.name}}</td>
+							<td><input type="number" class="form-control text-right" placeholder="" ng-model="activityParameter.indentWindow"></td>
+							<td><input type="number" class="form-control text-right" placeholder="" ng-model="activityParameter.cutOffDay1"></td>
+							<td><input type="number" class="form-control text-right" placeholder="" ng-model="activityParameter.cutOffDay2"></td>
+							<td><input type="numer" class="form-control text-right" placeholder="" ng-model="activityParameter.priority"></td>
+							<td><input type="text" class="form-control text-right" placeholder="" ng-model="activityParameter.restHour"></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+
+			<div class="tab-pane fade" id="doubleBookout">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-1 control-label">Snapshots</label>
+						<div class="col-sm-6">
+<!-- 							<select class="form-control"> -->
+<!-- 								<option>03-Mar-2016 14:35, by MWO TAN PENG SENG (S1385234D) - Current</option> -->
+<!-- 								<option>01-Jun-2014 10:25, by 1WO ANG TECK CHOON (S1832433E)</option> -->
+<!-- 								<option>13-Oct-2010 09:12, by 1WO JUHAIMI BIN SULAIMAN (S0658454A) </option> -->
+<!-- 							</select> -->
+								<select class="form-control" ng-model="snapShotDoubleBookOutType" ng-change="updateDoubleBookOut()" ng-options="snapShotDoubleBookOut.id as snapShotDoubleBookOut.display for snapShotDoubleBookOut in snapShotDoubleBookOuts">
+								<option value="" selected hidden />
+								</select>
+						</div>
+					</div>
+					
+					<table class="table table-bordered table-responsive table-condensed">
+						<tr>
+							<th rowspan="2">Activity</th>
+							<th colspan="2" style="text-align:center">Training</th>
+							<th colspan="2" style="text-align:center">Admin</th>
+						</tr>
+						<tr>
+							<th style="text-align:center">In-Camp</th>
+							<th style="text-align:center">Out-Camp</th>
+							<th style="text-align:center">In-Camp</th>
+							<th style="text-align:center">Out-Camp</th>
+						</tr>
+						<tr ng-repeat="doubleBookoutParameter in doubleBookoutParameters">
+							<td style="white-space:nowrap">{{doubleBookoutParameter.name}}</td>
+							<td>
+								<select class="form-control" ng-model="doubleBookoutParameter.trgInCamp">
+									<option value=""></option>
+									<option value="Allowed">Allowed</option>
+									<option value="Within Unit Only">Within Unit Only</option>
+									<option value="Within Sub-Unit Only">Within Sub-Unit Only</option>
+								</select>
+							</td>
+							<td>
+								<select class="form-control" ng-model="doubleBookoutParameter.trgOutCamp">
+									<option value=""></option>
+									<option value="Allowed">Allowed</option>
+									<option value="Within Unit Only">Within Unit Only</option>
+									<option value="Within Sub-Unit Only">Within Sub-Unit Only</option>
+								</select>
+							</td>
+							<td>
+								<select class="form-control" ng-model="doubleBookoutParameter.admInCamp">
+									<option value=""></option>
+									<option value="Allowed">Allowed</option>
+									<option value="Within Unit Only">Within Unit Only</option>
+									<option value="Within Sub-Unit Only">Within Sub-Unit Only</option>
+								</select>
+							</td>
+							<td>
+								<select class="form-control" ng-model="doubleBookoutParameter.admOutCamp">
+									<option value=""></option>
+									<option value="Allowed">Allowed</option>
+									<option value="Within Unit Only">Within Unit Only</option>
+									<option value="Within Sub-Unit Only">Within Sub-Unit Only</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Edit Parameter</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Parameter</label>
+							<div class="col-sm-9 control-value">{{selectedParameter.name}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Current Value</label>
+							<div class="col-sm-9 control-value">{{selectedParameter.value}} {{selectedParameter.metric}}</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">New Value</label>
+							<div class="col-sm-5">
+								<div class='input-group'>
+									<input type="text" class="form-control decimalbox text-right" placeholder="" ng-model="selectedParameter.newValue">
+									<label class="input-group-addon">{{selectedParameter.metric}}</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Effective Date</label>
+							<div class="col-sm-5">
+								<div class='input-group valueColumn date' >
+									<input datetimebox class="form-control" id="effectiveDate" min-Date="minimumDate" ng-model="selectedParameter.effectiveDate" />
+									<label class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</label>								
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveParameters(selectedParameter)">Update Parameter</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="logModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">Modification Log</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<table class="table table-bordered table-responsive table-condensed">
+							<tr>
+								<th width="150px">Modified On</th>
+								<th width="100px">Modified By</th>
+								<th>Old Value</th>
+								<th>New Value</th>
+							</tr>
+							<tr>
+								<td>03-Mar-2016 14:35</td>
+								<td><a uib-tooltip="MWO TAN PENG SENG" tooltip-placement="right">S1385234D</a></td>
+								<td>2</td>
+								<td>3</td>
+							</tr>
+							<tr>
+								<td>13-Oct-2010 09:12</td>
+								<td><a uib-tooltip="1WO ANG TECK CHOON" tooltip-placement="right">S1832433E</a></td>
+								<td>1</td>
+								<td>2</td>
+							</tr>
+							<tr>
+								<td>03-Mar-2016 14:35</td>
+								<td><a uib-tooltip="1WO JUHAIMI BIN SULAIMAN" tooltip-placement="right">S0658454A</a></td>
+								<td>0</td>
+								<td>1</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

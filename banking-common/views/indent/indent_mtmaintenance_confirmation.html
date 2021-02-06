@@ -1,0 +1,97 @@
+<div class="row page-header" style="border-bottom-style: none;">
+	<h3>Indent Confirmation (MT Maintenance)</h3>
+	<div style="height: 5px">
+		<hr>
+	</div>
+	<decide-button yes="Confirm" no="Reject" to-all="true" ng-model="allDecision" decision-count="count" ng-click="decideAll(allDecision)" />
+	<button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" ng-click="confirm()" ng-disabled="count < 1" >
+		Confirm Decision <span ng-show="count > 0"> for {{count}} Indents</span>
+	</button>
+</div>
+<div class="row page-body" style="position:relative; top: 75px;">
+	<table st-table="records" st-pipe="paginate" class="table table-striped table-bordered table-responsive table-condensed small">
+		<tr>
+			<th no-sort>#</th>
+			<th sort property="indentNo">Indent ID</th>
+			<th sort property="taskId">Task ID</th>
+			<th sort property="unit.name">Customer Unit</th>
+			<th sort property="activity.type.code">Activity Type</th>
+			<th sort property="startDate">Indent Period</th>
+			<th sort property="name">Indent Details</th>
+			<th no-sort>Vehicle Resources</th>
+			<th no-sort>Driver Resources</th>
+			<th sort property="status.code">Status</th>
+		</tr>
+		<tr ng-repeat-start="record in records">
+			<td rowspan="2">{{$index + searchDTO.startIndex + 1}}</td>
+			<td><a href="#/indent/{{record.indentNo}}">{{record.indentNo}}</a></td>
+			<td><a href="#/task/{{record.taskId}}">{{record.taskId}}</a></td>
+			<td>{{record.unit}}</td>
+			<td>
+				<div>{{record.activityType}} {{record.activity != null ? '-' : null}}</div>
+				<div>{{record.activity != null ? record.activity : null}}</div>
+			</td>
+			<td>
+				<div>{{record.startDate}} to</div>
+				<div>{{record.endDate}} </div>
+				<div>({{record.duration | number:1}} {{record.durationUnit}})</div>
+			</td>
+			<td>
+				<div style="font-size:13"><b>{{record.name}}</b></div>
+				<div><span class="glyphicon glyphicon-map-marker"/> {{record.reportingVenue}}</div>
+				<div><span class="glyphicon glyphicon-transfer"/> {{record.campMovement}}</div>
+			</td>
+			<td width="12%">
+				<img src="images/vehicle.gif" height="50" style="float:left; margin-right:10px">
+				<div>
+					<div>{{record.vehiclesRequested}} requested</div>
+					<div>{{record.vehiclesTasked}} tasked</div>
+				</div>
+			</td>
+			<td width="12%">
+				<img src="images/driver.gif" height="50" style="float:left; margin-right:10px">
+				<div>
+					<div>{{record.driversRequested}} requested</div>
+					<div>{{record.driversTasked}} tasked</div>
+				</div>
+			</td>
+			<td>
+				{{record.status}}
+			</td>
+		</tr>
+		<tr ng-repeat-end>
+			<td colspan="2">
+				<decide-button yes="Confirm" no="Reject" ng-model="decisions[record.indentNo].decision" decision-count="$parent.count" />
+			</td>
+			<td colspan="9">
+				<input type="text" class="form-control" ng-if="decisions[record.indentNo].decision == 'NO'" ng-model="decisions[record.indentNo].decisionReason" placeholder="Reasons for rejection"/>
+			</td>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="10">
+					<div st-template="pagination.html" st-pagination="" st-items-by-page="searchDTO.pageSize" ></div>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+<div class="modal fade" id="confirmSubmitModal" tabindex="-1">
+	<div class="modal-dialog" style="width:400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Confirm?</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>Are you sure you want to confirm and/or reject the Indents?</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submit()">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>

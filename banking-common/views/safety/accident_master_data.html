@@ -1,0 +1,1416 @@
+<div class=A"row page-header">
+	<h3>Manage Accident Master Data</h3>
+</div>
+<div class="row page-body">
+	<div>
+
+
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="" data-target="#locationType"
+			
+				data-toggle="tab">Location<br>Type
+			</a></li>
+			<li><a href="" data-target="#collisionType" data-toggle="tab">Between Moving<br> Vehicles
+			</a></li>
+			<li><a href="" data-target="#collisionObject" data-toggle="tab">Moving Vehicle<br>Against
+			</a></li>
+			<li><a href="" data-target="#manoeuvreType" data-toggle="tab">Vehicle Manoeuvre<br>Before Accident
+			</a></li>
+			<li><a href="" data-target="#roadType" data-toggle="tab">Road<br>Type
+			</a></li>
+			<li><a href="" data-target="#roadSurface" data-toggle="tab">Road<br>Surface
+			</a></li>
+			<li><a href="" data-target="#roadFeature" data-toggle="tab">Road<br>Feature
+			</a></li>
+			<li><a href="" data-target="#pointError" data-toggle="tab">Point<br>Error&nbsp;
+			</a></li>
+			<li><a href="" data-target="#systemError" data-toggle="tab">System<br>Error&nbsp;
+			</a></li>
+			<li><a href="" data-target="#speedLimit" data-toggle="tab">Speed<br>Limit&nbsp;
+			</a></li>
+			<li><a href="" data-target="#category" data-toggle="tab">Accident<br>Category
+			</a></li>
+			<li><a href="" data-target="#injuryDegree" data-toggle="tab">Injury<br>Degree&nbsp;
+			</a></li>
+			<li><a href="" data-target="#weather" data-toggle="tab">Weather</a></li>
+			<li><a href="" data-target="#traffic" data-toggle="tab">Traffic<br>Volume
+			</a></li>
+			<li><a href="" data-target="#visibility" data-toggle="tab">Visibility
+			</a></li>
+			<li><a href="" data-target="#civillianVehicleType" 	data-toggle="tab">Civilian Vehicle Type </a></li>
+
+		</ul>
+		<div class="tab-content">
+		
+			<div class="tab-pane fade in active" id="locationType">
+				<table    st-table="dto.locationTypes" st-pipe="search" 
+					class=" table table-striped table-bordered table-responsive table-condensed" >
+					
+					
+						<thead>
+						
+							<tr>
+								<th no-sort>Location Type
+								<br>
+								<input st-search="name" placeholder="Location Type" class="input-sm form-control" type="search"/>
+								</th>
+								
+								<th width="125px">
+								<button type="button" class="btn btn-xs btn-default" ng-click='showLoctionType(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+							</tr>
+							
+							
+					</thead>
+			
+					<tr ng-repeat="locationType in dto.locationTypes" >
+						<td>{{locationType.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showLoctionType(locationType.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteLocation(locationType.counterId)"	>
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				<br>
+				
+				
+<div class="modal fade" id="addEditlocationTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!locationTypeDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Location Type</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="locationTypeDTO.name"></div>
+				
+						</div>
+	
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdatelocationType(locationTypeDTO.counterId)">{{!locationTypeDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="deleteLocationModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{returnLocationMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+				
+				
+				
+			</div>	
+		
+		<div class="tab-pane fade" id="collisionObject">
+			
+				<table  st-table="dto.collisionObjects" st-pipe="search" 
+					class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort> Moving Vehicle<br>Against 	
+						<input st-search="name" placeholder=" Moving Vehicle Against" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px">
+						
+	<button type="button" class="btn btn-xs btn-default" 		ng-click='showCollisionObject(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="collisionObject in dto.collisionObjects">
+						<td>{{collisionObject.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showCollisionObject(collisionObject.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteCollisionObject(collisionObject.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="modal fade" id="addEditCollisionObjectModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!collisionObjectDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required"> Moving Vehicle<br>Against</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="collisionObjectDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateCollisionObject(collisionObjectDTO.counterId)">{{!collisionObjectDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="deleteCollisionObjectModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{collisionObjectMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+				
+				
+				
+				
+			</div>
+		
+		<div class="tab-pane fade" id="collisionType">
+
+				<table st-table="dto.collisionTypes" st-pipe="search" 
+				 	class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Between Moving Vehicle
+							 <br>	
+							<input st-search="name" placeholder="Between Moving Vehicle" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showCollisionType(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="collisionType in dto.collisionTypes">
+						<td>{{collisionType.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showCollisionType(collisionType.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click="deleteCollisionType(collisionType.counterId)" >
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+<div class="modal fade" id="addEditcollisionTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!collisionTypeDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Between Moving	 Vehicles</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="collisionTypeDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateCollisionType(collisionTypeDTO.counterId)">{{!collisionTypeDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<div class="modal fade" id="deleteCollisionTypeModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{collisionTypeMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+				
+
+				
+
+			</div>
+			
+			<div class="tab-pane fade" id="manoeuvreType">
+					<table	  st-table="dto.manoeuvreTypes" st-pipe="search" 
+					 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Vehicle Maneouvre Before Accident <br> <input st-search="name" placeholder="Vehicle Maneouvre Before Accident" class="input-sm form-control" type="search"/>
+						
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showManeoureType(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="manoeuvreType in dto.manoeuvreTypes">
+						<td>{{manoeuvreType.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showManeoureType(manoeuvreType.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteManevoureType(manoeuvreType.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+						
+<div class="modal fade" id="addEditManevoureTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!maneoureTypeDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Vehicle Maneouvre <br/>Before Accident</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="maneoureTypeDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateManevoureType(maneoureTypeDTO.counterId)">{{!maneoureTypeDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+	<div class="modal fade" id="deleteManevoureTypeModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{manevoureTypeModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			</div>
+			<div class="tab-pane fade" id="roadType">
+				<table	 st-table="dto.roadTypes" st-pipe="search" 
+				 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Road Type <br> 
+	<input st-search="name" placeholder="Road Type" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showRoadType(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="roadType in dto.roadTypes">
+						<td>{{roadType.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showRoadType(roadType.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteRoadType(roadType.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+<div class="modal fade" id="addEditRoadTypeModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!roadTypeDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Road Type</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="roadTypeDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateRoadType(roadTypeDTO.counterId)">{{!roadTypeDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+				<div class="modal fade" id="deleteRoadTypeModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{roadTypeModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			</div>
+			<div class="tab-pane fade" id="roadSurface">
+			<table st-table="dto.roadSurfaces" st-pipe="search" 
+				class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+							<th nos-sort>Road Surface<br> 
+								<input st-search="name" placeholder="Road Surface" class="input-sm form-control" type="search"/>
+			
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showRoadSurface(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="roadSurface in dto.roadSurfaces">
+						<td>{{roadSurface.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showRoadSurface(roadSurface.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteRoadSurface(roadSurface.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+			
+<div class="modal fade" id="addEditRoadSurfaceModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!roadSurfaceDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Road Surface</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="roadSurfaceDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateRoadSurface(roadSurfaceDTO.counterId)">{{!roadSurfaceDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+	<div class="modal fade" id=deleteRoadSurfaceModal tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{roadSurfaceModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+			
+			</div>
+			<div class="tab-pane fade" id="roadFeature">
+						<table	st-table="dto.roadFeatures" st-pipe="search" 
+						 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Road Feature <br> 
+	<input st-search="name" placeholder="Location Type" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showRoadFeature(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="roadFeature in dto.roadFeatures">
+						<td>{{roadFeature.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showRoadFeature(roadFeature.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default"
+								ng-click="deleteRoadFeature(roadFeature.counterId)" >
+								
+								
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+<div class="modal fade" id="addEditRoadFeatureModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!roadFeatureDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Road Feature</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="roadFeatureDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateRoadFeature(roadFeatureDTO.counterId)">{{!roadFeatureDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<div class="modal fade" id="deleteRoadFeatureModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{roadFeatureModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+	
+			
+			</div>
+	
+			<div class="tab-pane fade" id="pointError">
+			
+				<table st-table="dto.pointErrors" st-pipe="search" 
+				 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Point Error <br>
+								<input st-search="name" placeholder="Point Error " class="input-sm form-control" type="search"/>
+						
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showPointError(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="pointError in dto.pointErrors">
+						<td>{{pointError.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showPointError(pointError.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deletePointError(pointError.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+				
+	<div class="modal fade" id="addEditPointErrorModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!pointErrorDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Point Error</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model=pointErrorDTO.name></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdatePointError(pointErrorDTO.counterId)">{{!pointErrorDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<div class="modal fade" id="deletePointErrorModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{pointErrorModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			
+			</div>
+			<div class="tab-pane fade" id="systemError">
+						
+				<table st-table="dto.systemErrors" st-pipe="search" 
+					class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>System Error <br> 	
+						<input st-search="name" placeholder="System Error" class="input-sm form-control" type="search"/>
+						
+						
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showSystemError(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="systemError in dto.systemErrors">
+						<td>{{systemError.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showSystemError(systemError.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default"
+								ng-click="deleteSystemError(systemError.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+				
+								
+	<div class="modal fade" id="addEditSystemErrorModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!systemErrorDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">System Error</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="systemErrorDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateSystemError(systemErrorDTO.counterId)">{{!systemErrorDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+	<div class="modal fade" id="deleteSystemErrorModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{systemErrorModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+			
+			</div>
+			<div class="tab-pane fade" id="speedLimit">
+				<table	 st-table="dto.speedLimits" st-pipe="search" 
+				 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Speed Limit <br><input st-search="name" placeholder="Speed Limit" class="input-sm form-control" type="search"/>
+							
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showSpeedLimit(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="speedLimit in dto.speedLimits">
+						<td>{{speedLimit.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showSpeedLimit(speedLimit.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteSpeedLimit(speedLimit.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+		<div class="modal fade" id="addEditSystemLimitModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!systemLimitDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Speed Limit</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="systemLimitDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateSystemLimit(systemLimitDTO.counterId)">{{!systemLimitDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>		
+
+	<div class="modal fade" id="deleteSpeedLimitModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{speedLimitModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			
+			
+			</div>
+			<div class="tab-pane fade" id="category">
+				<table	 st-table="dto.categorys" st-pipe="search" 
+				 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Accident Category <br> 	
+						<input st-search="name" placeholder="Accident Category" class="input-sm form-control" type="search"/>
+						
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showCategory(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="category in dto.categorys">
+						<td>{{category.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showCategory(category.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteCategory(category.counterId) ">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+<div class="modal fade" id="addEditCategoryModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!categoryDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Category</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="categoryDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateCategory(categoryDTO.counterId)">{{!categoryDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>	
+
+	<div class="modal fade" id="deleteCategoryModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{categoryModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			
+			
+			</div>
+			<div class="tab-pane fade" id="injuryDegree">
+			
+					<table	st-table="dto.injuryDegrees" st-pipe="search" 
+					 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Injure Degree <br> <input st-search="name" placeholder="Injure Degree" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showInjuryDegree(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="injuryDegree in dto.injuryDegrees">
+						<td>{{injuryDegree.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showInjuryDegree(injuryDegree.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteInjury(injuryDegree.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+		<div class="modal fade" id="addEditInjureModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!injuryDegreeDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label required">Injury Degree</label>
+							<div class="col-sm-9"><input type="text" class="form-control" ng-model="injuryDegreeDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateInjureDegree(injuryDegreeDTO.counterId)">{{!injuryDegreeDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<div class="modal fade" id="deleteInjuryModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{injuryModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+	
+			
+			</div>
+			<div class="tab-pane fade" id="weather">
+						
+			<table	st-table="dto.weathers" st-pipe="search" 
+			 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Weather <br> 	<input st-search="name" placeholder="Weather" class="input-sm form-control" type="search"/>
+						
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showWeather(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="weather in dto.weathers">
+						<td>{{weather.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showWeather(weather.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteWeather(weather.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+<div class="modal fade" id="addEditWeatherModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!weatherDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+						<label class="col-sm-3 control-label required">Weather</label>
+							<div class="col-sm-9">
+						
+							<input type="text" class="form-control" ng-model="weatherDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateWeather(weatherDTO.counterId)">{{!weatherDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>				
+	
+	
+	<div class="modal fade" id="deleteWeatherModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{weatherModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+				
+			</div>
+			<div class="tab-pane fade" id="traffic">
+					<table	 st-table="dto.traffics" st-pipe="search" 
+					 class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Traffic Volume 	<input st-search="name" placeholder="Traffic Volume" class="input-sm form-control" type="search"/>
+						
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showTrafficVolume(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="traffic in dto.traffics">
+						<td>{{traffic.name}}</td>
+						<td style="white-space: nowrap">
+					
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showTrafficVolume(traffic.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteTraffic(traffic.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+				
+				
+		<div class="modal fade" id="addEditTrafficModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!trafficVolumeDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+						<label class="col-sm-3 control-label required">Traffic Volume</label>
+							<div class="col-sm-9">
+						
+							<input type="text" class="form-control" ng-model="trafficVolumeDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateTraffic(trafficVolumeDTO.counterId)">{{!trafficVolumeDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>	
+<div class="modal fade" id="deleteTrafficModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{trafficModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			
+			
+			</div>
+			<div class="tab-pane fade" id="visibility">
+				<table st-table="dto.visibilities" st-pipe="search" 
+									class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Visibility <br>
+							<input st-search="name" placeholder="Visibility" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showVisiblity(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="visibility in dto.visibilities">
+						<td>{{visibility.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showVisiblity(visibility.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteVisiblity(visibility.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+			<div class="modal fade" id="addEditVisiblityModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!visiblityDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+						<label class="col-sm-3 control-label required">Visibility</label>
+							<div class="col-sm-9">
+						
+							<input type="text" class="form-control" ng-model="visiblityDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateVisiblityDTO(visiblityDTO.counterId)">{{!visiblityDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="deleteVisibilityModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{visibilityModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+			
+			
+			</div>
+			
+			<div class="tab-pane fade" id="civillianVehicleType">
+			
+			<table st-table="dto.civilianVehicles" st-pipe="search" class="table table-striped table-bordered table-responsive table-condensed">
+					<tr>
+						<th no-sort>Civilian Vehicle Type <br>
+							<input st-search="name" placeholder="Civilian Vehicle Type" class="input-sm form-control" type="search"/>
+						</th>
+
+						<th width="125px"><button type="button"
+								class="btn btn-xs btn-default"
+								ng-click='showCivilianVehicle(null)'>
+								<div class="glyphicon glyphicon-plus" />
+								Add Master Data
+							</button></th>
+					</tr>
+					<tr ng-repeat="civilianVehicle in dto.civilianVehicles">
+						<td>{{civilianVehicle.name}}</td>
+						<td style="white-space: nowrap">
+							<button type="button" class="btn btn-xs btn-default"
+								data-toggle="modal" ng-click='showCivilianVehicle(civilianVehicle.counterId)'>
+								<div class="glyphicon glyphicon-pencil" />
+								Edit
+							</button>
+							<button type="button" class="btn btn-xs btn-default" ng-click="deleteCivilianVehicle(civilianVehicle.counterId)">
+								<div class="glyphicon glyphicon-minus" />
+								Delete
+							</button>
+						</td>
+					</tr>
+				</table>
+			
+			
+			<div class="modal fade" id="addEditCivilianVehicleModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">{{!civilianDTO.isEdit ? 'New' : 'Edit'}} Master Data</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal">
+						<div class="form-group">
+						<label class="col-sm-3 control-label required">Civilian Vehicle</label>
+							<div class="col-sm-9">
+						
+							<input type="text" class="form-control" ng-model="civilianDTO.name"></div>
+						</div>
+
+					</form>
+					
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateCivilianVehicleDTO(civilianDTO.counterId)">{{!civilianDTO.isEdit ? 'Save' : 'Update'}}</button>
+			</div>
+		</div>
+	</div>
+</div>			
+			
+			
+			
+			<div class="modal fade" id="deleteCivilianModal" tabindex="-1">
+		<div class="modal-dialog" style="width: 400px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+				<h4 class="modal-title">Delete</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<p>{{civilianVehicleModalMessage}}</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			</div>
+			
+
+		</div>
+
+	
+	</div>
+</div>

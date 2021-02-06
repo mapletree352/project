@@ -1,0 +1,25 @@
+<style>
+	.pagination {
+		margin: 5px;
+	}
+</style>
+<ul class="pagination" ng-if="totalItemCount > 0">
+	<li ng-if="currentPage > 1">
+		<a href="" ng-click="selectPage(1)">First</a>
+	</li>
+	<li ng-if="currentPage > 1">
+		<a href="" ng-click="selectPage(currentPage-1)">&lt;</a>
+	</li>
+	<li ng-repeat="page in pages" ng-class="{active: page==currentPage}">
+		<a href="" ng-click="selectPage(page)">{{page}}</a>
+	</li>
+	<li ng-if="currentPage < numPages">
+		<a href="" ng-click="selectPage(currentPage+1)">></a>
+	</li>
+	<li ng-if="currentPage < numPages">
+		<a href="" ng-click="selectPage(numPages)">Last</a>
+	</li>
+	<li>
+		<a style="color:black">Total Records: {{totalItemCount}}</a>
+	</li>
+</ul>
